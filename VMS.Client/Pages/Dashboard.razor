@@ -1,506 +1,649 @@
 @page "/dashboard"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using VMS.Client.DTOs.Invitations
 @using VMS.Client.DTOs.Common
+@using VMS.Client.DTOs.Dashboard
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
 @attribute [Authorize(Policy = "RequireAdmin")]
 
 <PageTitle>Dashboard</PageTitle>
 
-<div class="enterprise-dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-        <h1 class="dashboard-title">Visitor Management</h1>
-        <div class="user-profile-section">
-            <div class="notification-icon" role="button" tabindex="0">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-            </div>
-            <div class="profile-picture">
-                <img src="https://ui-avatars.com/api/?name=@(userName?.Replace(" ", "+"))&background=1A3B6A&color=fff&size=128" alt="Profile" />
-            </div>
-            <div class="user-info">
-                <div class="user-name">@userName</div>
-                <div class="user-email">@userEmail</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Metric Cards Section -->
-    <div class="metrics-section">
-        <div class="metric-card">
-            <div class="metric-card-background"></div>
-            <div class="metric-content">
-                <div class="metric-title">Active Enterprise Users</div>
-                <div class="metric-value">@activeEnterpriseUsers</div>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-card-background"></div>
-            <div class="metric-content">
-                <div class="metric-title">Total Visitors Today</div>
-                <div class="metric-value">@totalVisitorsToday</div>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-card-background"></div>
-            <div class="metric-content">
-                <div class="metric-title">Pending Invitations</div>
-                <div class="metric-value">@pendingInvitations</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="charts-section">
-        <div class="chart-container">
-            <div class="chart-header">
-                <h3 class="chart-title">Visitors by Hour</h3>
-                <span class="chart-subtitle">Today</span>
-            </div>
-            <div class="chart-content">
-                <svg class="visitors-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
-                    <!-- Y-axis labels -->
-                    <text x="10" y="20" class="axis-label">50</text>
-                    <text x="10" y="60" class="axis-label">40</text>
-                    <text x="10" y="100" class="axis-label">30</text>
-                    <text x="10" y="140" class="axis-label">20</text>
-                    <text x="10" y="180" class="axis-label">10</text>
-                    <text x="10" y="195" class="axis-label">0</text>
-                    
-                    <!-- X-axis labels -->
-                    <text x="50" y="195" class="axis-label">8:00</text>
-                    <text x="100" y="195" class="axis-label">9:00</text>
-                    <text x="150" y="195" class="axis-label">10:00</text>
-                    <text x="200" y="195" class="axis-label">11:00</text>
-                    <text x="250" y="195" class="axis-label">12:00</text>
-                    <text x="300" y="195" class="axis-label">1:00</text>
-                    <text x="350" y="195" class="axis-label">2:00</text>
-                    <text x="380" y="195" class="axis-label">4:00</text>
-                    
-                    <!-- Grid lines -->
-                    <line x1="30" y1="10" x2="30" y2="190" stroke="#E0E0E0" stroke-width="1"/>
-                    <line x1="30" y1="50" x2="390" y2="50" stroke="#E0E0E0" stroke-width="1"/>
-                    <line x1="30" y1="90" x2="390" y2="90" stroke="#E0E0E0" stroke-width="1"/>
-                    <line x1="30" y1="130" x2="390" y2="130" stroke="#E0E0E0" stroke-width="1"/>
-                    <line x1="30" y1="170" x2="390" y2="170" stroke="#E0E0E0" stroke-width="1"/>
-                    <line x1="30" y1="190" x2="390" y2="190" stroke="#E0E0E0" stroke-width="1"/>
-                    
-                    <!-- Green wavy line representing visitors -->
-                    <path d="M 50,170 L 80,150 L 100,140 L 150,130 L 200,100 L 250,160 L 300,120 L 350,80 L 380,60" 
-                          stroke="#4CAF50" 
-                          stroke-width="3" 
-                          fill="none" 
-                          class="chart-line"/>
-                    
-                    <!-- Data points -->
-                    <circle cx="50" cy="170" r="4" fill="#4CAF50"/>
-                    <circle cx="80" cy="150" r="4" fill="#4CAF50"/>
-                    <circle cx="100" cy="140" r="4" fill="#4CAF50"/>
-                    <circle cx="150" cy="130" r="4" fill="#4CAF50"/>
-                    <circle cx="200" cy="100" r="4" fill="#4CAF50"/>
-                    <circle cx="250" cy="160" r="4" fill="#4CAF50"/>
-                    <circle cx="300" cy="120" r="4" fill="#4CAF50"/>
-                    <circle cx="350" cy="80" r="4" fill="#4CAF50"/>
-                    <circle cx="380" cy="60" r="4" fill="#4CAF50"/>
-                </svg>
-            </div>
-        </div>
-        <div class="chart-container">
-            <div class="chart-header">
-                <h3 class="chart-title">Entry vs Exit</h3>
-                <span class="chart-subtitle">Today</span>
-            </div>
-            <div class="chart-content chart-placeholder">
-                <!-- Placeholder for Entry vs Exit chart -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Invitations Table Section -->
-    <div class="invitations-section">
-        <h2 class="section-title">Invitations</h2>
-        
-        <div class="invitations-controls">
-            <div class="search-container">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" 
-                       class="search-input" 
-                       placeholder="Search by name or ID" 
-                       @bind="searchTerm"
-                       @bind:event="oninput" />
-            </div>
-            
-            <div class="filter-buttons">
-                <button class="filter-btn @(selectedFilter == "All" ? "active" : "")" @onclick='() => SetFilter("All")'>All</button>
-                <button class="filter-btn @(selectedFilter == "Pending" ? "active" : "")" @onclick='() => SetFilter("Pending")'>Pending</button>
-                <button class="filter-btn @(selectedFilter == "Approved" ? "active" : "")" @onclick='() => SetFilter("Approved")'>Approved</button>
-                <button class="filter-btn @(selectedFilter == "Expired" ? "active" : "")" @onclick='() => SetFilter("Expired")'>Expired</button>
+<div class="lfz-admin-container">
+    <div class="lfz-admin-main">
+        <!-- Header Section -->
+        <div class="lfz-admin-header">
+            <span class="lfz-admin-title">LFZ ADMIN</span>
+            <div class="lfz-admin-user-section">
+                <div class="lfz-admin-notification-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </div>
+                <div class="lfz-admin-profile">
+                    <div class="lfz-admin-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Tochukwu+Ndefo&background=1A3B6A&color=fff&size=128" alt="Profile" />
+                    </div>
+                    <div class="lfz-admin-user-info">
+                        <span class="lfz-admin-user-name">Tochukwu Ndefo</span>
+                        <span class="lfz-admin-user-email">tndefo@lfz.com</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="table-container">
-            <table class="invitations-table">
-                <thead>
-                    <tr>
-                        <th>INVITATION ID</th>
-                        <th>VISITOR</th>
-                        <th>HOST</th>
-                        <th>DATE</th>
-                        <th>STATUS</th>
-                        <th>ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (filteredInvitations.Count == 0)
+        <!-- Metric Cards Section -->
+        <div class="lfz-admin-metrics">
+            <!-- Total Visitors Card -->
+            <div class="lfz-admin-metric-card metric-visitors">
+                <div class="metric-wave-bg"></div>
+                <span class="metric-label">Total Visitors</span>
+                <span class="metric-value">@totalVisitors</span>
+                <div class="metric-icon visitors-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Total Enterprises Card -->
+            <div class="lfz-admin-metric-card metric-enterprises">
+                <div class="metric-wave-bg"></div>
+                <span class="metric-label">Total Enterprises</span>
+                <span class="metric-value">@totalEnterprises</span>
+                <div class="metric-icon enterprises-icon">
+                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="50" height="50" rx="8" fill="#007AFF" fill-opacity="0.08"/>
+                        <path d="M16 16H18.25V20.5H16V16ZM16 22.75H18.25V27.25H16V22.75ZM22.75 16H25V20.5H22.75V16ZM22.75 22.75H25V27.25H22.75V22.75ZM16 29.5H18.25V34H16V29.5ZM22.75 29.5H25V34H22.75V29.5Z" fill="#007AFF"/>
+                        <path d="M40.75 22.75C40.75 22.1533 40.5129 21.581 40.091 21.159C39.669 20.7371 39.0967 20.5 38.5 20.5H31.75V11.5C31.75 10.9033 31.5129 10.331 31.091 9.90901C30.669 9.48705 30.0967 9.25 29.5 9.25H11.5C10.9033 9.25 10.331 9.48705 9.90901 9.90901C9.48705 10.331 9.25 10.9033 9.25 11.5V40.75H40.75V22.75ZM11.5 11.5H29.5V38.5H11.5V11.5ZM31.75 38.5V22.75H38.5V38.5H31.75Z" fill="#007AFF"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Walk-In Requests Card -->
+            <div class="lfz-admin-metric-card metric-walkins">
+                <div class="metric-wave-bg"></div>
+                <span class="metric-label">Walk-In Requests</span>
+                <span class="metric-value">@walkInRequests</span>
+                <div class="metric-icon walkins-icon">
+                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="50" height="50" rx="8" fill="#52C752" fill-opacity="0.08"/>
+                        <path d="M29.0931 40.9131L25.1014 32.8455L21.9451 28.8102C21.4788 28.0213 21.2328 27.1216 21.2329 26.2052V17.125M21.2329 17.125H22.3346C22.7061 17.1249 23.0739 17.198 23.4171 17.3401C23.7603 17.4821 24.0721 17.6904 24.3348 17.953C24.5975 18.2157 24.8058 18.5274 24.948 18.8706C25.0901 19.2137 25.1633 19.5815 25.1633 19.953V32.8455M21.2329 17.125C18.613 17.125 15.9932 22.3654 15.9932 22.3654V27.6051M33.0229 26.2952L28.3752 23.2422M18.9906 40.6347L22.7502 35.125" stroke="#34C759" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M25.1633 14.5052C26.6102 14.5052 27.7831 13.3322 27.7831 11.8853C27.7831 10.4384 26.6102 9.26547 25.1633 9.26547C23.7164 9.26547 22.5435 10.4384 22.5435 11.8853C22.5435 13.3322 23.7164 14.5052 25.1633 14.5052Z" stroke="#34C759" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="lfz-admin-charts">
+            <!-- Visitors by Day Chart -->
+            <div class="lfz-admin-chart-container">
+                <span class="chart-title">Visitors by Day</span>
+                <div class="chart-content">
+                    @if (isLoadingChart)
                     {
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem;">
-                                <span>No invitations found.</span>
-                            </td>
-                        </tr>
+                        <div style="text-align: center; padding: 2rem;">
+                            <span>Loading chart data...</span>
+                        </div>
+                    }
+                    else if (visitorsByDay == null || visitorsByDay.Count == 0)
+                    {
+                        <div style="text-align: center; padding: 2rem;">
+                            <span>No data available</span>
+                        </div>
                     }
                     else
                     {
-                        @foreach (var invitation in filteredInvitations)
+                        <svg class="visitors-chart" viewBox="0 0 500 250" preserveAspectRatio="none">
+                        @{
+                            var maxCount = visitorsByDay.Count > 0 ? visitorsByDay.Max(v => v.Count) : 0;
+                            var yAxisMax = maxCount > 325 ? ((maxCount / 50) + 1) * 50 : 325;
+                            var chartHeight = 180;
+                            var chartWidth = 400;
+                            var startX = 50;
+                            var startY = 20;
+                            var endY = 200;
+                            var daySpacing = chartWidth / 6.0;
+                            
+                            // Y-axis labels
+                            @for (int i = 0; i <= 5; i++)
+                            {
+                                var value = (yAxisMax / 5) * (5 - i);
+                                var yPos = startY + (chartHeight / 5) * i;
+                                @((MarkupString)$"<text x=\"10\" y=\"{yPos + 5}\" class=\"axis-label\">{value}</text>")
+                            }
+                            
+                            // X-axis labels
+                            var days = new[] { "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun" };
+                            @for (int i = 0; i < visitorsByDay.Count; i++)
+                            {
+                                var xPos = startX + (daySpacing * i);
+                                @((MarkupString)$"<text x=\"{xPos - 15}\" y=\"220\" class=\"axis-label\">{days[i]}</text>")
+                            }
+                            
+                            // Grid lines
+                            <line x1="@startX" y1="@startY" x2="@startX" y2="@endY" stroke="#E0E0E0" stroke-width="1"/>
+                            @for (int i = 0; i <= 5; i++)
+                            {
+                                var yPos = startY + (chartHeight / 5) * i;
+                                <line x1="@startX" y1="@yPos" x2="@(startX + chartWidth)" y2="@yPos" stroke="#E0E0E0" stroke-width="1"/>
+                            }
+                            <line x1="@startX" y1="@endY" x2="@(startX + chartWidth)" y2="@endY" stroke="#E0E0E0" stroke-width="1"/>
+                            
+                            // Line chart
+                            var pathPoints = new List<(double x, double y)>();
+                            for (int i = 0; i < visitorsByDay.Count; i++)
+                            {
+                                var day = visitorsByDay[i];
+                                var x = startX + (daySpacing * i);
+                                var normalizedCount = yAxisMax > 0 ? (double)day.Count / yAxisMax : 0;
+                                var y = endY - (normalizedCount * chartHeight);
+                                pathPoints.Add((x, y));
+                            }
+                            
+                            if (pathPoints.Count > 0)
+                            {
+                                var pathString = string.Join(" ", pathPoints.Select((p, idx) => 
+                                    idx == 0 ? $"M {p.x:F1},{p.y:F1}" : $"L {p.x:F1},{p.y:F1}"));
+                                
+                                <path d="@pathString" 
+                                      stroke="#4CAF50" 
+                                      stroke-width="3" 
+                                      fill="none" 
+                                      class="chart-line"/>
+                                
+                                @foreach (var point in pathPoints)
+                                {
+                                    <circle cx="@point.x" cy="@point.y" r="4" fill="#4CAF50"/>
+                                }
+                                
+                                // Tooltip for highest point (or Tue if available)
+                                @if (pathPoints.Count > 1 && visitorsByDay.Count > 1)
+                                {
+                                    var maxIndex = pathPoints.Select((p, idx) => (p.y, idx)).OrderBy(x => x.y).First().idx;
+                                    <g class="chart-tooltip" transform="translate(@(pathPoints[maxIndex].x), @(pathPoints[maxIndex].y - 30))">
+                                        <rect x="-40" y="-25" width="80" height="30" rx="4" fill="white" stroke="#E0E0E0"/>
+                                        @((MarkupString)$"<text x=\"0\" y=\"-8\" text-anchor=\"middle\" class=\"tooltip-text\">{visitorsByDay[maxIndex].Day}</text>")
+                                        @((MarkupString)$"<text x=\"0\" y=\"5\" text-anchor=\"middle\" class=\"tooltip-text\">visitors : {visitorsByDay[maxIndex].Count}</text>")
+                                    </g>
+                                }
+                            }
+                        }
+                        </svg>
+                    }
+                </div>
+            </div>
+
+            <!-- Top Enterprises Pie Chart -->
+            <div class="lfz-admin-chart-container">
+                <span class="chart-title">Top Enterprises by Visitor Count</span>
+                <div class="chart-content pie-chart-content">
+                    @if (isLoadingChart)
+                    {
+                        <div style="text-align: center; padding: 2rem;">
+                            <span>Loading chart data...</span>
+                        </div>
+                    }
+                    else if (topEnterprises == null || topEnterprises.Count == 0)
+                    {
+                        <div style="text-align: center; padding: 2rem;">
+                            <span>No data available</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <svg class="pie-chart" viewBox="0 0 220 220" width="220" height="220">
+                        @{
+                            var pieSize = 220;
+                            var center = pieSize / 2.0;
+                            var radius = 80.0;
+                            
+                            double currentAngle = -90;
+                            // Colors matching the image: Kellogg's (dark blue), Dano (orange), Dangote (purple-blue), INSIGNIA (bright blue), Colgate (light blue)
+                            var segmentColors = new[] { "#002B82", "#FF9500", "#5856D6", "#005AFF", "#99BAFF" };
+                            
+                            for (int i = 0; i < topEnterprises.Count; i++)
+                            {
+                                var enterprise = topEnterprises[i];
+                                var percentage = enterprise.Percentage;
+                                var angle = (percentage / 100.0) * 360.0;
+                                var startAngle = currentAngle;
+                                var endAngle = currentAngle + angle;
+                                
+                                // Calculate arc path for pie chart (from center to edge)
+                                var startAngleRad = (startAngle * Math.PI) / 180.0;
+                                var endAngleRad = (endAngle * Math.PI) / 180.0;
+                                
+                                var x1 = center + radius * Math.Cos(startAngleRad);
+                                var y1 = center + radius * Math.Sin(startAngleRad);
+                                var x2 = center + radius * Math.Cos(endAngleRad);
+                                var y2 = center + radius * Math.Sin(endAngleRad);
+                                
+                                var largeArcFlag = angle > 180.0 ? 1 : 0;
+                                // Pie chart path: Move to center, line to start point, arc to end point, close path
+                                var path = $"M {center:F2} {center:F2} L {x1:F2} {y1:F2} A {radius:F2} {radius:F2} 0 {largeArcFlag} 1 {x2:F2} {y2:F2} Z";
+                                
+                                <path d="@path" fill="@segmentColors[i]" class="pie-segment"/>
+                                
+                                currentAngle = endAngle;
+                            }
+                        }
+                        </svg>
+                        <div class="pie-legend">
+                            @for (int i = 0; i < topEnterprises.Count; i++)
+                            {
+                                var enterprise = topEnterprises[i];
+                                // Colors matching the image: Kellogg's (dark blue), Dano (orange), Dangote (purple-blue), INSIGNIA (bright blue), Colgate (light blue)
+                                var legendColors = new[] { "#002B82", "#FF9500", "#5856D6", "#005AFF", "#99BAFF" };
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: @legendColors[i]"></div>
+                                    <span class="legend-label">@enterprise.Name</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Invitations Table Section -->
+        <div class="lfz-admin-invitations">
+            <span class="invitations-title">Invitations</span>
+            
+            <!-- Search and Filters -->
+            <div class="invitations-controls">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search by name or ID" class="search-input" />
+                </div>
+                <div class="filter-dropdown">
+                    <span>Filters</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="export-dropdown">
+                    <span>Export</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+                <table class="invitations-table">
+                    <thead>
+                        <tr>
+                            <th>INVITATION ID</th>
+                            <th>VISITOR</th>
+                            <th>HOST</th>
+                            <th>DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (isLoadingInvitations)
                         {
                             <tr>
-                                <td>@invitation.InvitationNo</td>
-                                <td>@invitation.GuestName</td>
-                                <td>@invitation.HostName</td>
-                                <td>@FormatDate(invitation.ExpectedArrival)</td>
-                                <td>
-                                    <span class="status-badge status-@GetStatusBadgeClass(invitation.Status)">@FormatStatus(invitation.Status)</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" @onclick="() => ViewInvitation(invitation.GuestInvitationId)" title="View Details">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
-                                        @if (invitation.Status == "PendingApproval")
-                                        {
-                                            <button class="action-btn approve-btn" @onclick="() => ApproveInvitation(invitation.GuestInvitationId)">Approve</button>
-                                            <button class="action-btn reject-btn" @onclick="() => RejectInvitation(invitation.GuestInvitationId)">Reject</button>
-                                        }
-                                    </div>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    Loading invitations...
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        @if (pagedResponse != null)
-        {
-            <div class="pagination">
-                <button class="pagination-btn" @onclick="PreviousPage" disabled="@(!pagedResponse.HasPreviousPage)">
-                    ← Previous Page
-                </button>
-                <span class="pagination-info">Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount invitations)</span>
-                <button class="pagination-btn" @onclick="NextPage" disabled="@(!pagedResponse.HasNextPage)">
-                    Next Page →
-                </button>
+                        else if (invitations.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    No invitations found.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var invitation in invitations)
+                            {
+                                var displayStatus = GetDisplayStatus(invitation.Status);
+                                <tr>
+                                    <td>@invitation.InvitationNo</td>
+                                    <td>@invitation.GuestName</td>
+                                    <td>@invitation.HostName</td>
+                                    <td>@FormatDate(invitation.ExpectedArrival)</td>
+                                    <td>
+                                        <span class="status-badge status-@displayStatus.ToLower().Replace(" ", "")">@displayStatus</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View" @onclick='() => OpenDetailsModal(invitation)'>
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
+
+            <!-- Pagination -->
+            @if (pagedResponse != null)
+            {
+                <div class="pagination">
+                    <button class="pagination-btn prev-btn" @onclick="GoToPreviousPage" disabled="@(!pagedResponse.HasPreviousPage)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        <span>Previous Page</span>
+                    </button>
+                    <div class="pagination-info">
+                        <span>Page</span>
+                        <div class="page-number">@pagedResponse.PageNumber</div>
+                        <span>of @pagedResponse.TotalPages</span>
+                    </div>
+                    <button class="pagination-btn next-btn" @onclick="GoToNextPage" disabled="@(!pagedResponse.HasNextPage)">
+                        <span>Next Page</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
     </div>
 </div>
 
+<!-- Visit Details Modal Overlay -->
+@if (showDetailsModal)
+{
+    <div class="modal-overlay @(isModalVisible ? "show" : "")" @onclick="CloseDetailsModal">
+        <div class="modal-content @(isModalVisible ? "show" : "")" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2 class="modal-title">Visit Details</h2>
+                <button class="modal-close-btn-top" @onclick="CloseDetailsModal" aria-label="Close" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (selectedInvitation != null)
+                {
+                    var displayStatus = GetDisplayStatus(selectedInvitation.Status);
+                    <div class="detail-field">
+                        <span class="detail-label">Name of Host</span>
+                        <div class="detail-value-with-badge">
+                            <span class="detail-value">@selectedInvitation.HostName</span>
+                            <span class="status-badge status-@displayStatus.ToLower().Replace(" ", "")">@displayStatus</span>
+                        </div>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">@(selectedInvitation.HostEmail ?? "N/A")</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Name of Guest</span>
+                        <span class="detail-value">@selectedInvitation.GuestName</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Phone Number</span>
+                        <span class="detail-value">@selectedInvitation.GuestPhone</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Arrival Time</span>
+                        <span class="detail-value">@(selectedInvitation.CheckedInAt?.ToString("dd/MM/yyyy | hh:mmtt") ?? selectedInvitation.ExpectedArrival.ToString("dd/MM/yyyy | hh:mmtt"))</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Departure Time</span>
+                        <span class="detail-value">@selectedInvitation.ExpectedDeparture.ToString("dd/MM/yyyy | hh:mmtt")</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Number of Guests</span>
+                        <span class="detail-value">@(selectedInvitation.NumberOfAdditionalGuests + 1)</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Number of Vehicles</span>
+                        <span class="detail-value">@(selectedInvitation.Vehicles?.Count ?? 0)</span>
+                    </div>
+                    @if (selectedInvitation.Vehicles != null && selectedInvitation.Vehicles.Count > 0)
+                    {
+                        @for (int i = 0; i < selectedInvitation.Vehicles.Count; i++)
+                        {
+                            var vehicle = selectedInvitation.Vehicles[i];
+                            <div class="detail-field">
+                                <span class="detail-label">Vehicle @(i + 1) - Plate Number</span>
+                                <span class="detail-value">@vehicle.PlateNumber</span>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn-bottom" @onclick="CloseDetailsModal" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
-    // Dummy data
-    private string userName = "John Doe";
-    private string userEmail = "john.doe@example.com";
-    
-    private int activeEnterpriseUsers = 10;
-    private int totalVisitorsToday = 219;
-    private int pendingInvitations = 5;
-    
-    private string searchTerm = string.Empty;
-    private string selectedFilter = "All";
-    private int pageSize = 10;
-    
-    private List<InvitationDto> allInvitations = new();
+    // Real data - metrics
+    private int totalVisitors = 0;
+    private int totalEnterprises = 0;
+    private int walkInRequests = 0;
+
+    // Real data - Visitors by Day
+    private List<VisitorsByDayDto> visitorsByDay = new();
+
+    // Real data - Top Enterprises
+    private List<TopEnterpriseDto> topEnterprises = new();
+
+    // Real data - Invitations
+    private List<InvitationDto> invitations = new();
     private PagedResponse<InvitationDto>? pagedResponse;
-    
-    private List<InvitationDto> filteredInvitations => GetFilteredInvitations();
-    
-    protected override void OnInitialized()
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    // Loading and error states
+    private bool isLoadingMetrics = true;
+    private bool isLoadingChart = true;
+    private bool isLoadingInvitations = true;
+    private string? errorMessage;
+
+    // Modal state
+    private bool showDetailsModal = false;
+    private bool isModalVisible = false;
+    private InvitationDto? selectedInvitation = null;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Initialize with dummy data
-        InitializeDummyData();
+        await LoadDashboardMetrics();
+        await LoadVisitorsByDay();
+        await LoadTopEnterprises();
+        await LoadInvitations();
     }
-    
-    private void InitializeDummyData()
+
+    private async Task LoadDashboardMetrics()
     {
-        allInvitations = new List<InvitationDto>
+        isLoadingMetrics = true;
+        try
         {
-            new InvitationDto
+            var response = await Http.GetFromJsonAsync<BaseResponse<DashboardMetricsDto>>("api/Dashboard/metrics");
+            if (response != null && response.Success && response.Data != null)
             {
-                GuestInvitationId = 1,
-                InvitationNo = "INV-001",
-                GuestName = "Alice Johnson",
-                HostName = "Bob Smith",
-                Status = "PendingApproval",
-                ExpectedArrival = DateTime.Now.AddDays(2),
-                ExpectedDeparture = DateTime.Now.AddDays(2).AddHours(4),
-                CreatedAt = DateTime.Now.AddDays(-1)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 2,
-                InvitationNo = "INV-002",
-                GuestName = "Charlie Brown",
-                HostName = "David Wilson",
-                Status = "Approved",
-                ExpectedArrival = DateTime.Now.AddDays(1),
-                ExpectedDeparture = DateTime.Now.AddDays(1).AddHours(3),
-                CreatedAt = DateTime.Now.AddDays(-2)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 3,
-                InvitationNo = "INV-003",
-                GuestName = "Emma Davis",
-                HostName = "Frank Miller",
-                Status = "CheckedIn",
-                ExpectedArrival = DateTime.Today,
-                ExpectedDeparture = DateTime.Today.AddHours(5),
-                CreatedAt = DateTime.Now.AddDays(-3),
-                CheckedInAt = DateTime.Today.AddHours(2)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 4,
-                InvitationNo = "INV-004",
-                GuestName = "Grace Lee",
-                HostName = "Henry Taylor",
-                Status = "Approved",
-                ExpectedArrival = DateTime.Now.AddDays(3),
-                ExpectedDeparture = DateTime.Now.AddDays(3).AddHours(6),
-                CreatedAt = DateTime.Now.AddDays(-1)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 5,
-                InvitationNo = "INV-005",
-                GuestName = "Ivan Petrov",
-                HostName = "Jane Anderson",
-                Status = "PendingApproval",
-                ExpectedArrival = DateTime.Now.AddDays(5),
-                ExpectedDeparture = DateTime.Now.AddDays(5).AddHours(4),
-                CreatedAt = DateTime.Now.AddHours(-5)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 6,
-                InvitationNo = "INV-006",
-                GuestName = "Kate Williams",
-                HostName = "Liam Johnson",
-                Status = "Rejected",
-                ExpectedArrival = DateTime.Now.AddDays(-1),
-                ExpectedDeparture = DateTime.Now.AddDays(-1).AddHours(3),
-                CreatedAt = DateTime.Now.AddDays(-4)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 7,
-                InvitationNo = "INV-007",
-                GuestName = "Michael Chen",
-                HostName = "Nancy Brown",
-                Status = "Approved",
-                ExpectedArrival = DateTime.Now.AddDays(4),
-                ExpectedDeparture = DateTime.Now.AddDays(4).AddHours(8),
-                CreatedAt = DateTime.Now.AddDays(-2)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 8,
-                InvitationNo = "INV-008",
-                GuestName = "Olivia Martinez",
-                HostName = "Paul Garcia",
-                Status = "PendingApproval",
-                ExpectedArrival = DateTime.Now.AddDays(6),
-                ExpectedDeparture = DateTime.Now.AddDays(6).AddHours(2),
-                CreatedAt = DateTime.Now.AddHours(-2)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 9,
-                InvitationNo = "INV-009",
-                GuestName = "Robert Kim",
-                HostName = "Sarah White",
-                Status = "CheckedIn",
-                ExpectedArrival = DateTime.Today,
-                ExpectedDeparture = DateTime.Today.AddHours(4),
-                CreatedAt = DateTime.Now.AddDays(-5),
-                CheckedInAt = DateTime.Today.AddHours(1)
-            },
-            new InvitationDto
-            {
-                GuestInvitationId = 10,
-                InvitationNo = "INV-010",
-                GuestName = "Thomas Anderson",
-                HostName = "Victoria Clark",
-                Status = "Approved",
-                ExpectedArrival = DateTime.Now.AddDays(7),
-                ExpectedDeparture = DateTime.Now.AddDays(7).AddHours(6),
-                CreatedAt = DateTime.Now.AddDays(-3)
+                totalVisitors = response.Data.TotalVisitors;
+                totalEnterprises = response.Data.TotalEnterprises;
+                walkInRequests = response.Data.WalkInRequests;
             }
-        };
-        
-        // Create dummy paged response
-        pagedResponse = new PagedResponse<InvitationDto>
-        {
-            Items = allInvitations,
-            PageNumber = 1,
-            PageSize = pageSize,
-            TotalCount = allInvitations.Count
-        };
-        
-        // Update metrics from dummy data
-        UpdateMetrics();
-    }
-    
-    private void UpdateMetrics()
-    {
-        if (allInvitations == null || allInvitations.Count == 0)
-        {
-            pendingInvitations = 0;
-            totalVisitorsToday = 0;
-            return;
-        }
-        
-        // Count pending invitations
-        pendingInvitations = allInvitations.Count(i => i.Status == "PendingApproval");
-        
-        // Count visitors today (checked in today)
-        var today = DateTime.Today;
-        totalVisitorsToday = allInvitations.Count(i => 
-            i.Status == "CheckedIn" && 
-            i.ExpectedArrival.Date == today);
-    }
-    
-    private List<InvitationDto> GetFilteredInvitations()
-    {
-        var filtered = allInvitations.AsEnumerable();
-        
-        // Client-side search filtering
-        if (!string.IsNullOrWhiteSpace(searchTerm))
-        {
-            filtered = filtered.Where(i => 
-                i.GuestName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                i.InvitationNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                i.HostName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-        }
-        
-        // Client-side filter for status
-        if (selectedFilter != "All")
-        {
-            if (selectedFilter == "Pending")
+            else
             {
-                filtered = filtered.Where(i => i.Status == "PendingApproval");
-            }
-            else if (selectedFilter == "Approved")
-            {
-                filtered = filtered.Where(i => i.Status == "Approved");
-            }
-            else if (selectedFilter == "Expired")
-            {
-                var now = DateTime.Now;
-                filtered = filtered.Where(i => 
-                    i.ExpectedArrival < now && 
-                    i.Status != "CheckedIn" && 
-                    i.Status != "Completed");
+                errorMessage = response?.Message ?? "Failed to load dashboard metrics.";
             }
         }
-        
-        return filtered.ToList();
-    }
-    
-    private void SetFilter(string filter)
-    {
-        selectedFilter = filter;
-    }
-    
-    private void PreviousPage()
-    {
-        if (pagedResponse != null && pagedResponse.HasPreviousPage)
+        catch (Exception ex)
         {
-            // Dummy pagination - just update the page number
-            pagedResponse = new PagedResponse<InvitationDto>
-            {
-                Items = allInvitations,
-                PageNumber = pagedResponse.PageNumber - 1,
-                PageSize = pageSize,
-                TotalCount = allInvitations.Count
-            };
+            errorMessage = $"Error loading dashboard metrics: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingMetrics = false;
         }
     }
-    
-    private void NextPage()
+
+    private async Task LoadVisitorsByDay()
     {
-        if (pagedResponse != null && pagedResponse.HasNextPage)
+        isLoadingChart = true;
+        try
         {
-            // Dummy pagination - just update the page number
-            pagedResponse = new PagedResponse<InvitationDto>
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<VisitorsByDayDto>>>("api/Dashboard/visitors-by-day");
+            if (response != null && response.Success && response.Data != null)
             {
-                Items = allInvitations,
-                PageNumber = pagedResponse.PageNumber + 1,
-                PageSize = pageSize,
-                TotalCount = allInvitations.Count
-            };
+                visitorsByDay = response.Data;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load visitors by day data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading visitors by day: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingChart = false;
         }
     }
-    
-    private string FormatDate(DateTime date)
+
+    private async Task LoadTopEnterprises()
     {
-        return date.ToString("yyyy-MM-dd / HH:mm");
+        isLoadingChart = true;
+        try
+        {
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<TopEnterpriseDto>>>("api/Dashboard/top-enterprises?count=5");
+            if (response != null && response.Success && response.Data != null)
+            {
+                topEnterprises = response.Data;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load top enterprises data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading top enterprises: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingChart = false;
+        }
     }
-    
-    private string FormatStatus(string status)
+
+    private async Task LoadInvitations(int? pageNumber = null)
+    {
+        isLoadingInvitations = true;
+        try
+        {
+            var page = pageNumber ?? currentPage;
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/Invitations?PageNumber={page}&PageSize={pageSize}");
+            if (response != null && response.Success && response.Data != null)
+            {
+                pagedResponse = response.Data;
+                invitations = response.Data.Items;
+                currentPage = response.Data.PageNumber;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load invitations.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading invitations: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingInvitations = false;
+        }
+    }
+
+    private string GetDisplayStatus(string status)
     {
         return status switch
         {
+            "Completed" => "Exited",
             "PendingApproval" => "Pending",
             "CheckedIn" => "Checked In",
             _ => status
         };
     }
-    
-    private string GetStatusBadgeClass(string status)
+
+    private string FormatDate(DateTime date)
     {
-        return status.ToLower() switch
+        return date.ToString("yyyy-MM-dd / HH:mm");
+    }
+
+    private void OpenDetailsModal(InvitationDto invitation)
+    {
+        selectedInvitation = invitation;
+        showDetailsModal = true;
+        StateHasChanged();
+        
+        // Trigger slide-in animation after render
+        Task.Delay(10).ContinueWith(_ =>
         {
-            "approved" => "approved",
-            "pendingapproval" => "pending",
-            "rejected" => "rejected",
-            "checkedin" => "checkedin",
-            "completed" => "completed",
-            "cancelled" => "cancelled",
-            "expired" => "expired",
-            _ => "pending"
-        };
+            InvokeAsync(() =>
+            {
+                isModalVisible = true;
+                StateHasChanged();
+            });
+        });
     }
-    
-    private void ViewInvitation(int invitationId)
+
+    private void CloseDetailsModal()
     {
-        // No-op for UI purposes only
+        isModalVisible = false;
+        StateHasChanged();
+        
+        // Wait for animation to complete before removing from DOM
+        Task.Delay(300).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showDetailsModal = false;
+                selectedInvitation = null;
+                StateHasChanged();
+            });
+        });
     }
-    
-    private void ApproveInvitation(int invitationId)
+
+    private async Task GoToPreviousPage()
     {
-        // No-op for UI purposes only
+        if (pagedResponse != null && pagedResponse.HasPreviousPage)
+        {
+            await LoadInvitations(currentPage - 1);
+        }
     }
-    
-    private void RejectInvitation(int invitationId)
+
+    private async Task GoToNextPage()
     {
-        // No-op for UI purposes only
+        if (pagedResponse != null && pagedResponse.HasNextPage)
+        {
+            await LoadInvitations(currentPage + 1);
+        }
     }
 }

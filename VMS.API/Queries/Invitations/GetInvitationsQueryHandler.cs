@@ -78,6 +78,7 @@ public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, B
                 GuestPhone = i.Guest?.PhoneNumber ?? string.Empty,
                 GuestEmail = i.Guest?.Email,
                 HostName = i.HostName,
+                HostEmail = i.HostEmail,
                 EnterpriseName = i.Enterprise?.Name,
                 Status = i.Status.ToString(),
                 ExpectedArrival = i.ExpectedArrival,

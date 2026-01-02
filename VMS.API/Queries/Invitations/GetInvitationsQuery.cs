@@ -23,6 +23,7 @@ public class InvitationDto
     public string GuestPhone { get; set; } = string.Empty;
     public string? GuestEmail { get; set; }
     public string HostName { get; set; } = string.Empty;
+    public string? HostEmail { get; set; }
     public string? EnterpriseName { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime ExpectedArrival { get; set; }

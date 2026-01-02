@@ -1,0 +1,2629 @@
+.visitor-management-lfzadmin-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.visitor-management-lfzadmin-thq-visitor-management-lfzadmin-elm {
+  width: 100%;
+  height: 1024px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-lfzlogo231-elm {
+  top: 30px;
+  left: 30px;
+  width: 120px;
+  height: 53px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line3-elm1 {
+  top: 107px;
+  left: 30px;
+  width: 200px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-frame491-elm {
+  top: 16px;
+  left: 260px;
+  width: 1164px;
+  height: 992px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-line3-elm2 {
+  top: 62px;
+  left: 0px;
+  width: 1164px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-frame507-elm {
+  gap: 443px;
+  top: 14px;
+  left: 14px;
+  width: 1136px;
+  height: 32px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm10 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 28px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame496-elm {
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-mingcutenotificationline-elm {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm1 {
+  top: 2px;
+  left: 3.0618371963500977px;
+  width: 17.876325607299805px;
+  height: 21.81399917602539px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm10 {
+  top: 0px;
+  left: 0px;
+  width: 18px;
+  height: 19px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-frame399-elm {
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+ 
+.visitor-management-lfzadmin-thq-ellipse161-elm {
+  width: 30px;
+  height: 30px;
+}
+ 
+.visitor-management-lfzadmin-thq-frame398-elm {
+  gap: 2px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm11 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  align-self: stretch;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm12 {
+  color: rgba(20, 20, 20, 0.6499999761581421);
+  height: auto;
+  font-size: 12px;
+  align-self: stretch;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm10 {
+  top: 86px;
+  left: 22px;
+  width: 360px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-wave-elm1 {
+  top: 125.17822265625px;
+  left: 129.00146484375px;
+  width: 396.0000305175781px;
+  height: 102.88837432861328px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm11 {
+  top: -0.00007760380307786363px;
+  left: 0.00012958033261156743px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm12 {
+  top: 8.5467116051571px;
+  left: 4.996445233025639px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm13 {
+  top: 17.093501079537702px;
+  left: 9.992761040879174px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm14 {
+  top: 25.640132477390864px;
+  left: 14.988984439734537px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm15 {
+  top: 34.18692359840196px;
+  left: 19.985301210181802px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm16 {
+  top: 44.15858854504921px;
+  left: 25.814576326047842px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm17 {
+  top: 52.705358259863885px;
+  left: 30.810880582776605px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm18 {
+  top: 61.252016003804954px;
+  left: 35.80711938313166px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm19 {
+  top: 69.79880547818556px;
+  left: 40.8034351909852px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm20 {
+  top: 78.3455817795222px;
+  left: 45.799743298088885px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm13 {
+  top: 20px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm14 {
+  top: 63px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 32px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-desktop3-elm1 {
+  top: 20px;
+  left: 286px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background-color: rgba(223, 129, 47, 0.07999999821186066);
+}
+ 
+.visitor-management-lfzadmin-thq-heroiconsusers-elm {
+  top: 7px;
+  left: 7px;
+  width: 36px;
+  height: 36px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm11 {
+  top: 86px;
+  left: 782px;
+  width: 360px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-wave-elm2 {
+  top: 125.17822265625px;
+  left: 129.00146484375px;
+  width: 396.0000305175781px;
+  height: 102.88837432861328px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm21 {
+  top: -0.00007760380307786363px;
+  left: 0.00012958033261156743px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm22 {
+  top: 8.5467116051571px;
+  left: 4.996445233025639px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm23 {
+  top: 17.093501079537702px;
+  left: 9.992761040879174px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm24 {
+  top: 25.640132477390864px;
+  left: 14.988984439734537px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm25 {
+  top: 34.18692359840196px;
+  left: 19.985301210181802px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm26 {
+  top: 44.15858854504921px;
+  left: 25.814576326047842px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm27 {
+  top: 52.705358259863885px;
+  left: 30.810880582776605px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm28 {
+  top: 61.252016003804954px;
+  left: 35.80711938313166px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm29 {
+  top: 69.79880547818556px;
+  left: 40.8034351909852px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm30 {
+  top: 78.3455817795222px;
+  left: 45.799743298088885px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm15 {
+  top: 20px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-desktop3-elm2 {
+  top: 20px;
+  left: 286px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background-color: rgba(82, 198, 82, 0.07999999821186066);
+}
+ 
+.visitor-management-lfzadmin-thq-ionwalkoutline-elm {
+  top: 7px;
+  left: 7px;
+  width: 36px;
+  height: 36px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm12 {
+  top: 86px;
+  left: 402px;
+  width: 360px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-wave-elm3 {
+  top: 125.17822265625px;
+  left: 129.00146484375px;
+  width: 396.0000305175781px;
+  height: 102.88837432861328px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm31 {
+  top: -0.00007760380346155671px;
+  left: 0.00012958033238419375px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm32 {
+  top: 8.5467116051571px;
+  left: 4.996445233025639px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm33 {
+  top: 17.093501079537702px;
+  left: 9.992761040879174px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm34 {
+  top: 25.640132477390864px;
+  left: 14.988984439734537px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm35 {
+  top: 34.18692359840196px;
+  left: 19.985301210181802px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm36 {
+  top: 44.15858854504921px;
+  left: 25.814576326047842px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm37 {
+  top: 52.705358259863885px;
+  left: 30.810880582776605px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm38 {
+  top: 61.252016003804954px;
+  left: 35.80711938313166px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm39 {
+  top: 69.79880547818556px;
+  left: 40.8034351909852px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm40 {
+  top: 78.3455817795222px;
+  left: 45.799743298088885px;
+  width: 396px;
+  height: 12px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm16 {
+  top: 20px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm17 {
+  top: 63px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 32px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-desktop3-elm3 {
+  top: 20px;
+  left: 286px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background-color: rgba(0, 122, 255, 0.07999999821186066);
+}
+ 
+.visitor-management-lfzadmin-thq-carbonenterprise-elm {
+  top: 7px;
+  left: 7px;
+  width: 36px;
+  height: 36px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm13 {
+  top: 551px;
+  left: 22px;
+  width: 1120px;
+  height: 425px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm18 {
+  top: 28px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm19 {
+  top: 86px;
+  left: 16px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm20 {
+  top: 86px;
+  left: 392px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm21 {
+  top: 86px;
+  left: 195px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm22 {
+  top: 86px;
+  left: 552px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm23 {
+  top: 86px;
+  left: 746px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm24 {
+  top: 86px;
+  left: 918px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-line19-elm {
+  top: 120px;
+  left: 0px;
+  width: 1120px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line20-elm {
+  top: 176px;
+  left: 0px;
+  width: 1120px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line25-elm1 {
+  top: 232px;
+  left: 0px;
+  width: 1120px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line22-elm {
+  top: 288px;
+  left: 0px;
+  width: 1120px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line23-elm1 {
+  top: 344px;
+  left: 0px;
+  width: 1120px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm25 {
+  top: 140px;
+  left: 16px;
+  color: rgba(0, 31, 87, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm26 {
+  top: 140px;
+  left: 392px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm27 {
+  top: 140px;
+  left: 552px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm28 {
+  top: 140px;
+  left: 195px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm29 {
+  top: 196px;
+  left: 16px;
+  color: rgba(0, 31, 87, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm30 {
+  top: 196px;
+  left: 392px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm31 {
+  top: 196px;
+  left: 552px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm32 {
+  top: 196px;
+  left: 195px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm33 {
+  top: 252px;
+  left: 16px;
+  color: rgba(0, 31, 87, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm34 {
+  top: 252px;
+  left: 392px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm35 {
+  top: 252px;
+  left: 552px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm36 {
+  top: 252px;
+  left: 195px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm37 {
+  top: 308px;
+  left: 16px;
+  color: rgba(0, 31, 87, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm38 {
+  top: 308px;
+  left: 392px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm39 {
+  top: 308px;
+  left: 552px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm40 {
+  top: 308px;
+  left: 195px;
+  color: var(--dl-color-default-textcolor);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame626-elm {
+  gap: 10px;
+  top: 136px;
+  left: 746px;
+  width: 79px;
+  display: flex;
+  padding: 4px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(82, 198, 82, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(52, 199, 89, 0.11999999731779099);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm41 {
+  color: var(--dl-color-colors-green);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm1 {
+  gap: 8px;
+  top: 134px;
+  left: 918px;
+  width: 32px;
+  display: flex;
+  padding: 6px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-meteoriconseye-elm1 {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm2 {
+  top: 2.666666269302368px;
+  left: 0.6666664481163025px;
+  width: 14.666666984558105px;
+  height: 10.666666984558105px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm41 {
+  top: 3.333333730697632px;
+  left: 5.333333492279053px;
+  width: 4px;
+  height: 4px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm42 {
+  top: 0px;
+  left: 0px;
+  width: 15px;
+  height: 11px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm2 {
+  gap: 8px;
+  top: 190px;
+  left: 918px;
+  width: 32px;
+  display: flex;
+  padding: 6px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-meteoriconseye-elm2 {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm3 {
+  top: 2.666666269302368px;
+  left: 0.6666664481163025px;
+  width: 14.666666984558105px;
+  height: 10.666666984558105px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm43 {
+  top: 3.333333730697632px;
+  left: 5.333333492279053px;
+  width: 4px;
+  height: 4px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm44 {
+  top: 0px;
+  left: 0px;
+  width: 15px;
+  height: 11px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868679-elm {
+  gap: 10px;
+  top: 304px;
+  left: 746px;
+  width: 68px;
+  display: flex;
+  padding: 4px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(255, 149, 0, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(255, 149, 0, 0.11999999731779099);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm42 {
+  color: var(--dl-color-colors-orange);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868681-elm {
+  gap: 10px;
+  top: 248px;
+  left: 746px;
+  width: 68px;
+  display: flex;
+  padding: 4px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(255, 149, 0, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(255, 149, 0, 0.11999999731779099);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm43 {
+  color: var(--dl-color-colors-orange);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm3 {
+  gap: 8px;
+  top: 20px;
+  left: 584px;
+  width: 265px;
+  height: 42px;
+  display: flex;
+  padding: 16px 12px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+}
+ 
+.visitor-management-lfzadmin-thq-materialsymbolssearchrounded-elm {
+  width: 20px;
+  height: 20px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm44 {
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm4 {
+  gap: 8px;
+  top: 20px;
+  left: 869px;
+  width: 114px;
+  height: 42px;
+  display: flex;
+  padding: 12px 20px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm45 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-mingcutedownline-elm1 {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm4 {
+  top: 0px;
+  left: 0px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm45 {
+  top: 6.942259311676025px;
+  left: 4.442259788513184px;
+  width: 11px;
+  height: 6px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868827-elm {
+  gap: 12px;
+  top: 246px;
+  left: 918px;
+  width: 183px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm5 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-meteoriconseye-elm3 {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm5 {
+  top: 2.666666269302368px;
+  left: 0.6666664481163025px;
+  width: 14.666666984558105px;
+  height: 10.666666984558105px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm46 {
+  top: 3.333333730697632px;
+  left: 5.333333492279053px;
+  width: 4px;
+  height: 4px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm47 {
+  top: 0px;
+  left: 0px;
+  width: 15px;
+  height: 11px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-reschdule-elm1 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm46 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-reschdule-elm2 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-radius: 4px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm47 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868828-elm {
+  gap: 12px;
+  top: 302px;
+  left: 918px;
+  width: 183px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.visitor-management-lfzadmin-thq-cancel-elm6 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-meteoriconseye-elm4 {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm6 {
+  top: 2.666666269302368px;
+  left: 0.6666664481163025px;
+  width: 14.666666984558105px;
+  height: 10.666666984558105px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm48 {
+  top: 3.333333730697632px;
+  left: 5.333333492279053px;
+  width: 4px;
+  height: 4px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm49 {
+  top: 0px;
+  left: 0px;
+  width: 15px;
+  height: 11px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-reschdule-elm3 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm48 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-reschdule-elm4 {
+  gap: 8px;
+  display: flex;
+  padding: 6px 8px;
+  align-items: center;
+  border-radius: 4px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm49 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-group237786-elm {
+  top: 371px;
+  left: 16px;
+  width: 1085px;
+  height: 28px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-frame621-elm {
+  gap: 2px;
+  top: 7px;
+  left: 499px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm50 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame620-elm {
+  gap: 10px;
+  width: 22px;
+  display: flex;
+  padding: 0 4px;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 4px;
+  flex-direction: column;
+  justify-content: center;
+  background-color: rgba(242, 245, 253, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm51 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-nextpage-elm1 {
+  gap: 8px;
+  top: 0px;
+  left: 983px;
+  display: flex;
+  padding: 6px 8px;
+  position: absolute;
+  align-items: center;
+  border-radius: 4px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm52 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-grommeticonslinknext-elm1 {
+  width: 12px;
+  height: 12px;
+}
+ 
+.visitor-management-lfzadmin-thq-nextpage-elm2 {
+  gap: 8px;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  padding: 6px 8px;
+  position: absolute;
+  align-items: center;
+  border-radius: 4px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-grommeticonslinknext-elm2 {
+  width: 12px;
+  height: 12px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm53 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868829-elm {
+  gap: 10px;
+  top: 192px;
+  left: 746px;
+  width: 57px;
+  display: flex;
+  padding: 4px 8px;
+  position: absolute;
+  align-items: center;
+  border-color: rgba(139, 139, 139, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(139, 139, 139, 0.11999999731779099);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm54 {
+  color: var(--dl-color-default-light);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868698-elm {
+  top: 222px;
+  left: 22px;
+  width: 550px;
+  height: 313px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm55 {
+  top: 16px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-group237650-elm {
+  top: 51.999908447265625px;
+  left: 45px;
+  width: 456px;
+  height: 235.0000457763672px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-line30-elm {
+  top: 128px;
+  left: 455.99951171875px;
+  width: 420px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line32-elm {
+  top: 88px;
+  left: 455.99951171875px;
+  width: 420px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line33-elm {
+  top: 48px;
+  left: 455.99951171875px;
+  width: 420px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line38-elm {
+  top: 8px;
+  left: 455.99951171875px;
+  width: 420px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line31-elm {
+  top: 168px;
+  left: 455.99951171875px;
+  width: 420px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line25-elm2 {
+  top: 211px;
+  left: 79.99951171875px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line34-elm {
+  top: 211px;
+  left: 138px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line23-elm2 {
+  top: 211px;
+  left: 29px;
+  width: 427px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line24-elm {
+  top: 211px;
+  left: 35.99951171875px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line35-elm {
+  top: 211px;
+  left: 196px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line27-elm {
+  top: 211px;
+  left: 256px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line28-elm {
+  top: 211px;
+  left: 311px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line36-elm {
+  top: 211px;
+  left: 361px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-line29-elm {
+  top: 211px;
+  left: 414px;
+  width: 207px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm56 {
+  top: 219.0000457763672px;
+  left: 65.9998779296875px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm57 {
+  top: 160.32080078125px;
+  left: 4px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm58 {
+  top: 120.32080078125px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm59 {
+  top: 80.32080078125px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm60 {
+  top: 40.32080078125px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm61 {
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm62 {
+  top: 219px;
+  left: 126px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm63 {
+  top: 219px;
+  left: 181px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm64 {
+  top: 219px;
+  left: 241px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm65 {
+  top: 219px;
+  left: 302px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm66 {
+  top: 219px;
+  left: 350px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm67 {
+  top: 219px;
+  left: 402px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-union-elm {
+  top: 49px;
+  left: 76px;
+  width: 342px;
+  height: 128px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm14 {
+  top: 56.000091552734375px;
+  left: 60px;
+  width: 80px;
+  height: 40px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm68 {
+  top: 5px;
+  left: 30px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm69 {
+  top: 21px;
+  left: 6px;
+  color: var(--dl-color-default-green);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868704-elm {
+  top: 222px;
+  left: 592px;
+  width: 550px;
+  height: 313px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm70 {
+  top: 16px;
+  left: 16px;
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm50 {
+  top: 68.99992370605469px;
+  left: 112.99996185302734px;
+  width: 208px;
+  height: 208px;
+  position: absolute;
+  box-sizing: content-box;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868838-elm {
+  gap: 12px;
+  top: 109px;
+  left: 417px;
+  width: 78px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868833-elm {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm15 {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: rgba(153, 186, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm71 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868834-elm {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm16 {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: rgba(255, 149, 0, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm72 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868835-elm {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm17 {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: rgba(0, 43, 130, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm73 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868836-elm {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm18 {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: rgba(0, 90, 255, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm74 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame1618868837-elm {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.visitor-management-lfzadmin-thq-activeusers-elm19 {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: rgba(88, 86, 214, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm75 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-addenterprise-elm {
+  gap: 8px;
+  top: 574px;
+  left: 1025px;
+  width: 97px;
+  display: flex;
+  padding: 8px 8px 8px 12px;
+  position: absolute;
+  align-items: center;
+  border-radius: 8px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm76 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-mingcutedownline-elm2 {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm7 {
+  top: 20px;
+  left: 0px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm51 {
+  top: -6.942259311676025px;
+  left: 4.442259788513184px;
+  width: 11px;
+  height: 6px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-group237785-elm {
+  top: 147px;
+  left: 14px;
+  width: 230px;
+  height: 184px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-frame492-elm {
+  gap: 12px;
+  top: 0px;
+  left: 0px;
+  width: 230px;
+  display: flex;
+  padding: 8px 16px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background-color: var(--dl-color-default-primary);
+}
+ 
+.visitor-management-lfzadmin-thq-cuidadashboardoutline-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm77 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame493-elm {
+  gap: 12px;
+  top: 56px;
+  left: 16px;
+  height: 24px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-lucideuser-elm {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-group-elm8 {
+  top: 3px;
+  left: 5px;
+  width: 14px;
+  height: 18px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm52 {
+  top: 12px;
+  left: 0px;
+  width: 14px;
+  height: 6px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-vector-elm53 {
+  top: 0px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  position: absolute;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm78 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame494-elm {
+  gap: 12px;
+  top: 108px;
+  left: 16px;
+  height: 24px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-fluentform24regular-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm79 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-frame495-elm {
+  gap: 12px;
+  top: 160px;
+  left: 16px;
+  height: 24px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-lfzadmin-thq-mdiboomgatealertoutline-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm80 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-group237762-elm {
+  top: 918px;
+  left: 32px;
+  width: 96px;
+  height: 80px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-lfzadmin-thq-settings-elm {
+  gap: 12px;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.visitor-management-lfzadmin-thq-carbonsettings-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm81 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-lfzadmin-thq-logout-elm {
+  gap: 12px;
+  top: 56px;
+  left: 0px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.visitor-management-lfzadmin-thq-hugeiconslogout02-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.visitor-management-lfzadmin-thq-text-elm82 {
+  color: var(--dl-color-default-red);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}

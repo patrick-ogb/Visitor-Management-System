@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="english">
+  <head>
+    <title>exported project</title>
+    <meta property="og:title" content="exported project" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}pre {  white-space: normal;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-theme-neutral-dark);
+        background: var(--dl-color-theme-neutral-light);
+
+        fill: var(--dl-color-theme-neutral-dark);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    />
+  </head>
+  <body>
+    <link rel="stylesheet" href="./style.css" />
+    <div>
+      <link href="./index.css" rel="stylesheet" />
+
+      <div class="visitor-management-lfzadmin-container">
+        <div
+          class="visitor-management-lfzadmin-thq-visitor-management-lfzadmin-elm"
+        >
+          <img
+            src="public/lfzlogo2318451-r366-200h.png"
+            alt="LFZLOGO2318451"
+            class="visitor-management-lfzadmin-thq-lfzlogo231-elm"
+          />
+          <img
+            src="public/line38451-urnj.svg"
+            alt="Line38451"
+            class="visitor-management-lfzadmin-thq-line3-elm1"
+          />
+          <div class="visitor-management-lfzadmin-thq-frame491-elm">
+            <img
+              src="public/line38451-sfvl.svg"
+              alt="Line38451"
+              class="visitor-management-lfzadmin-thq-line3-elm2"
+            />
+            <div class="visitor-management-lfzadmin-thq-frame507-elm">
+              <span class="visitor-management-lfzadmin-thq-text-elm10">
+                LFZ ADMIN
+              </span>
+              <div class="visitor-management-lfzadmin-thq-frame496-elm">
+                <div
+                  class="visitor-management-lfzadmin-thq-mingcutenotificationline-elm"
+                >
+                  <div class="visitor-management-lfzadmin-thq-group-elm1">
+                    <img
+                      src="public/vector8451-fds.svg"
+                      alt="Vector8451"
+                      class="visitor-management-lfzadmin-thq-vector-elm10"
+                    />
+                  </div>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-frame399-elm">
+                  <img
+                    src="public/ellipse1618451-lt5-200h.png"
+                    alt="Ellipse1618451"
+                    class="visitor-management-lfzadmin-thq-ellipse161-elm"
+                  />
+                  <div class="visitor-management-lfzadmin-thq-frame398-elm">
+                    <span class="visitor-management-lfzadmin-thq-text-elm11">
+                      Tochukwu Ndefo
+                    </span>
+                    <span class="visitor-management-lfzadmin-thq-text-elm12">
+                      tndefo@lfz.com
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-activeusers-elm10">
+              <div class="visitor-management-lfzadmin-thq-wave-elm1">
+                <img
+                  src="public/vector8451-jsb.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm11"
+                />
+                <img
+                  src="public/vector8451-6qwc.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm12"
+                />
+                <img
+                  src="public/vector8451-j43t.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm13"
+                />
+                <img
+                  src="public/vector8451-sjqo.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm14"
+                />
+                <img
+                  src="public/vector8451-uec9.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm15"
+                />
+                <img
+                  src="public/vector8451-1v27.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm16"
+                />
+                <img
+                  src="public/vector8451-ijj.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm17"
+                />
+                <img
+                  src="public/vector8451-nmavc.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm18"
+                />
+                <img
+                  src="public/vector8451-15gh.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm19"
+                />
+                <img
+                  src="public/vector8451-4ve.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm20"
+                />
+              </div>
+              <span class="visitor-management-lfzadmin-thq-text-elm13">
+                Total Visitors
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm14">54</span>
+              <div class="visitor-management-lfzadmin-thq-desktop3-elm1">
+                <img
+                  src="public/heroiconsusers8498-mmdd.svg"
+                  alt="heroiconsusers8498"
+                  class="visitor-management-lfzadmin-thq-heroiconsusers-elm"
+                />
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-activeusers-elm11">
+              <div class="visitor-management-lfzadmin-thq-wave-elm2">
+                <img
+                  src="public/vector8451-m87d.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm21"
+                />
+                <img
+                  src="public/vector8451-hb3c.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm22"
+                />
+                <img
+                  src="public/vector8451-6qw.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm23"
+                />
+                <img
+                  src="public/vector8451-p5c.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm24"
+                />
+                <img
+                  src="public/vector8451-8ycc.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm25"
+                />
+                <img
+                  src="public/vector8451-jo8q.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm26"
+                />
+                <img
+                  src="public/vector8451-cgs.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm27"
+                />
+                <img
+                  src="public/vector8451-rgus.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm28"
+                />
+                <img
+                  src="public/vector8451-vh1r.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm29"
+                />
+                <img
+                  src="public/vector8451-ixbq.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm30"
+                />
+              </div>
+              <span class="visitor-management-lfzadmin-thq-text-elm15">
+                Walk-In Requests
+              </span>
+              <div class="visitor-management-lfzadmin-thq-desktop3-elm2">
+                <img
+                  src="public/ionwalkoutline8498-vt6b.svg"
+                  alt="ionwalkoutline8498"
+                  class="visitor-management-lfzadmin-thq-ionwalkoutline-elm"
+                />
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-activeusers-elm12">
+              <div class="visitor-management-lfzadmin-thq-wave-elm3">
+                <img
+                  src="public/vector8451-soh9.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm31"
+                />
+                <img
+                  src="public/vector8451-if2.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm32"
+                />
+                <img
+                  src="public/vector8451-t2qb.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm33"
+                />
+                <img
+                  src="public/vector8451-52lc.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm34"
+                />
+                <img
+                  src="public/vector8451-a24.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm35"
+                />
+                <img
+                  src="public/vector8451-hhyd.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm36"
+                />
+                <img
+                  src="public/vector8451-fjk.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm37"
+                />
+                <img
+                  src="public/vector8451-bxw6.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm38"
+                />
+                <img
+                  src="public/vector8451-6q4.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm39"
+                />
+                <img
+                  src="public/vector8451-bm3s.svg"
+                  alt="Vector8451"
+                  class="visitor-management-lfzadmin-thq-vector-elm40"
+                />
+              </div>
+              <span class="visitor-management-lfzadmin-thq-text-elm16">
+                Total Enterprises
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm17">
+                120
+              </span>
+              <div class="visitor-management-lfzadmin-thq-desktop3-elm3">
+                <img
+                  src="public/carbonenterprise8498-6zi.svg"
+                  alt="carbonenterprise8498"
+                  class="visitor-management-lfzadmin-thq-carbonenterprise-elm"
+                />
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-activeusers-elm13">
+              <span class="visitor-management-lfzadmin-thq-text-elm18">
+                Invitations
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm19">
+                INVITATION ID
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm20">
+                HOST
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm21">
+                VISITOR
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm22">
+                DATE
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm23">
+                STATUS
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm24">
+                ACTIONS
+              </span>
+              <img
+                src="public/line198451-y9ye.svg"
+                alt="Line198451"
+                class="visitor-management-lfzadmin-thq-line19-elm"
+              />
+              <img
+                src="public/line208451-fdi7.svg"
+                alt="Line208451"
+                class="visitor-management-lfzadmin-thq-line20-elm"
+              />
+              <img
+                src="public/line258451-mebi.svg"
+                alt="Line258451"
+                class="visitor-management-lfzadmin-thq-line25-elm1"
+              />
+              <img
+                src="public/line228451-qd9e.svg"
+                alt="Line228451"
+                class="visitor-management-lfzadmin-thq-line22-elm"
+              />
+              <img
+                src="public/line238451-qpeg.svg"
+                alt="Line238451"
+                class="visitor-management-lfzadmin-thq-line23-elm1"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm25">
+                INV - 1001
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm26">
+                Ada O.
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm27">
+                2025-10-15 / 09:00
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm28">
+                Suraju Muftau
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm29">
+                INV - 1002
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm30">
+                Grace H.
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm31">
+                2025-10-15 / 10:30
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm32">
+                Rasheed Apapa
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm33">
+                INV - 1003
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm34">
+                Linus T.
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm35">
+                2025-10-14 / 14:00
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm36">
+                Stanley Omeje
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm37">
+                INV - 1004
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm38">
+                Ada O.
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm39">
+                2025-10-15 / 11:00
+              </span>
+              <span class="visitor-management-lfzadmin-thq-text-elm40">
+                Christian Chinemerem
+              </span>
+              <div class="visitor-management-lfzadmin-thq-frame626-elm">
+                <span class="visitor-management-lfzadmin-thq-text-elm41">
+                  Approved
+                </span>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-cancel-elm1">
+                <div
+                  class="visitor-management-lfzadmin-thq-meteoriconseye-elm1"
+                >
+                  <div class="visitor-management-lfzadmin-thq-group-elm2">
+                    <img
+                      src="public/vector8451-k7z.svg"
+                      alt="Vector8451"
+                      class="visitor-management-lfzadmin-thq-vector-elm41"
+                    />
+                    <img
+                      src="public/vector8451-uqen.svg"
+                      alt="Vector8451"
+                      class="visitor-management-lfzadmin-thq-vector-elm42"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-cancel-elm2">
+                <div
+                  class="visitor-management-lfzadmin-thq-meteoriconseye-elm2"
+                >
+                  <div class="visitor-management-lfzadmin-thq-group-elm3">
+                    <img
+                      src="public/vector8451-jwbg.svg"
+                      alt="Vector8451"
+                      class="visitor-management-lfzadmin-thq-vector-elm43"
+                    />
+                    <img
+                      src="public/vector8451-s06.svg"
+                      alt="Vector8451"
+                      class="visitor-management-lfzadmin-thq-vector-elm44"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-frame1618868679-elm">
+                <span class="visitor-management-lfzadmin-thq-text-elm42">
+                  Pending
+                </span>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-frame1618868681-elm">
+                <span class="visitor-management-lfzadmin-thq-text-elm43">
+                  Pending
+                </span>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-cancel-elm3">
+                <img
+                  src="public/materialsymbolssearchrounded8451-2dl.svg"
+                  alt="materialsymbolssearchrounded8451"
+                  class="visitor-management-lfzadmin-thq-materialsymbolssearchrounded-elm"
+                />
+                <span class="visitor-management-lfzadmin-thq-text-elm44">
+                  Search by name or ID
+                </span>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-cancel-elm4">
+                <span class="visitor-management-lfzadmin-thq-text-elm45">
+                  Filters
+                </span>
+                <div
+                  class="visitor-management-lfzadmin-thq-mingcutedownline-elm1"
+                >
+                  <div class="visitor-management-lfzadmin-thq-group-elm4">
+                    <img
+                      src="public/vector8567-5kof.svg"
+                      alt="Vector8567"
+                      class="visitor-management-lfzadmin-thq-vector-elm45"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-frame1618868827-elm">
+                <div class="visitor-management-lfzadmin-thq-cancel-elm5">
+                  <div
+                    class="visitor-management-lfzadmin-thq-meteoriconseye-elm3"
+                  >
+                    <div class="visitor-management-lfzadmin-thq-group-elm5">
+                      <img
+                        src="public/vector8451-kijn.svg"
+                        alt="Vector8451"
+                        class="visitor-management-lfzadmin-thq-vector-elm46"
+                      />
+                      <img
+                        src="public/vector8451-yctf.svg"
+                        alt="Vector8451"
+                        class="visitor-management-lfzadmin-thq-vector-elm47"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-reschdule-elm1">
+                  <span class="visitor-management-lfzadmin-thq-text-elm46">
+                    Reject
+                  </span>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-reschdule-elm2">
+                  <span class="visitor-management-lfzadmin-thq-text-elm47">
+                    Approve
+                  </span>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-frame1618868828-elm">
+                <div class="visitor-management-lfzadmin-thq-cancel-elm6">
+                  <div
+                    class="visitor-management-lfzadmin-thq-meteoriconseye-elm4"
+                  >
+                    <div class="visitor-management-lfzadmin-thq-group-elm6">
+                      <img
+                        src="public/vector8451-e218.svg"
+                        alt="Vector8451"
+                        class="visitor-management-lfzadmin-thq-vector-elm48"
+                      />
+                      <img
+                        src="public/vector8451-s9w.svg"
+                        alt="Vector8451"
+                        class="visitor-management-lfzadmin-thq-vector-elm49"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-reschdule-elm3">
+                  <span class="visitor-management-lfzadmin-thq-text-elm48">
+                    Reject
+                  </span>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-reschdule-elm4">
+                  <span class="visitor-management-lfzadmin-thq-text-elm49">
+                    Approve
+                  </span>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-group237786-elm">
+                <div class="visitor-management-lfzadmin-thq-frame621-elm">
+                  <span class="visitor-management-lfzadmin-thq-text-elm50">
+                    Page
+                  </span>
+                  <div
+                    class="visitor-management-lfzadmin-thq-frame620-elm"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm51">
+                    of 86
+                  </span>
+                </div>
+                <div class="visitor-management-lfzadmin-thq-nextpage-elm1">
+                  <span class="visitor-management-lfzadmin-thq-text-elm52">
+                    Next Page
+                  </span>
+                  <img
+                    src="public/grommeticonslinknexti8451-3l6.svg"
+                    alt="grommeticonslinknextI8451"
+                    class="visitor-management-lfzadmin-thq-grommeticonslinknext-elm1"
+                  />
+                </div>
+                <div class="visitor-management-lfzadmin-thq-nextpage-elm2">
+                  <img
+                    src="public/grommeticonslinknext8451-ynr.svg"
+                    alt="grommeticonslinknext8451"
+                    class="visitor-management-lfzadmin-thq-grommeticonslinknext-elm2"
+                  />
+                  <span class="visitor-management-lfzadmin-thq-text-elm53">
+                    Previous Page
+                  </span>
+                </div>
+              </div>
+              <div class="visitor-management-lfzadmin-thq-frame1618868829-elm">
+                <span class="visitor-management-lfzadmin-thq-text-elm54">
+                  Exited
+                </span>
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-frame1618868698-elm">
+              <span class="visitor-management-lfzadmin-thq-text-elm55">
+                Visitors by Day
+              </span>
+              <div class="visitor-management-lfzadmin-thq-group237650-elm">
+                <img
+                  src="public/line308451-5xw.svg"
+                  alt="Line308451"
+                  class="visitor-management-lfzadmin-thq-line30-elm"
+                />
+                <img
+                  src="public/line328451-lzak.svg"
+                  alt="Line328451"
+                  class="visitor-management-lfzadmin-thq-line32-elm"
+                />
+                <img
+                  src="public/line338451-lvr.svg"
+                  alt="Line338451"
+                  class="visitor-management-lfzadmin-thq-line33-elm"
+                />
+                <img
+                  src="public/line388451-yymd.svg"
+                  alt="Line388451"
+                  class="visitor-management-lfzadmin-thq-line38-elm"
+                />
+                <img
+                  src="public/line318451-y0ja.svg"
+                  alt="Line318451"
+                  class="visitor-management-lfzadmin-thq-line31-elm"
+                />
+                <img
+                  src="public/line258451-nxkb.svg"
+                  alt="Line258451"
+                  class="visitor-management-lfzadmin-thq-line25-elm2"
+                />
+                <img
+                  src="public/line348451-a0m6.svg"
+                  alt="Line348451"
+                  class="visitor-management-lfzadmin-thq-line34-elm"
+                />
+                <img
+                  src="public/line238451-uiql.svg"
+                  alt="Line238451"
+                  class="visitor-management-lfzadmin-thq-line23-elm2"
+                />
+                <img
+                  src="public/line248451-5khk.svg"
+                  alt="Line248451"
+                  class="visitor-management-lfzadmin-thq-line24-elm"
+                />
+                <img
+                  src="public/line358451-73bl.svg"
+                  alt="Line358451"
+                  class="visitor-management-lfzadmin-thq-line35-elm"
+                />
+                <img
+                  src="public/line278451-i79i.svg"
+                  alt="Line278451"
+                  class="visitor-management-lfzadmin-thq-line27-elm"
+                />
+                <img
+                  src="public/line288451-dekc.svg"
+                  alt="Line288451"
+                  class="visitor-management-lfzadmin-thq-line28-elm"
+                />
+                <img
+                  src="public/line368451-wmgk.svg"
+                  alt="Line368451"
+                  class="visitor-management-lfzadmin-thq-line36-elm"
+                />
+                <img
+                  src="public/line298451-43qo.svg"
+                  alt="Line298451"
+                  class="visitor-management-lfzadmin-thq-line29-elm"
+                />
+                <span class="visitor-management-lfzadmin-thq-text-elm56">
+                  Mon
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm57">
+                  65
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm58">
+                  130
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm59">
+                  195
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm60">
+                  260
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm61">
+                  325
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm62">
+                  Tue
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm63">
+                  Wed
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm64">
+                  Thur
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm65">
+                  Fri
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm66">
+                  Sat
+                </span>
+                <span class="visitor-management-lfzadmin-thq-text-elm67">
+                  Sun
+                </span>
+                <img
+                  src="public/union8576-ttik.svg"
+                  alt="Union8576"
+                  class="visitor-management-lfzadmin-thq-union-elm"
+                />
+                <div class="visitor-management-lfzadmin-thq-activeusers-elm14">
+                  <span class="visitor-management-lfzadmin-thq-text-elm68">
+                    Tue
+                  </span>
+                  <span class="visitor-management-lfzadmin-thq-text-elm69">
+                    visitors : 193
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-frame1618868704-elm">
+              <span class="visitor-management-lfzadmin-thq-text-elm70">
+                Top Enterprises by Visitor Count
+              </span>
+              <img
+                src="public/vector8576-36mj.svg"
+                alt="Vector8576"
+                class="visitor-management-lfzadmin-thq-vector-elm50"
+              />
+              <div class="visitor-management-lfzadmin-thq-frame1618868838-elm">
+                <div
+                  class="visitor-management-lfzadmin-thq-frame1618868833-elm"
+                >
+                  <div
+                    class="visitor-management-lfzadmin-thq-activeusers-elm15"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm71">
+                    Colgate
+                  </span>
+                </div>
+                <div
+                  class="visitor-management-lfzadmin-thq-frame1618868834-elm"
+                >
+                  <div
+                    class="visitor-management-lfzadmin-thq-activeusers-elm16"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm72">
+                    Dano
+                  </span>
+                </div>
+                <div
+                  class="visitor-management-lfzadmin-thq-frame1618868835-elm"
+                >
+                  <div
+                    class="visitor-management-lfzadmin-thq-activeusers-elm17"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm73">
+                    Kellogg’s
+                  </span>
+                </div>
+                <div
+                  class="visitor-management-lfzadmin-thq-frame1618868836-elm"
+                >
+                  <div
+                    class="visitor-management-lfzadmin-thq-activeusers-elm18"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm74">
+                    INSIGNIA
+                  </span>
+                </div>
+                <div
+                  class="visitor-management-lfzadmin-thq-frame1618868837-elm"
+                >
+                  <div
+                    class="visitor-management-lfzadmin-thq-activeusers-elm19"
+                  ></div>
+                  <span class="visitor-management-lfzadmin-thq-text-elm75">
+                    Dangote
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-addenterprise-elm">
+              <span class="visitor-management-lfzadmin-thq-text-elm76">
+                Export
+              </span>
+              <div
+                class="visitor-management-lfzadmin-thq-mingcutedownline-elm2"
+              >
+                <div class="visitor-management-lfzadmin-thq-group-elm7">
+                  <img
+                    src="public/vector8567-hno.svg"
+                    alt="Vector8567"
+                    class="visitor-management-lfzadmin-thq-vector-elm51"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="visitor-management-lfzadmin-thq-group237785-elm">
+            <div class="visitor-management-lfzadmin-thq-frame492-elm">
+              <img
+                src="public/cuidadashboardoutline8451-3x6e.svg"
+                alt="cuidadashboardoutline8451"
+                class="visitor-management-lfzadmin-thq-cuidadashboardoutline-elm"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm77">
+                Dashboard
+              </span>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-frame493-elm">
+              <div class="visitor-management-lfzadmin-thq-lucideuser-elm">
+                <div class="visitor-management-lfzadmin-thq-group-elm8">
+                  <img
+                    src="public/vector8451-xqky.svg"
+                    alt="Vector8451"
+                    class="visitor-management-lfzadmin-thq-vector-elm52"
+                  />
+                  <img
+                    src="public/vector8451-udno.svg"
+                    alt="Vector8451"
+                    class="visitor-management-lfzadmin-thq-vector-elm53"
+                  />
+                </div>
+              </div>
+              <span class="visitor-management-lfzadmin-thq-text-elm78">
+                User Management
+              </span>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-frame494-elm">
+              <img
+                src="public/fluentform24regular8451-4ke.svg"
+                alt="fluentform24regular8451"
+                class="visitor-management-lfzadmin-thq-fluentform24regular-elm"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm79">
+                Invitation Form
+              </span>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-frame495-elm">
+              <img
+                src="public/mdiboomgatealertoutline8451-but.svg"
+                alt="mdiboomgatealertoutline8451"
+                class="visitor-management-lfzadmin-thq-mdiboomgatealertoutline-elm"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm80">
+                Gate Operations
+              </span>
+            </div>
+          </div>
+          <div class="visitor-management-lfzadmin-thq-group237762-elm">
+            <div class="visitor-management-lfzadmin-thq-settings-elm">
+              <img
+                src="public/carbonsettings8451-9sfs.svg"
+                alt="carbonsettings8451"
+                class="visitor-management-lfzadmin-thq-carbonsettings-elm"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm81">
+                Settings
+              </span>
+            </div>
+            <div class="visitor-management-lfzadmin-thq-logout-elm">
+              <img
+                src="public/hugeiconslogout028451-5peh.svg"
+                alt="hugeiconslogout028451"
+                class="visitor-management-lfzadmin-thq-hugeiconslogout02-elm"
+              />
+              <span class="visitor-management-lfzadmin-thq-text-elm82">
+                Log Out
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <link
+        rel="canonical"
+        href="https://one-portal355-fprvui.teleporthq.app/"
+      />
+    </div>
+  </body>
+</html>

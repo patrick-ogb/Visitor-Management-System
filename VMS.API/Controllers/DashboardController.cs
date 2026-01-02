@@ -7,7 +7,7 @@ namespace VMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "SUPERADMIN,EnterpriseAdmin")]
+[Authorize(Roles = "SUPERADMIN,EnterpriseAdmin,LFZAdmin")]
 public class DashboardController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -48,6 +48,77 @@ public class DashboardController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+
+    [HttpGet("metrics")]
+    public async Task<ActionResult> GetDashboardMetrics()
+    {
+        var isSuperadmin = User.IsInRole("SUPERADMIN");
+
+        var query = new GetDashboardMetricsQuery();
+
+        // Auto-filter by enterprise for non-SUPERADMIN users
+        if (!isSuperadmin)
+        {
+            var enterpriseIdClaim = User.FindFirst("enterpriseId")?.Value;
+            if (!string.IsNullOrEmpty(enterpriseIdClaim) && int.TryParse(enterpriseIdClaim, out var userEnterpriseId))
+            {
+                query.EnterpriseId = userEnterpriseId;
+            }
+        }
+
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("visitors-by-day")]
+    public async Task<ActionResult> GetVisitorsByDay([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+    {
+        var isSuperadmin = User.IsInRole("SUPERADMIN");
+
+        var query = new GetVisitorsByDayQuery
+        {
+            FromDate = fromDate,
+            ToDate = toDate
+        };
+
+        // Auto-filter by enterprise for non-SUPERADMIN users
+        if (!isSuperadmin)
+        {
+            var enterpriseIdClaim = User.FindFirst("enterpriseId")?.Value;
+            if (!string.IsNullOrEmpty(enterpriseIdClaim) && int.TryParse(enterpriseIdClaim, out var userEnterpriseId))
+            {
+                query.EnterpriseId = userEnterpriseId;
+            }
+        }
+
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("top-enterprises")]
+    public async Task<ActionResult> GetTopEnterprises([FromQuery] int count = 5)
+    {
+        var isSuperadmin = User.IsInRole("SUPERADMIN");
+
+        var query = new GetTopEnterprisesQuery
+        {
+            Count = count
+        };
+
+        // Auto-filter by enterprise for non-SUPERADMIN users
+        if (!isSuperadmin)
+        {
+            var enterpriseIdClaim = User.FindFirst("enterpriseId")?.Value;
+            if (!string.IsNullOrEmpty(enterpriseIdClaim) && int.TryParse(enterpriseIdClaim, out var userEnterpriseId))
+            {
+                query.EnterpriseId = userEnterpriseId;
+            }
+        }
+
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
 }
+
 
 

@@ -65,3 +65,4 @@ public class GetVisitorsByHourQueryHandler : IRequestHandler<GetVisitorsByHourQu
 }
 
 
+
