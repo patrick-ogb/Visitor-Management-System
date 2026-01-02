@@ -1,0 +1,186 @@
+@using VMS.Client.DTOs.Invitations
+
+@if (IsOpen)
+{
+    <div class="modal-overlay @(IsVisible ? "show" : "hide")" @onclick="Close" @onkeydown="HandleKeyDown">
+        <div class="modal-content @(IsVisible ? "show" : "hide")" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>@(IsApproval ? "Approve" : "Reject") Invitation</h2>
+                <button class="modal-close" @onclick="Close" aria-label="Close" type="button">×</button>
+            </div>
+            <div class="modal-body">
+                @if (SelectedInvitation != null)
+                {
+                    <div class="confirmation-message">
+                        <p>Are you sure you want to <strong>@(IsApproval ? "approve" : "reject")</strong> this invitation?</p>
+                    </div>
+
+                    <div class="details-section">
+                        <h3 class="section-title">Invitation Details</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Invitation No:</span>
+                            <span>@SelectedInvitation.InvitationNo</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Guest Name:</span>
+                            <span>@SelectedInvitation.GuestName</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Host Name:</span>
+                            <span>@SelectedInvitation.HostName</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Expected Arrival:</span>
+                            <span>@SelectedInvitation.ExpectedArrival.ToString("g")</span>
+                        </div>
+                    </div>
+
+                    <div class="comments-section">
+                        <label class="comments-label" for="comments-textarea">
+                            Comments (Optional)
+                        </label>
+                        <textarea 
+                            id="comments-textarea"
+                            class="comments-textarea" 
+                            @bind="Comments"
+                            @bind:event="oninput"
+                            placeholder="Add any comments about this @(IsApproval ? "approval" : "rejection")..."
+                            rows="4"></textarea>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @ErrorMessage
+                        </div>
+                    }
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-cancel-btn" @onclick="Close" disabled="@IsProcessing">
+                    Cancel
+                </button>
+                <button type="button" class="modal-confirm-btn @(IsApproval ? "approve" : "reject")" @onclick="ConfirmAction" disabled="@IsProcessing">
+                    @if (IsProcessing)
+                    {
+                        <span>Processing...</span>
+                    }
+                    else
+                    {
+                        <span>@(IsApproval ? "Approve" : "Reject")</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<ApprovalModalResult> OnConfirmed { get; set; }
+
+    private bool IsOpen { get; set; }
+    private bool IsVisible { get; set; }
+    private bool IsProcessing { get; set; }
+    private InvitationDto? SelectedInvitation { get; set; }
+    private bool IsApproval { get; set; }
+    private string Comments { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    public void Open(InvitationDto invitation, bool isApproval)
+    {
+        SelectedInvitation = invitation;
+        IsApproval = isApproval;
+        Comments = string.Empty;
+        ErrorMessage = string.Empty;
+        IsProcessing = false;
+        IsOpen = true;
+        StateHasChanged();
+        
+        // Trigger animation after render
+        Task.Delay(10).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                IsVisible = true;
+                StateHasChanged();
+            });
+        });
+    }
+
+    public void Close()
+    {
+        // Reset processing state when closing
+        IsProcessing = false;
+        IsVisible = false;
+        StateHasChanged();
+        
+        // Wait for animation to complete before removing from DOM
+        Task.Delay(300).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                IsOpen = false;
+                SelectedInvitation = null;
+                Comments = string.Empty;
+                ErrorMessage = string.Empty;
+                StateHasChanged();
+            });
+        });
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && !IsProcessing)
+        {
+            Close();
+        }
+    }
+
+    private async Task ConfirmAction()
+    {
+        if (SelectedInvitation == null || IsProcessing) return;
+
+        IsProcessing = true;
+        ErrorMessage = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var result = new ApprovalModalResult
+            {
+                InvitationId = SelectedInvitation.GuestInvitationId,
+                IsApproved = IsApproval,
+                Comments = Comments
+            };
+
+            await OnConfirmed.InvokeAsync(result);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    public void SetError(string error)
+    {
+        ErrorMessage = error;
+        IsProcessing = false;
+        StateHasChanged();
+    }
+
+    public void ClearError()
+    {
+        ErrorMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    public class ApprovalModalResult
+    {
+        public int InvitationId { get; set; }
+        public bool IsApproved { get; set; }
+        public string? Comments { get; set; }
+    }
+}
+

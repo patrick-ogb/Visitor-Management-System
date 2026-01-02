@@ -1,0 +1,319 @@
+@page "/otp-verification"
+@layout LoginLayout
+@using Microsoft.AspNetCore.Components.Web
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<div class="visitor-management-login-page-optional-container">
+    <div class="visitor-management-login-page-optional-visitor-management-login-page-optional">
+        <div class="visitor-management-login-page-optional-frame327">
+            <img
+                src="images/nightrender23721-j5bs-1100h.png"
+                alt="NIGHTRENDER23760"
+                class="visitor-management-login-page-optionalnightrender2" />
+            <div class="visitor-management-login-page-optional-frame346">
+                <span class="visitor-management-login-page-optional-text1">
+                    Streamline your visitor experience — log in to manage entries,
+                    track visits, and ensure secure access to the facility.
+                </span>
+            </div>
+        </div>
+        <div class="visitor-management-login-page-optional-group237745">
+            <div class="visitor-management-login-page-optional-frame32343318">
+                <span class="visitor-management-login-page-optional-text2">OTP Verification</span>
+
+                <span class="visitor-management-login-page-optional-text3">
+                    <span class="visitor-management-login-page-optional-text4">Enter the security code sent to</span>
+                    <span>@maskedEmail</span>
+                </span>
+            </div>
+            <div class="visitor-management-login-page-optional-frame32343317">
+                <span class="visitor-management-login-page-optional-text6">Didn't receive code?</span>
+                <div class="visitor-management-login-page-optional-frame32343315">
+                    @if (canResend)
+                    {
+                        <span class="visitor-management-login-page-optional-text7" @onclick="async () => await ResendCode()" role="button" tabindex="0">Resend</span>
+                    }
+                    else
+                    {
+                        <span class="visitor-management-login-page-optional-text7" style="color: rgba(149, 149, 149, 1); text-decoration: none; cursor: default;">Resend</span>
+                    }
+                    <img
+                        src="images/ellipse27.svg"
+                        alt="Ellipse27"
+                        class="visitor-management-login-page-optional-ellipse27" />
+                    <span class="visitor-management-login-page-optional-text8">@timerDisplay</span>
+                </div>
+            </div>
+            <div class="visitor-management-login-page-optional-number">
+                <input type="text"
+                       maxlength="1"
+                       value="@otp1"
+                       @oninput="@(async (e) => await HandleOtpInput(e, 1))"
+                       @onkeydown="@(async (e) => await HandleKeyDown(e, 1))"
+                       @ref="otpInput1"
+                       class="@GetOtpInputClass(otp1)" />
+                <input type="text"
+                       maxlength="1"
+                       value="@otp2"
+                       @oninput="@(async (e) => await HandleOtpInput(e, 2))"
+                       @onkeydown="@(async (e) => await HandleKeyDown(e, 2))"
+                       @ref="otpInput2"
+                       class="@GetOtpInputClass(otp2)" />
+                <input type="text"
+                       maxlength="1"
+                       value="@otp3"
+                       @oninput="@(async (e) => await HandleOtpInput(e, 3))"
+                       @onkeydown="@(async (e) => await HandleKeyDown(e, 3))"
+                       @ref="otpInput3"
+                       class="@GetOtpInputClass(otp3)" />
+                <input type="text"
+                       maxlength="1"
+                       value="@otp4"
+                       @oninput="@(async (e) => await HandleOtpInput(e, 4))"
+                       @onkeydown="@(async (e) => await HandleKeyDown(e, 4))"
+                       @ref="otpInput4"
+                       class="@GetOtpInputClass(otp4)" />
+            </div>
+            <button class="visitor-management-login-page-optional-verify @(IsVerifyEnabled ? "enabled" : "disabled")"
+                    @onclick="HandleVerify"
+                    disabled="@(!IsVerifyEnabled)">
+                <span class="visitor-management-login-page-optional-text9">Verify</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Email { get; set; }
+
+    private string maskedEmail = "chr******@tolaram.com";
+    private string otp1 = string.Empty;
+    private string otp2 = string.Empty;
+    private string otp3 = string.Empty;
+    private string otp4 = string.Empty;
+    private int timeRemaining = 60;
+    private bool canResend = false;
+    private System.Threading.Timer? countdownTimer;
+    private Microsoft.AspNetCore.Components.ElementReference otpInput1;
+    private Microsoft.AspNetCore.Components.ElementReference otpInput2;
+    private Microsoft.AspNetCore.Components.ElementReference otpInput3;
+    private Microsoft.AspNetCore.Components.ElementReference otpInput4;
+
+    private bool IsVerifyEnabled => !string.IsNullOrWhiteSpace(otp1) &&
+                                     !string.IsNullOrWhiteSpace(otp2) &&
+                                     !string.IsNullOrWhiteSpace(otp3) &&
+                                     !string.IsNullOrWhiteSpace(otp4);
+
+    private string timerDisplay => $"{(timeRemaining / 60):D2}:{(timeRemaining % 60):D2}";
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Email))
+        {
+            // Mask the email: show first 3 characters, then ******, then domain
+            var emailParts = Email.Split('@');
+            if (emailParts.Length == 2)
+            {
+                var localPart = emailParts[0];
+                var domain = emailParts[1];
+                if (localPart.Length > 3)
+                {
+                    maskedEmail = $"{localPart.Substring(0, 3)}******@{domain}";
+                }
+                else
+                {
+                    maskedEmail = $"{localPart}******@{domain}";
+                }
+            }
+            else
+            {
+                maskedEmail = Email;
+            }
+        }
+        StartCountdown();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Focus first OTP input
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(100);
+                // Note: ElementReference focus requires JSInterop, but for now we'll handle it via keyboard navigation
+            });
+        }
+    }
+
+    private void StartCountdown()
+    {
+        timeRemaining = 60;
+        canResend = false;
+        countdownTimer?.Dispose();
+        countdownTimer = new System.Threading.Timer(_ =>
+        {
+            timeRemaining--;
+            if (timeRemaining <= 0)
+            {
+                timeRemaining = 0;
+                canResend = true;
+                countdownTimer?.Dispose();
+            }
+            InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+    }
+
+    private async Task HandleOtpInput(ChangeEventArgs e, int index)
+    {
+        var value = e.Value?.ToString() ?? string.Empty;
+        // Only allow digits
+        if (value.Length > 0 && !char.IsDigit(value[0]))
+        {
+            value = string.Empty;
+        }
+        else if (value.Length > 1)
+        {
+            value = value.Substring(0, 1);
+        }
+
+        switch (index)
+        {
+            case 1:
+                otp1 = value;
+                if (!string.IsNullOrEmpty(value) && value.Length == 1)
+                {
+                    // Auto-focus next input
+                    await Task.Delay(50);
+                    await FocusInputAsync(2);
+                }
+                break;
+            case 2:
+                otp2 = value;
+                if (!string.IsNullOrEmpty(value) && value.Length == 1)
+                {
+                    await Task.Delay(50);
+                    await FocusInputAsync(3);
+                }
+                break;
+            case 3:
+                otp3 = value;
+                if (!string.IsNullOrEmpty(value) && value.Length == 1)
+                {
+                    await Task.Delay(50);
+                    await FocusInputAsync(4);
+                }
+                break;
+            case 4:
+                otp4 = value;
+                break;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e, int currentIndex)
+    {
+        if (e.Key == "Backspace")
+        {
+            var currentValue = GetOtpValue(currentIndex);
+            if (string.IsNullOrEmpty(currentValue) && currentIndex > 1)
+            {
+                // Clear previous and focus it
+                ClearOtpValue(currentIndex - 1);
+                await Task.Delay(50);
+                await FocusInputAsync(currentIndex - 1);
+            }
+            else
+            {
+                // Clear current
+                ClearOtpValue(currentIndex);
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        else if (e.Key == "ArrowLeft" && currentIndex > 1)
+        {
+            await Task.Delay(50);
+            await FocusInputAsync(currentIndex - 1);
+        }
+        else if (e.Key == "ArrowRight" && currentIndex < 4)
+        {
+            await Task.Delay(50);
+            await FocusInputAsync(currentIndex + 1);
+        }
+    }
+
+    private void ClearOtpValue(int index)
+    {
+        switch (index)
+        {
+            case 1: otp1 = string.Empty; break;
+            case 2: otp2 = string.Empty; break;
+            case 3: otp3 = string.Empty; break;
+            case 4: otp4 = string.Empty; break;
+        }
+    }
+
+    private async Task FocusInputAsync(int index)
+    {
+        // This will be handled by browser focus, but we trigger state change
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetOtpValue(int index)
+    {
+        return index switch
+        {
+            1 => otp1,
+            2 => otp2,
+            3 => otp3,
+            4 => otp4,
+            _ => string.Empty
+        };
+    }
+
+
+    private string GetOtpInputClass(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "visitor-management-login-page-optional-frame32343314-empty";
+        }
+        return "visitor-management-login-page-optional-frame32343314-filled";
+    }
+
+    private async Task ResendCode()
+    {
+        if (canResend)
+        {
+            // Generate new dummy OTP
+            // In real implementation, this would call an API
+            StartCountdown();
+            // Clear OTP fields
+            otp1 = otp2 = otp3 = otp4 = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void HandleVerify()
+    {
+        if (IsVerifyEnabled)
+        {
+            var otpCode = $"{otp1}{otp2}{otp3}{otp4}";
+            // Dummy validation - accept any 4-digit code
+            if (otpCode.Length == 4)
+            {
+                // Navigate to home or success page
+                Navigation.NavigateTo("/");
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        countdownTimer?.Dispose();
+    }
+}
+

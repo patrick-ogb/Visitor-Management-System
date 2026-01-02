@@ -1,0 +1,137 @@
+@page "/notifications"
+@using VMS.Client.DTOs.Notifications
+@inject HttpClient Http
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+
+<PageTitle>Notifications</PageTitle>
+
+<div class="notifications-page">
+    <h1>Notifications</h1>
+
+    @if (notifications == null)
+    {
+        <div class="loading">Loading notifications...</div>
+    }
+    else if (!notifications.Any())
+    {
+        <div class="empty-state">
+            <p>No notifications</p>
+        </div>
+    }
+    else
+    {
+        <div class="notifications-list">
+            @foreach (var notification in notifications)
+            {
+                <div class="notification-card @(notification.IsRead ? "read" : "unread")">
+                    <div class="notification-header">
+                        <span class="notification-type">@notification.Type</span>
+                        <span class="notification-time">@notification.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                    </div>
+                    <div class="notification-body">
+                        <p>@notification.Message</p>
+                    </div>
+                    <div class="notification-footer">
+                        @if (!notification.IsRead)
+                        {
+                            <button class="btn btn-sm btn-primary" @onclick="() => MarkAsRead(notification.Id)">Mark as read</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (hasMore)
+        {
+            <div class="load-more">
+                <button class="btn btn-primary" @onclick="LoadMore">Load More</button>
+            </div>
+        }
+
+        <div class="done-button-container">
+            <button class="btn-done" @onclick="HandleDone">Done</button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<NotificationDto> notifications = new();
+    private int currentPage = 1;
+    private const int pageSize = 20;
+    private bool hasMore = true;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotifications();
+    }
+
+    private async Task LoadNotifications()
+    {
+        if (isLoading) return;
+
+        isLoading = true;
+        try
+        {
+            var response = await Http.GetAsync($"api/Notifications/history?pageNumber={currentPage}&pageSize={pageSize}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<VMS.Client.DTOs.Common.BaseResponse<List<NotificationDto>>>();
+                if (result?.Data != null)
+                {
+                    if (currentPage == 1)
+                    {
+                        notifications = result.Data;
+                    }
+                    else
+                    {
+                        notifications.AddRange(result.Data);
+                    }
+                    hasMore = result.Data.Count == pageSize;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Failed to load notifications");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadMore()
+    {
+        currentPage++;
+        await LoadNotifications();
+    }
+
+    private async Task MarkAsRead(Guid notificationId)
+    {
+        try
+        {
+            var response = await Http.PutAsync($"api/Notifications/{notificationId}/read", null);
+            if (response.IsSuccessStatusCode)
+            {
+                var notification = notifications.FirstOrDefault(n => n.Id == notificationId);
+                if (notification != null)
+                {
+                    notification.IsRead = true;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Failed to mark notification as read");
+        }
+    }
+
+    private void HandleDone()
+    {
+        Navigation.NavigateTo("/invitation");
+    }
+}
+

@@ -1,0 +1,691 @@
+@page "/enterprisedashboard"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using VMS.Client.DTOs.Invitations
+@using VMS.Client.DTOs.Common
+@using VMS.Client.DTOs.Approvals
+@using VMS.Client.DTOs.Dashboard
+@inject AuthenticationStateProvider AuthStateProvider
+@inject HttpClient Http
+@attribute [Authorize(Roles = "SUPERADMIN,EnterpriseAdmin")]
+
+<PageTitle>Enterprise Dashboard</PageTitle>
+
+<div class="enterprise-dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Visitor Management</h1>
+        <div class="user-profile-section">
+            <div class="notification-icon" role="button" tabindex="0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <div class="profile-picture">
+                <img src="https://ui-avatars.com/api/?name=@(userName?.Replace(" ", "+"))&background=1A3B6A&color=fff&size=128" alt="Profile" />
+            </div>
+            <div class="user-info">
+                <div class="user-name">@userName</div>
+                <div class="user-email">@userEmail</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metric Cards Section -->
+    <div class="metrics-section">
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Active Enterprise Users</div>
+                <div class="metric-value">@activeEnterpriseUsers</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Total Visitors Today</div>
+                <div class="metric-value">@totalVisitorsToday</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Pending Invitations</div>
+                <div class="metric-value">@pendingInvitations</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Visitors by Hour</h3>
+                <span class="chart-subtitle">Today</span>
+            </div>
+            <div class="chart-content">
+                @if (isLoadingChart)
+                {
+                    <div style="text-align: center; padding: 2rem;">
+                        <span>Loading chart data...</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(chartErrorMessage))
+                {
+                    <div style="text-align: center; padding: 2rem; color: red;">
+                        <span>@chartErrorMessage</span>
+                    </div>
+                }
+                else if (visitorsByHour == null || visitorsByHour.Count == 0 || visitorsByHour.All(v => v.Count == 0))
+                {
+                    <div style="text-align: center; padding: 2rem;">
+                        <span>No visitors checked in today.</span>
+                    </div>
+                }
+                else
+                {
+                    <svg class="visitors-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+                        @{
+                            var maxCount = visitorsByHour.Max(v => v.Count);
+                            var yAxisMax = maxCount == 0 ? 10 : ((maxCount / 10) + 1) * 10; // Round up to nearest 10
+                            var chartHeight = 180; // Height of chart area (190 - 10)
+                            var chartWidth = 360; // Width of chart area (390 - 30)
+                            var startX = 30;
+                            var startY = 10;
+                            var endY = 190;
+                            
+                            // Filter to business hours (8:00 - 17:00) for better visualization
+                            var businessHours = visitorsByHour.Where(v => v.Hour >= 8 && v.Hour <= 17).ToList();
+                            var hoursToShow = businessHours.Count > 0 ? businessHours : visitorsByHour;
+                            var hourCount = hoursToShow.Count;
+                            var hourSpacing = hourCount > 1 ? chartWidth / (double)(hourCount - 1) : chartWidth;
+                        }
+                        
+                        <!-- Y-axis labels -->
+                        @for (int i = 0; i <= 5; i++)
+                        {
+                            var value = (yAxisMax / 5) * (5 - i);
+                            var yPos = startY + (chartHeight / 5) * i;
+                            @((MarkupString)$"<text x=\"10\" y=\"{yPos + 5}\" class=\"axis-label\">{value}</text>")
+                        }
+                        
+                        <!-- X-axis labels -->
+                        @for (int i = 0; i < hoursToShow.Count; i++)
+                        {
+                            var hour = hoursToShow[i];
+                            var xPos = startX + (hourSpacing * i);
+                            var displayHour = $"{hour.Hour:D2}:00";
+                            @((MarkupString)$"<text x=\"{xPos - 15}\" y=\"195\" class=\"axis-label\">{displayHour}</text>")
+                        }
+                        
+                        <!-- Grid lines -->
+                        <line x1="@startX" y1="@startY" x2="@startX" y2="@endY" stroke="#E0E0E0" stroke-width="1"/>
+                        @for (int i = 0; i <= 5; i++)
+                        {
+                            var yPos = startY + (chartHeight / 5) * i;
+                            <line x1="@startX" y1="@yPos" x2="@(startX + chartWidth)" y2="@yPos" stroke="#E0E0E0" stroke-width="1"/>
+                        }
+                        <line x1="@startX" y1="@endY" x2="@(startX + chartWidth)" y2="@endY" stroke="#E0E0E0" stroke-width="1"/>
+                        
+                        @if (hoursToShow.Count > 0)
+                        {
+                            var pathPoints = new List<(double x, double y)>();
+                            for (int i = 0; i < hoursToShow.Count; i++)
+                            {
+                                var hour = hoursToShow[i];
+                                var x = startX + (hourSpacing * i);
+                                // Invert Y: higher count = lower Y position
+                                var normalizedCount = yAxisMax > 0 ? (double)hour.Count / yAxisMax : 0;
+                                var y = endY - (normalizedCount * chartHeight);
+                                pathPoints.Add((x, y));
+                            }
+                            
+                            // Generate path string
+                            var pathString = string.Join(" ", pathPoints.Select((p, idx) => 
+                                idx == 0 ? $"M {p.x},{p.y}" : $"L {p.x},{p.y}"));
+                            
+                            <!-- Green line representing visitors -->
+                            <path d="@pathString" 
+                                  stroke="#4CAF50" 
+                                  stroke-width="3" 
+                                  fill="none" 
+                                  class="chart-line"/>
+                            
+                            <!-- Data points -->
+                            @foreach (var point in pathPoints)
+                            {
+                                <circle cx="@point.x" cy="@point.y" r="4" fill="#4CAF50"/>
+                            }
+                        }
+                    </svg>
+                }
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Entry vs Exit</h3>
+                <span class="chart-subtitle">Today</span>
+            </div>
+            <div class="chart-content entry-exit-chart">
+                @{
+                    // Dummy data - Entry: 65%, Exit: 35%
+                    var entryCount = 65;
+                    var exitCount = 35;
+                    var total = entryCount + exitCount;
+                    var entryPercentage = (entryCount * 100.0) / total;
+                    var exitPercentage = (exitCount * 100.0) / total;
+                    
+                    // SVG dimensions
+                    var size = 200;
+                    var center = size / 2.0;
+                    var radius = 70.0;
+                    var innerRadius = 45.0; // Creates donut effect
+                    
+                    // Calculate arc paths
+                    var entryAngle = (entryPercentage / 100.0) * 360.0;
+                    var exitAngle = (exitPercentage / 100.0) * 360.0;
+                    
+                    // SVG path calculations - start from top (-90 degrees)
+                    var entryStartAngle = -90.0;
+                    var entryEndAngle = entryStartAngle + entryAngle;
+                    var exitStartAngle = entryEndAngle;
+                    var exitEndAngle = exitStartAngle + exitAngle;
+                    
+                    // Helper function to convert angle to coordinates
+                    string GetArcPath(double startAngle, double endAngle, double outerRadius, double innerRadius)
+                    {
+                        var startAngleRad = (startAngle * Math.PI) / 180.0;
+                        var endAngleRad = (endAngle * Math.PI) / 180.0;
+                        
+                        var x1 = center + outerRadius * Math.Cos(startAngleRad);
+                        var y1 = center + outerRadius * Math.Sin(startAngleRad);
+                        var x2 = center + outerRadius * Math.Cos(endAngleRad);
+                        var y2 = center + outerRadius * Math.Sin(endAngleRad);
+                        
+                        var x3 = center + innerRadius * Math.Cos(endAngleRad);
+                        var y3 = center + innerRadius * Math.Sin(endAngleRad);
+                        var x4 = center + innerRadius * Math.Cos(startAngleRad);
+                        var y4 = center + innerRadius * Math.Sin(startAngleRad);
+                        
+                        var largeArcFlag = (endAngle - startAngle) > 180.0 ? 1 : 0;
+                        
+                        return $"M {x1:F2} {y1:F2} A {outerRadius:F2} {outerRadius:F2} 0 {largeArcFlag} 1 {x2:F2} {y2:F2} L {x3:F2} {y3:F2} A {innerRadius:F2} {innerRadius:F2} 0 {largeArcFlag} 0 {x4:F2} {y4:F2} Z";
+                    }
+                    
+                    var entryPath = GetArcPath(entryStartAngle, entryEndAngle, radius, innerRadius);
+                    var exitPath = GetArcPath(exitStartAngle, exitEndAngle, radius, innerRadius);
+                }
+                
+                <svg width="@size" height="@size" viewBox="0 0 @size @size" class="donut-chart-svg">
+                    <!-- Entry segment (dark blue) -->
+                    <path d="@entryPath" fill="#1A3B6A" class="chart-segment entry-segment"/>
+                    
+                    <!-- Exit segment (light blue) -->
+                    <path d="@exitPath" fill="#4A90E2" class="chart-segment exit-segment"/>
+                </svg>
+                
+                <!-- Legend -->
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color entry-color"></div>
+                        <span class="legend-label">Entry</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color exit-color"></div>
+                        <span class="legend-label">Exit</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invitations Table Section -->
+    <div class="invitations-section">
+        <h2 class="section-title">Invitations</h2>
+        
+        <div class="invitations-controls">
+            <div class="search-container">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" 
+                       class="search-input" 
+                       placeholder="Search by name or ID" 
+                       @bind="searchTerm"
+                       @bind:event="oninput" />
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn @(selectedFilter == "All" ? "active" : "")" @onclick='() => SetFilter("All")'>All</button>
+                <button class="filter-btn @(selectedFilter == "Pending" ? "active" : "")" @onclick='() => SetFilter("Pending")'>Pending</button>
+                <button class="filter-btn @(selectedFilter == "Approved" ? "active" : "")" @onclick='() => SetFilter("Approved")'>Approved</button>
+                <button class="filter-btn @(selectedFilter == "Expired" ? "active" : "")" @onclick='() => SetFilter("Expired")'>Expired</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="invitations-table">
+                <thead>
+                    <tr>
+                        <th>INVITATION ID</th>
+                        <th>VISITOR</th>
+                        <th>HOST</th>
+                        <th>DATE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                <span>Loading invitations...</span>
+                            </td>
+                        </tr>
+                    }
+                    else if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: red;">
+                                <span>@errorMessage</span>
+                            </td>
+                        </tr>
+                    }
+                    else if (filteredInvitations.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                <span>No invitations found.</span>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var invitation in filteredInvitations)
+                        {
+                            <tr>
+                                <td>@invitation.InvitationNo</td>
+                                <td>@invitation.GuestName</td>
+                                <td>@invitation.HostName</td>
+                                <td>@FormatDate(invitation.ExpectedArrival)</td>
+                                <td>
+                                    <span class="status-badge status-@GetStatusBadgeClass(invitation.Status)">@FormatStatus(invitation.Status)</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn view-btn" @onclick="() => ViewInvitation(invitation.GuestInvitationId)" title="View Details">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                        @if (invitation.Status == "PendingApproval")
+                                        {
+                                            <button class="action-btn approve-btn" @onclick="() => ApproveInvitation(invitation.GuestInvitationId)">Approve</button>
+                                            <button class="action-btn reject-btn" @onclick="() => RejectInvitation(invitation.GuestInvitationId)">Reject</button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (pagedResponse != null)
+        {
+            <div class="pagination">
+                <button class="pagination-btn" @onclick="PreviousPage" disabled="@(!pagedResponse.HasPreviousPage || isLoading)">
+                    ← Previous Page
+                </button>
+                <span class="pagination-info">Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount invitations)</span>
+                <button class="pagination-btn" @onclick="NextPage" disabled="@(!pagedResponse.HasNextPage || isLoading)">
+                    Next Page →
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<InvitationDetailsModal @ref="detailsModal" OnInvitationCreated="HandleInvitationCreated" />
+<ApprovalConfirmationModal @ref="approvalModal" OnConfirmed="HandleApprovalConfirmed" />
+
+@code {
+    private string userName = "Tochukwu Ndefo";
+    private string userEmail = "tndefo@lfz.com";
+    
+    private int activeEnterpriseUsers = 10;
+    private int totalVisitorsToday = 219;
+    private int pendingInvitations = 0;
+    
+    private string searchTerm = string.Empty;
+    private string selectedFilter = "All";
+    private int pageSize = 10;
+    
+    private List<InvitationDto> allInvitations = new();
+    private PagedResponse<InvitationDto>? pagedResponse;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    
+    private List<InvitationDto> filteredInvitations => GetFilteredInvitations();
+    private InvitationDetailsModal? detailsModal;
+    private ApprovalConfirmationModal? approvalModal;
+    
+    // Chart data
+    private List<VisitorsByHourDto>? visitorsByHour;
+    private bool isLoadingChart = true;
+    private string? chartErrorMessage;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                userName = user.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? 
+                          user.FindFirst("name")?.Value ?? 
+                          user.Identity.Name ?? "User";
+                userEmail = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
+                           user.FindFirst("email")?.Value ?? 
+                           "user@example.com";
+            }
+        }
+        catch
+        {
+            // Use default values if authentication state cannot be retrieved
+        }
+        
+        await LoadInvitations();
+        await LoadVisitorsByHour();
+    }
+    
+    private async Task LoadInvitations(int? pageNumber = null)
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        
+        try
+        {
+            var queryParams = new List<string>();
+            
+            // Map filter to API status
+            if (selectedFilter != "All" && selectedFilter != "Expired")
+            {
+                var statusMap = selectedFilter switch
+                {
+                    "Pending" => "PendingApproval",
+                    "Approved" => "Approved",
+                    "Rejected" => "Rejected",
+                    "Checked In" => "CheckedIn",
+                    _ => selectedFilter
+                };
+                queryParams.Add($"Status={Uri.EscapeDataString(statusMap)}");
+            }
+            // Note: "Expired" is not a status in the enum, so we don't filter by status for it
+            // Could be enhanced later to filter by date if needed
+            
+            var currentPage = pageNumber ?? pagedResponse?.PageNumber ?? 1;
+            queryParams.Add($"PageNumber={currentPage}");
+            queryParams.Add($"PageSize={pageSize}");
+            
+            var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/Invitations{queryString}");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                pagedResponse = response.Data;
+                allInvitations = response.Data.Items;
+                
+                // Update metrics from real data
+                UpdateMetrics();
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load invitations.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading invitations: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private void UpdateMetrics()
+    {
+        if (allInvitations == null || allInvitations.Count == 0)
+        {
+            pendingInvitations = 0;
+            totalVisitorsToday = 0;
+            return;
+        }
+        
+        // Count pending invitations
+        pendingInvitations = allInvitations.Count(i => i.Status == "PendingApproval");
+        
+        // Count visitors today (checked in today)
+        var today = DateTime.Today;
+        totalVisitorsToday = allInvitations.Count(i => 
+            i.Status == "CheckedIn" && 
+            i.ExpectedArrival.Date == today);
+        
+        // Note: activeEnterpriseUsers would need a separate API call to get actual count
+        // For now, keeping the default value
+    }
+    
+    private List<InvitationDto> GetFilteredInvitations()
+    {
+        var filtered = allInvitations.AsEnumerable();
+        
+        // Client-side search filtering
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filtered = filtered.Where(i => 
+                i.GuestName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                i.InvitationNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                i.HostName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Client-side filter for "Expired" (invitations past ExpectedArrival that are not CheckedIn)
+        if (selectedFilter == "Expired")
+        {
+            var now = DateTime.Now;
+            filtered = filtered.Where(i => 
+                i.ExpectedArrival < now && 
+                i.Status != "CheckedIn" && 
+                i.Status != "Completed");
+        }
+        
+        return filtered.ToList();
+    }
+    
+    private async Task SetFilter(string filter)
+    {
+        selectedFilter = filter;
+        await LoadInvitations(1); // Reset to page 1 when filter changes
+    }
+    
+    private async Task PreviousPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasPreviousPage)
+        {
+            await LoadInvitations(pagedResponse.PageNumber - 1);
+        }
+    }
+    
+    private async Task NextPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasNextPage)
+        {
+            await LoadInvitations(pagedResponse.PageNumber + 1);
+        }
+    }
+    
+    private string FormatDate(DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd / HH:mm");
+    }
+    
+    private string FormatStatus(string status)
+    {
+        return status switch
+        {
+            "PendingApproval" => "Pending",
+            "CheckedIn" => "Checked In",
+            _ => status
+        };
+    }
+    
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "approved" => "approved",
+            "pendingapproval" => "pending",
+            "rejected" => "rejected",
+            "checkedin" => "checkedin",
+            "completed" => "completed",
+            "cancelled" => "cancelled",
+            "expired" => "expired", // For display purposes even if not in enum
+            _ => "pending"
+        };
+    }
+    
+    private void ViewInvitation(int invitationId)
+    {
+        var invitation = allInvitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            detailsModal?.Open(invitation);
+        }
+    }
+    
+    private async Task HandleInvitationCreated()
+    {
+        await LoadInvitations();
+    }
+    
+    private void ApproveInvitation(int invitationId)
+    {
+        var invitation = allInvitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            approvalModal?.Open(invitation, isApproval: true);
+        }
+    }
+    
+    private void RejectInvitation(int invitationId)
+    {
+        var invitation = allInvitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            approvalModal?.Open(invitation, isApproval: false);
+        }
+    }
+    
+    private async Task LoadVisitorsByHour()
+    {
+        isLoadingChart = true;
+        chartErrorMessage = null;
+        
+        try
+        {
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<VisitorsByHourDto>>>("api/Dashboard/visitors-by-hour");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                visitorsByHour = response.Data;
+            }
+            else
+            {
+                chartErrorMessage = response?.Message ?? "Failed to load chart data.";
+                visitorsByHour = new List<VisitorsByHourDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            chartErrorMessage = $"An error occurred while loading chart data: {ex.Message}";
+            visitorsByHour = new List<VisitorsByHourDto>();
+        }
+        finally
+        {
+            isLoadingChart = false;
+        }
+    }
+    
+    private async Task HandleApprovalConfirmed(ApprovalConfirmationModal.ApprovalModalResult result)
+    {
+        try
+        {
+            var request = new ApproveRequestDto
+            {
+                Type = "Invitation",
+                RequestId = result.InvitationId,
+                IsApproved = result.IsApproved,
+                Comments = result.Comments
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Approvals/approve", request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                
+                if (apiResponse != null && apiResponse.Success)
+                {
+                    // Close the modal (it will reset processing state)
+                    approvalModal?.Close();
+                    
+                    // Refresh the invitations list
+                    await LoadInvitations();
+                }
+                else
+                {
+                    // Show error message in modal
+                    var errorMsg = apiResponse?.Message ?? "Failed to process approval request.";
+                    if (apiResponse?.Errors != null && apiResponse.Errors.Any())
+                    {
+                        errorMsg = string.Join(" ", apiResponse.Errors);
+                    }
+                    approvalModal?.SetError(errorMsg);
+                }
+            }
+            else
+            {
+                // Try to parse error response
+                BaseResponse<bool>? errorResponse = null;
+                try
+                {
+                    errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                }
+                catch
+                {
+                    // If parsing fails, use status code message
+                }
+
+                var errorMsg = errorResponse?.Message ?? $"Request failed with status: {response.StatusCode}";
+                if (errorResponse?.Errors != null && errorResponse.Errors.Any())
+                {
+                    errorMsg = string.Join(" ", errorResponse.Errors);
+                }
+                approvalModal?.SetError(errorMsg);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Show error in modal
+            approvalModal?.SetError($"An error occurred: {ex.Message}");
+        }
+    }
+}

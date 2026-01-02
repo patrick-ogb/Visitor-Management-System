@@ -1,0 +1,506 @@
+@page "/dashboard"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Invitations
+@using VMS.Client.DTOs.Common
+@attribute [Authorize(Policy = "RequireAdmin")]
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="enterprise-dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Visitor Management</h1>
+        <div class="user-profile-section">
+            <div class="notification-icon" role="button" tabindex="0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <div class="profile-picture">
+                <img src="https://ui-avatars.com/api/?name=@(userName?.Replace(" ", "+"))&background=1A3B6A&color=fff&size=128" alt="Profile" />
+            </div>
+            <div class="user-info">
+                <div class="user-name">@userName</div>
+                <div class="user-email">@userEmail</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metric Cards Section -->
+    <div class="metrics-section">
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Active Enterprise Users</div>
+                <div class="metric-value">@activeEnterpriseUsers</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Total Visitors Today</div>
+                <div class="metric-value">@totalVisitorsToday</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-card-background"></div>
+            <div class="metric-content">
+                <div class="metric-title">Pending Invitations</div>
+                <div class="metric-value">@pendingInvitations</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Visitors by Hour</h3>
+                <span class="chart-subtitle">Today</span>
+            </div>
+            <div class="chart-content">
+                <svg class="visitors-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Y-axis labels -->
+                    <text x="10" y="20" class="axis-label">50</text>
+                    <text x="10" y="60" class="axis-label">40</text>
+                    <text x="10" y="100" class="axis-label">30</text>
+                    <text x="10" y="140" class="axis-label">20</text>
+                    <text x="10" y="180" class="axis-label">10</text>
+                    <text x="10" y="195" class="axis-label">0</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="50" y="195" class="axis-label">8:00</text>
+                    <text x="100" y="195" class="axis-label">9:00</text>
+                    <text x="150" y="195" class="axis-label">10:00</text>
+                    <text x="200" y="195" class="axis-label">11:00</text>
+                    <text x="250" y="195" class="axis-label">12:00</text>
+                    <text x="300" y="195" class="axis-label">1:00</text>
+                    <text x="350" y="195" class="axis-label">2:00</text>
+                    <text x="380" y="195" class="axis-label">4:00</text>
+                    
+                    <!-- Grid lines -->
+                    <line x1="30" y1="10" x2="30" y2="190" stroke="#E0E0E0" stroke-width="1"/>
+                    <line x1="30" y1="50" x2="390" y2="50" stroke="#E0E0E0" stroke-width="1"/>
+                    <line x1="30" y1="90" x2="390" y2="90" stroke="#E0E0E0" stroke-width="1"/>
+                    <line x1="30" y1="130" x2="390" y2="130" stroke="#E0E0E0" stroke-width="1"/>
+                    <line x1="30" y1="170" x2="390" y2="170" stroke="#E0E0E0" stroke-width="1"/>
+                    <line x1="30" y1="190" x2="390" y2="190" stroke="#E0E0E0" stroke-width="1"/>
+                    
+                    <!-- Green wavy line representing visitors -->
+                    <path d="M 50,170 L 80,150 L 100,140 L 150,130 L 200,100 L 250,160 L 300,120 L 350,80 L 380,60" 
+                          stroke="#4CAF50" 
+                          stroke-width="3" 
+                          fill="none" 
+                          class="chart-line"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="50" cy="170" r="4" fill="#4CAF50"/>
+                    <circle cx="80" cy="150" r="4" fill="#4CAF50"/>
+                    <circle cx="100" cy="140" r="4" fill="#4CAF50"/>
+                    <circle cx="150" cy="130" r="4" fill="#4CAF50"/>
+                    <circle cx="200" cy="100" r="4" fill="#4CAF50"/>
+                    <circle cx="250" cy="160" r="4" fill="#4CAF50"/>
+                    <circle cx="300" cy="120" r="4" fill="#4CAF50"/>
+                    <circle cx="350" cy="80" r="4" fill="#4CAF50"/>
+                    <circle cx="380" cy="60" r="4" fill="#4CAF50"/>
+                </svg>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Entry vs Exit</h3>
+                <span class="chart-subtitle">Today</span>
+            </div>
+            <div class="chart-content chart-placeholder">
+                <!-- Placeholder for Entry vs Exit chart -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Invitations Table Section -->
+    <div class="invitations-section">
+        <h2 class="section-title">Invitations</h2>
+        
+        <div class="invitations-controls">
+            <div class="search-container">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" 
+                       class="search-input" 
+                       placeholder="Search by name or ID" 
+                       @bind="searchTerm"
+                       @bind:event="oninput" />
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn @(selectedFilter == "All" ? "active" : "")" @onclick='() => SetFilter("All")'>All</button>
+                <button class="filter-btn @(selectedFilter == "Pending" ? "active" : "")" @onclick='() => SetFilter("Pending")'>Pending</button>
+                <button class="filter-btn @(selectedFilter == "Approved" ? "active" : "")" @onclick='() => SetFilter("Approved")'>Approved</button>
+                <button class="filter-btn @(selectedFilter == "Expired" ? "active" : "")" @onclick='() => SetFilter("Expired")'>Expired</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="invitations-table">
+                <thead>
+                    <tr>
+                        <th>INVITATION ID</th>
+                        <th>VISITOR</th>
+                        <th>HOST</th>
+                        <th>DATE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (filteredInvitations.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                <span>No invitations found.</span>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var invitation in filteredInvitations)
+                        {
+                            <tr>
+                                <td>@invitation.InvitationNo</td>
+                                <td>@invitation.GuestName</td>
+                                <td>@invitation.HostName</td>
+                                <td>@FormatDate(invitation.ExpectedArrival)</td>
+                                <td>
+                                    <span class="status-badge status-@GetStatusBadgeClass(invitation.Status)">@FormatStatus(invitation.Status)</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn view-btn" @onclick="() => ViewInvitation(invitation.GuestInvitationId)" title="View Details">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                        @if (invitation.Status == "PendingApproval")
+                                        {
+                                            <button class="action-btn approve-btn" @onclick="() => ApproveInvitation(invitation.GuestInvitationId)">Approve</button>
+                                            <button class="action-btn reject-btn" @onclick="() => RejectInvitation(invitation.GuestInvitationId)">Reject</button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (pagedResponse != null)
+        {
+            <div class="pagination">
+                <button class="pagination-btn" @onclick="PreviousPage" disabled="@(!pagedResponse.HasPreviousPage)">
+                    ← Previous Page
+                </button>
+                <span class="pagination-info">Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount invitations)</span>
+                <button class="pagination-btn" @onclick="NextPage" disabled="@(!pagedResponse.HasNextPage)">
+                    Next Page →
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    // Dummy data
+    private string userName = "John Doe";
+    private string userEmail = "john.doe@example.com";
+    
+    private int activeEnterpriseUsers = 10;
+    private int totalVisitorsToday = 219;
+    private int pendingInvitations = 5;
+    
+    private string searchTerm = string.Empty;
+    private string selectedFilter = "All";
+    private int pageSize = 10;
+    
+    private List<InvitationDto> allInvitations = new();
+    private PagedResponse<InvitationDto>? pagedResponse;
+    
+    private List<InvitationDto> filteredInvitations => GetFilteredInvitations();
+    
+    protected override void OnInitialized()
+    {
+        // Initialize with dummy data
+        InitializeDummyData();
+    }
+    
+    private void InitializeDummyData()
+    {
+        allInvitations = new List<InvitationDto>
+        {
+            new InvitationDto
+            {
+                GuestInvitationId = 1,
+                InvitationNo = "INV-001",
+                GuestName = "Alice Johnson",
+                HostName = "Bob Smith",
+                Status = "PendingApproval",
+                ExpectedArrival = DateTime.Now.AddDays(2),
+                ExpectedDeparture = DateTime.Now.AddDays(2).AddHours(4),
+                CreatedAt = DateTime.Now.AddDays(-1)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 2,
+                InvitationNo = "INV-002",
+                GuestName = "Charlie Brown",
+                HostName = "David Wilson",
+                Status = "Approved",
+                ExpectedArrival = DateTime.Now.AddDays(1),
+                ExpectedDeparture = DateTime.Now.AddDays(1).AddHours(3),
+                CreatedAt = DateTime.Now.AddDays(-2)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 3,
+                InvitationNo = "INV-003",
+                GuestName = "Emma Davis",
+                HostName = "Frank Miller",
+                Status = "CheckedIn",
+                ExpectedArrival = DateTime.Today,
+                ExpectedDeparture = DateTime.Today.AddHours(5),
+                CreatedAt = DateTime.Now.AddDays(-3),
+                CheckedInAt = DateTime.Today.AddHours(2)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 4,
+                InvitationNo = "INV-004",
+                GuestName = "Grace Lee",
+                HostName = "Henry Taylor",
+                Status = "Approved",
+                ExpectedArrival = DateTime.Now.AddDays(3),
+                ExpectedDeparture = DateTime.Now.AddDays(3).AddHours(6),
+                CreatedAt = DateTime.Now.AddDays(-1)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 5,
+                InvitationNo = "INV-005",
+                GuestName = "Ivan Petrov",
+                HostName = "Jane Anderson",
+                Status = "PendingApproval",
+                ExpectedArrival = DateTime.Now.AddDays(5),
+                ExpectedDeparture = DateTime.Now.AddDays(5).AddHours(4),
+                CreatedAt = DateTime.Now.AddHours(-5)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 6,
+                InvitationNo = "INV-006",
+                GuestName = "Kate Williams",
+                HostName = "Liam Johnson",
+                Status = "Rejected",
+                ExpectedArrival = DateTime.Now.AddDays(-1),
+                ExpectedDeparture = DateTime.Now.AddDays(-1).AddHours(3),
+                CreatedAt = DateTime.Now.AddDays(-4)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 7,
+                InvitationNo = "INV-007",
+                GuestName = "Michael Chen",
+                HostName = "Nancy Brown",
+                Status = "Approved",
+                ExpectedArrival = DateTime.Now.AddDays(4),
+                ExpectedDeparture = DateTime.Now.AddDays(4).AddHours(8),
+                CreatedAt = DateTime.Now.AddDays(-2)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 8,
+                InvitationNo = "INV-008",
+                GuestName = "Olivia Martinez",
+                HostName = "Paul Garcia",
+                Status = "PendingApproval",
+                ExpectedArrival = DateTime.Now.AddDays(6),
+                ExpectedDeparture = DateTime.Now.AddDays(6).AddHours(2),
+                CreatedAt = DateTime.Now.AddHours(-2)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 9,
+                InvitationNo = "INV-009",
+                GuestName = "Robert Kim",
+                HostName = "Sarah White",
+                Status = "CheckedIn",
+                ExpectedArrival = DateTime.Today,
+                ExpectedDeparture = DateTime.Today.AddHours(4),
+                CreatedAt = DateTime.Now.AddDays(-5),
+                CheckedInAt = DateTime.Today.AddHours(1)
+            },
+            new InvitationDto
+            {
+                GuestInvitationId = 10,
+                InvitationNo = "INV-010",
+                GuestName = "Thomas Anderson",
+                HostName = "Victoria Clark",
+                Status = "Approved",
+                ExpectedArrival = DateTime.Now.AddDays(7),
+                ExpectedDeparture = DateTime.Now.AddDays(7).AddHours(6),
+                CreatedAt = DateTime.Now.AddDays(-3)
+            }
+        };
+        
+        // Create dummy paged response
+        pagedResponse = new PagedResponse<InvitationDto>
+        {
+            Items = allInvitations,
+            PageNumber = 1,
+            PageSize = pageSize,
+            TotalCount = allInvitations.Count
+        };
+        
+        // Update metrics from dummy data
+        UpdateMetrics();
+    }
+    
+    private void UpdateMetrics()
+    {
+        if (allInvitations == null || allInvitations.Count == 0)
+        {
+            pendingInvitations = 0;
+            totalVisitorsToday = 0;
+            return;
+        }
+        
+        // Count pending invitations
+        pendingInvitations = allInvitations.Count(i => i.Status == "PendingApproval");
+        
+        // Count visitors today (checked in today)
+        var today = DateTime.Today;
+        totalVisitorsToday = allInvitations.Count(i => 
+            i.Status == "CheckedIn" && 
+            i.ExpectedArrival.Date == today);
+    }
+    
+    private List<InvitationDto> GetFilteredInvitations()
+    {
+        var filtered = allInvitations.AsEnumerable();
+        
+        // Client-side search filtering
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filtered = filtered.Where(i => 
+                i.GuestName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                i.InvitationNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                i.HostName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Client-side filter for status
+        if (selectedFilter != "All")
+        {
+            if (selectedFilter == "Pending")
+            {
+                filtered = filtered.Where(i => i.Status == "PendingApproval");
+            }
+            else if (selectedFilter == "Approved")
+            {
+                filtered = filtered.Where(i => i.Status == "Approved");
+            }
+            else if (selectedFilter == "Expired")
+            {
+                var now = DateTime.Now;
+                filtered = filtered.Where(i => 
+                    i.ExpectedArrival < now && 
+                    i.Status != "CheckedIn" && 
+                    i.Status != "Completed");
+            }
+        }
+        
+        return filtered.ToList();
+    }
+    
+    private void SetFilter(string filter)
+    {
+        selectedFilter = filter;
+    }
+    
+    private void PreviousPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasPreviousPage)
+        {
+            // Dummy pagination - just update the page number
+            pagedResponse = new PagedResponse<InvitationDto>
+            {
+                Items = allInvitations,
+                PageNumber = pagedResponse.PageNumber - 1,
+                PageSize = pageSize,
+                TotalCount = allInvitations.Count
+            };
+        }
+    }
+    
+    private void NextPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasNextPage)
+        {
+            // Dummy pagination - just update the page number
+            pagedResponse = new PagedResponse<InvitationDto>
+            {
+                Items = allInvitations,
+                PageNumber = pagedResponse.PageNumber + 1,
+                PageSize = pageSize,
+                TotalCount = allInvitations.Count
+            };
+        }
+    }
+    
+    private string FormatDate(DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd / HH:mm");
+    }
+    
+    private string FormatStatus(string status)
+    {
+        return status switch
+        {
+            "PendingApproval" => "Pending",
+            "CheckedIn" => "Checked In",
+            _ => status
+        };
+    }
+    
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "approved" => "approved",
+            "pendingapproval" => "pending",
+            "rejected" => "rejected",
+            "checkedin" => "checkedin",
+            "completed" => "completed",
+            "cancelled" => "cancelled",
+            "expired" => "expired",
+            _ => "pending"
+        };
+    }
+    
+    private void ViewInvitation(int invitationId)
+    {
+        // No-op for UI purposes only
+    }
+    
+    private void ApproveInvitation(int invitationId)
+    {
+        // No-op for UI purposes only
+    }
+    
+    private void RejectInvitation(int invitationId)
+    {
+        // No-op for UI purposes only
+    }
+}

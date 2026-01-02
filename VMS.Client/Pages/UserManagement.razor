@@ -1,0 +1,689 @@
+@page "/users"
+@page "/user-management"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Users
+@using VMS.Client.DTOs.Enterprises
+@using VMS.Client.DTOs.Common
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@attribute [Authorize(Roles = "SUPERADMIN,LFZAdmin,EnterpriseAdmin")]
+
+<PageTitle>User Management</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>User Management</h3>
+        <button class="btn btn-primary" @onclick="ShowCreateUserModal">Create New User</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <p><em>Loading users...</em></p>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+    else if (users == null || users.Count == 0)
+    {
+        <p>No users found.</p>
+    }
+    else
+    {
+        <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Search by name or email..." value="@searchTerm" @oninput="OnSearchInput" />
+        </div>
+
+        <div class="mb-3">
+            <select class="form-select" value="@selectedRoleFilter" @onchange="OnRoleFilterChanged">
+                <option value="">All Roles</option>
+                <option value="SUPERADMIN">SUPERADMIN</option>
+                <option value="LFZAdmin">LFZ Admin</option>
+                <option value="LFZStaff">LFZ Staff</option>
+                <option value="EnterpriseAdmin">Enterprise Admin</option>
+                <option value="EnterpriseUser">Enterprise User</option>
+                <option value="GateAdmin">Gate Admin</option>
+            </select>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role(s)</th>
+                    <th>Enterprise</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@(user.Phone ?? "-")</td>
+                        <td>
+                            @foreach (var role in user.Roles)
+                            {
+                                <span class="badge bg-secondary me-1">@role</span>
+                            }
+                        </td>
+                        <td>@(user.EnterpriseName ?? "-")</td>
+                        <td>
+                            @if (user.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>@user.CreatedAt.ToString("g")</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ShowUpdateRoleModal(user)">Update Role</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (pagedResponse != null && pagedResponse.TotalPages > 1)
+        {
+            <div class="pagination-info">
+                <p>Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount users)</p>
+            </div>
+        }
+    }
+</div>
+
+<!-- Create User Modal -->
+@if (showCreateModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New User</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCreateUserModal"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(createErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @createErrorMessage
+                        </div>
+                    }
+                    <EditForm Model="@createUserRequest" OnValidSubmit="HandleCreateUser">
+                        <DataAnnotationsValidator />
+                        <!-- 1. Enterprise dropdown (first) -->
+                        <div class="mb-3">
+                            <label class="form-label">Enterprise</label>
+                            @if (isLfzAdmin)
+                            {
+                                <select class="form-select" value="@createUserRequest.EnterpriseId" @onchange="OnEnterpriseChanged">
+                                    <option value="">Select Enterprise</option>
+                                    @foreach (var enterprise in enterprises)
+                                    {
+                                        <option value="@enterprise.EnterpriseId">@enterprise.Name</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <select class="form-select" disabled>
+                                    @foreach (var enterprise in enterprises)
+                                    {
+                                        <option value="@enterprise.EnterpriseId" selected="@(createUserRequest.EnterpriseId == enterprise.EnterpriseId)">@enterprise.Name</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Your enterprise is automatically assigned.</small>
+                            }
+                        </div>
+                        <!-- 2. Users dropdown (second) - Shows after enterprise selected -->
+                        @if (createUserRequest.EnterpriseId.HasValue && createUserRequest.EnterpriseId.Value > 0)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Users in Enterprise</label>
+                                @if (isLoadingEnterpriseUsers)
+                                {
+                                    <div class="form-control">
+                                        <em>Loading users...</em>
+                                    </div>
+                                }
+                                else if (enterpriseUsers.Count == 0)
+                                {
+                                    <select class="form-select">
+                                        <option>No users found in this enterprise</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-select" value="@selectedEnterpriseUserId" @onchange="OnUserSelected">
+                                        <option value="">Select a user</option>
+                                        @foreach (var user in enterpriseUsers)
+                                        {
+                                            <option value="@user.UserId">@user.FirstName @user.LastName - @user.Email</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        }
+                        <!-- 3. First Name (auto-populated from user selection, editable) -->
+                        <div class="mb-3">
+                            <label class="form-label">First Name *</label>
+                            <InputText class="form-control" @bind-Value="createUserRequest.FirstName" />
+                            <ValidationMessage For="@(() => createUserRequest.FirstName)" />
+                        </div>
+                        <!-- 4. Last Name (auto-populated from user selection, editable) -->
+                        <div class="mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <InputText class="form-control" @bind-Value="createUserRequest.LastName" />
+                            <ValidationMessage For="@(() => createUserRequest.LastName)" />
+                        </div>
+                        <!-- 5. Role dropdown (third) -->
+                        <div class="mb-3">
+                            <label class="form-label">Role *</label>
+                            <select class="form-select" value="@createUserRequest.Role" @onchange="OnCreateRoleChanged">
+                                <option value="">Select Role</option>
+                                @if (isLfzAdmin)
+                                {
+                                    <option value="SUPERADMIN">SUPERADMIN</option>
+                                    <option value="LFZAdmin">LFZ Admin</option>
+                                    <option value="LFZStaff">LFZ Staff</option>
+                                    <option value="EnterpriseAdmin">Enterprise Admin</option>
+                                    <option value="EnterpriseUser">Enterprise User</option>
+                                    <option value="GateAdmin">Gate Admin</option>
+                                }
+                                else
+                                {
+                                    <option value="EnterpriseUser">Enterprise User</option>
+                                }
+                            </select>
+                            @if (string.IsNullOrWhiteSpace(createUserRequest.Role))
+                            {
+                                <div class="text-danger small">Role is required</div>
+                            }
+                        </div>
+                        <!-- 6. Email (auto-populated from user selection, editable, Required) -->
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <InputText class="form-control" @bind-Value="createUserRequest.Email" />
+                            <ValidationMessage For="@(() => createUserRequest.Email)" />
+                        </div>
+                        <!-- 7. Password (Required) -->
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <InputText type="password" class="form-control" @bind-Value="createUserRequest.Password" />
+                            <ValidationMessage For="@(() => createUserRequest.Password)" />
+                        </div>
+                        <!-- 8. Phone (Optional) -->
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <InputText class="form-control" @bind-Value="createUserRequest.Phone" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateUserModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isCreating">@(isCreating ? "Creating..." : "Create User")</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Update Role Modal -->
+@if (showUpdateRoleModal && selectedUser != null)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Role for @selectedUser.FirstName @selectedUser.LastName</h5>
+                    <button type="button" class="btn-close" @onclick="CloseUpdateRoleModal"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(updateRoleErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @updateRoleErrorMessage
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label">Current Role(s)</label>
+                        <div>
+                            @foreach (var role in selectedUser.Roles)
+                            {
+                                <span class="badge bg-secondary me-1">@role</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Role *</label>
+                        <select class="form-select" value="@updateRoleRequest.NewRole" @onchange="OnUpdateRoleChanged">
+                            <option value="">Select Role</option>
+                            @if (isLfzAdmin)
+                            {
+                                <option value="SUPERADMIN">SUPERADMIN</option>
+                                <option value="LFZAdmin">LFZ Admin</option>
+                                <option value="LFZStaff">LFZ Staff</option>
+                                <option value="EnterpriseAdmin">Enterprise Admin</option>
+                                <option value="EnterpriseUser">Enterprise User</option>
+                                <option value="GateAdmin">Gate Admin</option>
+                            }
+                            else
+                            {
+                                <option value="EnterpriseUser">Enterprise User</option>
+                            }
+                        </select>
+                    </div>
+                    @if (showUpdateEnterpriseDropdown)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Enterprise *</label>
+                            @if (isLfzAdmin)
+                            {
+                                <select class="form-select" @bind="updateRoleRequest.EnterpriseId">
+                                    <option value="">Select Enterprise</option>
+                                    @foreach (var enterprise in enterprises)
+                                    {
+                                        <option value="@enterprise.EnterpriseId">@enterprise.Name</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <select class="form-select" disabled>
+                                    @foreach (var enterprise in enterprises)
+                                    {
+                                        <option value="@enterprise.EnterpriseId" selected="@(updateRoleRequest.EnterpriseId == enterprise.EnterpriseId)">@enterprise.Name</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Your enterprise is automatically assigned.</small>
+                            }
+                        </div>
+                    }
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseUpdateRoleModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @onclick="HandleUpdateRole" disabled="@isUpdatingRole">@(isUpdatingRole ? "Updating..." : "Update Role")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<UserDto> users = new();
+    private PagedResponse<UserDto>? pagedResponse;
+    private List<EnterpriseDto> enterprises = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    private string searchTerm = string.Empty;
+    private string selectedRoleFilter = string.Empty;
+
+    // Create User Modal
+    private bool showCreateModal = false;
+    private bool isCreating = false;
+    private string createErrorMessage = string.Empty;
+    private CreateUserRequestDto createUserRequest = new();
+    private bool showEnterpriseDropdown = false;
+    private bool isLfzAdmin = false;
+    
+    // Enterprise Users Dropdown
+    private List<UserDto> enterpriseUsers = new();
+    private bool isLoadingEnterpriseUsers = false;
+    private int? selectedEnterpriseUserId = null;
+
+    // Update Role Modal
+    private bool showUpdateRoleModal = false;
+    private bool isUpdatingRole = false;
+    private string updateRoleErrorMessage = string.Empty;
+    private UserDto? selectedUser;
+    private UpdateUserRoleRequestDto updateRoleRequest = new();
+    private bool showUpdateEnterpriseDropdown = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckUserRole();
+        await LoadEnterprises();
+        await LoadUsers();
+    }
+
+    private async Task CheckUserRole()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isLfzAdmin = authState.User.IsInRole("LFZAdmin") || authState.User.IsInRole("SUPERADMIN");
+    }
+
+    private async Task LoadEnterprises()
+    {
+        try
+        {
+            // Load enterprises from local database
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<EnterpriseDto>>>("api/Enterprises");
+            
+            // OnePortal service call (commented for future use):
+            // var response = await Http.GetFromJsonAsync<BaseResponse<List<EnterpriseDto>>>("api/Users/enterprises");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                enterprises = response.Data;
+                
+                // If EnterpriseAdmin, pre-select their enterprise in create form
+                if (!isLfzAdmin && enterprises.Count == 1)
+                {
+                    createUserRequest.EnterpriseId = enterprises[0].EnterpriseId;
+                }
+            }
+            else if (response != null && !string.IsNullOrWhiteSpace(response.Message))
+            {
+                Console.WriteLine($"Info: {response.Message}");
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            // Log error but don't block page load
+            Console.WriteLine($"Error loading enterprises: {httpEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't block page load
+            Console.WriteLine($"Error loading enterprises: {ex.Message}");
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var queryParams = new List<string>();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                queryParams.Add($"SearchTerm={Uri.EscapeDataString(searchTerm)}");
+            }
+            if (!string.IsNullOrWhiteSpace(selectedRoleFilter))
+            {
+                queryParams.Add($"Role={Uri.EscapeDataString(selectedRoleFilter)}");
+            }
+            queryParams.Add("PageNumber=1");
+            queryParams.Add("PageSize=50");
+
+            var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<UserDto>>>($"api/Users{queryString}");
+
+            if (response != null && response.Success && response.Data != null)
+            {
+                pagedResponse = response.Data;
+                users = response.Data.Items;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load users.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading users: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        await LoadUsers();
+    }
+
+    private async Task OnRoleFilterChanged(ChangeEventArgs e)
+    {
+        selectedRoleFilter = e.Value?.ToString() ?? string.Empty;
+        await LoadUsers();
+    }
+
+    private async Task ShowCreateUserModal()
+    {
+        createUserRequest = new CreateUserRequestDto();
+        createErrorMessage = string.Empty;
+        enterpriseUsers.Clear();
+        selectedEnterpriseUserId = null;
+        
+        // If EnterpriseAdmin, restore their pre-selected enterprise
+        if (!isLfzAdmin && enterprises.Count == 1)
+        {
+            createUserRequest.EnterpriseId = enterprises[0].EnterpriseId;
+        }
+        
+        showCreateModal = true;
+        
+        // If enterprise is already selected, load users
+        if (createUserRequest.EnterpriseId.HasValue)
+        {
+            await LoadUsersByEnterprise(createUserRequest.EnterpriseId.Value);
+        }
+    }
+
+    private void CloseCreateUserModal()
+    {
+        showCreateModal = false;
+        createUserRequest = new CreateUserRequestDto();
+        createErrorMessage = string.Empty;
+        enterpriseUsers.Clear();
+        selectedEnterpriseUserId = null;
+    }
+
+    private async Task OnCreateRoleChanged(ChangeEventArgs e)
+    {
+        createUserRequest.Role = e.Value?.ToString() ?? string.Empty;
+        showEnterpriseDropdown = createUserRequest.Role == "EnterpriseUser" || createUserRequest.Role == "EnterpriseAdmin";
+        
+        // If enterprise is already selected, reload users
+        if (createUserRequest.EnterpriseId.HasValue)
+        {
+            await LoadUsersByEnterprise(createUserRequest.EnterpriseId.Value);
+        }
+    }
+
+    private async Task OnEnterpriseChanged(ChangeEventArgs e)
+    {
+        var enterpriseIdValue = e.Value?.ToString();
+        if (int.TryParse(enterpriseIdValue, out int enterpriseId) && enterpriseId > 0)
+        {
+            createUserRequest.EnterpriseId = enterpriseId;
+            selectedEnterpriseUserId = null; // Reset selected user when enterprise changes
+            await LoadUsersByEnterprise(enterpriseId);
+        }
+        else
+        {
+            createUserRequest.EnterpriseId = null;
+            enterpriseUsers.Clear();
+            selectedEnterpriseUserId = null;
+        }
+    }
+
+    private void OnUserSelected(ChangeEventArgs e)
+    {
+        var userIdValue = e.Value?.ToString();
+        if (int.TryParse(userIdValue, out int userId) && userId > 0)
+        {
+            selectedEnterpriseUserId = userId;
+            var selectedUser = enterpriseUsers.FirstOrDefault(u => u.UserId == userId);
+            if (selectedUser != null)
+            {
+                // Auto-populate FirstName, LastName, and Email
+                createUserRequest.FirstName = selectedUser.FirstName;
+                createUserRequest.LastName = selectedUser.LastName;
+                createUserRequest.Email = selectedUser.Email;
+            }
+        }
+        else
+        {
+            selectedEnterpriseUserId = null;
+            // Optionally clear fields when no user is selected
+            // createUserRequest.FirstName = string.Empty;
+            // createUserRequest.LastName = string.Empty;
+            // createUserRequest.Email = string.Empty;
+        }
+    }
+
+    private async Task LoadUsersByEnterprise(int enterpriseId)
+    {
+        isLoadingEnterpriseUsers = true;
+        enterpriseUsers.Clear();
+
+        try
+        {
+            // Load users from local EnterpriseUsers table
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<UserDto>>>($"api/EnterpriseUsers/by-enterprise/{enterpriseId}");
+            
+            // OnePortal service call (commented for future use):
+            // var response = await Http.GetFromJsonAsync<BaseResponse<List<UserDto>>>($"api/Users/by-enterprise/{enterpriseId}");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                enterpriseUsers = response.Data;
+            }
+            else
+            {
+                Console.WriteLine($"Error loading users by enterprise: {response?.Message ?? "Unknown error"}");
+                enterpriseUsers.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading users by enterprise: {ex.Message}");
+            enterpriseUsers.Clear();
+        }
+        finally
+        {
+            isLoadingEnterpriseUsers = false;
+        }
+    }
+
+    private async Task HandleCreateUser()
+    {
+        // Validate EnterpriseId for Enterprise roles
+        if ((createUserRequest.Role == "EnterpriseUser" || createUserRequest.Role == "EnterpriseAdmin") 
+            && !createUserRequest.EnterpriseId.HasValue)
+        {
+            createErrorMessage = "Enterprise is required for Enterprise roles.";
+            return;
+        }
+
+        isCreating = true;
+        createErrorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Users", createUserRequest);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                CloseCreateUserModal();
+                await LoadUsers();
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<object>>();
+                createErrorMessage = errorResponse?.Message ?? "Failed to create user.";
+            }
+        }
+        catch (Exception ex)
+        {
+            createErrorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+
+    private void ShowUpdateRoleModal(UserDto user)
+    {
+        selectedUser = user;
+        updateRoleRequest = new UpdateUserRoleRequestDto
+        {
+            UserId = user.UserId,
+            NewRole = user.Roles.FirstOrDefault() ?? string.Empty,
+            EnterpriseId = user.EnterpriseId
+        };
+        updateRoleErrorMessage = string.Empty;
+        showUpdateEnterpriseDropdown = updateRoleRequest.NewRole == "EnterpriseUser" || updateRoleRequest.NewRole == "EnterpriseAdmin";
+        showUpdateRoleModal = true;
+    }
+
+    private void CloseUpdateRoleModal()
+    {
+        showUpdateRoleModal = false;
+        selectedUser = null;
+        updateRoleRequest = new UpdateUserRoleRequestDto();
+        updateRoleErrorMessage = string.Empty;
+    }
+
+    private void OnUpdateRoleChanged(ChangeEventArgs e)
+    {
+        updateRoleRequest.NewRole = e.Value?.ToString() ?? string.Empty;
+        showUpdateEnterpriseDropdown = updateRoleRequest.NewRole == "EnterpriseUser" || updateRoleRequest.NewRole == "EnterpriseAdmin";
+        if (!showUpdateEnterpriseDropdown)
+        {
+            updateRoleRequest.EnterpriseId = null;
+        }
+    }
+
+    private async Task HandleUpdateRole()
+    {
+        if (selectedUser == null || string.IsNullOrWhiteSpace(updateRoleRequest.NewRole))
+        {
+            updateRoleErrorMessage = "Please select a role.";
+            return;
+        }
+
+        // Validate EnterpriseId for Enterprise roles
+        if ((updateRoleRequest.NewRole == "EnterpriseUser" || updateRoleRequest.NewRole == "EnterpriseAdmin") 
+            && !updateRoleRequest.EnterpriseId.HasValue)
+        {
+            updateRoleErrorMessage = "Enterprise is required for Enterprise roles.";
+            return;
+        }
+
+        isUpdatingRole = true;
+        updateRoleErrorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"api/Users/{updateRoleRequest.UserId}/role", updateRoleRequest);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                CloseUpdateRoleModal();
+                await LoadUsers();
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<object>>();
+                updateRoleErrorMessage = errorResponse?.Message ?? "Failed to update user role.";
+            }
+        }
+        catch (Exception ex)
+        {
+            updateRoleErrorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isUpdatingRole = false;
+        }
+    }
+}

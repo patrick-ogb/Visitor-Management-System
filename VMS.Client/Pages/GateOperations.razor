@@ -1,0 +1,550 @@
+@page "/gate"
+@page "/gate-operations"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Gate
+@using VMS.Client.DTOs.Common
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject IToastService ToastService
+@attribute [Authorize(Roles = "SUPERADMIN,GateAdmin")]
+
+<PageTitle>Gate Operations</PageTitle>
+
+<div class="gate-operations-container">
+    <!-- Search Section -->
+    <div class="search-container">
+        <input type="text" 
+               class="search-input" 
+               placeholder="Search guest name, invitation number, or vehicle number"
+               @bind="searchTerm"
+               @bind:event="oninput"
+               @onkeypress="HandleKeyPress" />
+        <button type="button" class="search-button" @onclick="HandleSearch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <span>Search</span>
+        </button>
+        <button type="button" class="walkin-button" @onclick="NavigateToWalkIn">
+            Initiate walk in request
+        </button>
+    </div>
+
+    <!-- Header -->
+    <h2 class="approved-invitations-header">Approved Invitations</h2>
+
+    <!-- Results Table -->
+    <div class="invitations-list">
+        @if (isLoading)
+        {
+            <p class="no-results">Loading approved invitations...</p>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <p class="no-results" style="color: #DC3545;">@errorMessage</p>
+        }
+        else if (filteredInvitations == null || !filteredInvitations.Any())
+        {
+            <p class="no-results">No approved invitations found.</p>
+        }
+        else
+        {
+            @foreach (var invitation in filteredInvitations)
+            {
+                <div class="invitation-card">
+                    <span class="guest-name">@invitation.GuestName</span>
+                    <div class="card-actions">
+                        <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(invitation)">
+                            Allow Entry
+                        </button>
+                        <button type="button" class="reject-entry-button" @onclick="() => HandleReject(invitation)">
+                            Reject
+                        </button>
+                        <button type="button" class="view-details-button" @onclick="() => HandleViewDetails(invitation)" title="View Details">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Visit Details Modal -->
+@if (isDetailsOpen && selectedInvitation != null)
+{
+    <div class="modal-overlay" @onclick="HandleBackdropClick">
+        <div class="modal-panel" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3 class="modal-title">Visit Details</h3>
+                <button type="button" class="modal-close-button" @onclick="HandleCloseDetails" aria-label="Close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-content">
+                <!-- Host Details -->
+                <div class="detail-section">
+                    <div class="detail-item">
+                        <span class="detail-label">Name of Host:</span>
+                        <span class="detail-value">@selectedInvitation.HostName</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(selectedInvitation.EnterpriseName))
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">Enterprise:</span>
+                            <span class="detail-value">@selectedInvitation.EnterpriseName</span>
+                        </div>
+                    }
+                    <div class="detail-divider"></div>
+                </div>
+
+                <!-- Guest Details -->
+                <div class="detail-section">
+                    <div class="detail-item">
+                        <span class="detail-label">Name of Guest:</span>
+                        <span class="detail-value">@selectedInvitation.GuestName</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone Number:</span>
+                        <span class="detail-value">@selectedInvitation.PhoneNumber</span>
+                    </div>
+                </div>
+
+                <!-- Visit Timing -->
+                <div class="detail-section">
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <span class="detail-label">Arrival Time:</span>
+                            <span class="detail-value">@selectedInvitation.ExpectedArrival.ToString("dd/MM/yyyy | hh:mmtt")</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Departure Time:</span>
+                            <span class="detail-value">@selectedInvitation.ExpectedDeparture.ToString("dd/MM/yyyy | hh:mmtt")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purpose of Invitation -->
+                @if (!string.IsNullOrWhiteSpace(selectedInvitation.PurposeOfInvitation))
+                {
+                    <div class="detail-section">
+                        <div class="detail-item">
+                            <span class="detail-label">Purpose Of Invitation:</span>
+                            <span class="detail-value">@selectedInvitation.PurposeOfInvitation</span>
+                        </div>
+                    </div>
+                }
+
+                <!-- Counts -->
+                <div class="detail-section">
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <span class="detail-label">Number of Guests:</span>
+                            <span class="detail-value">@(selectedInvitation.NumberOfAdditionalGuests + 1)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Number of Vehicles:</span>
+                            <span class="detail-value">@selectedInvitation.Vehicles.Count</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Details -->
+                <div class="detail-section">
+                    @for (int i = 0; i < selectedInvitation.Vehicles.Count; i++)
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">Vehicle @(i + 1) - Plate Number:</span>
+                            <span class="detail-value">@selectedInvitation.Vehicles[i].PlateNumber</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(selectedInvitation)">Allow Entry</button>
+                <button type="button" class="reject-entry-button" @onclick="() => HandleReject(selectedInvitation)">Reject</button>
+                <button type="button" class="modal-close-btn" @onclick="HandleCloseDetails">Close</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Walk-In Modal -->
+@if (isWalkInModalOpen)
+{
+    <div class="walkin-modal-overlay" @onclick="HandleCloseWalkInModal">
+        <div class="walkin-modal" @onclick:stopPropagation="true">
+            <button type="button" class="walkin-close-button" @onclick="HandleCloseWalkInModal" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="walkin-modal-content">
+                <h3 class="walkin-title">No Approved Visitor Found</h3>
+                <p class="walkin-subtitle">You may create a walk-in request</p>
+                <button type="button" class="walkin-cta" @onclick="NavigateToWalkIn">
+                    Create Walk-in Request
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Confirmation Modal -->
+@if (isConfirmationModalOpen && confirmationInvitation != null && !string.IsNullOrEmpty(confirmationAction))
+{
+    <div class="confirmation-modal-overlay" @onclick="HandleConfirmationBackdropClick">
+        <div class="confirmation-modal" @onclick:stopPropagation="true">
+            <div class="confirmation-modal-content">
+                <p class="confirmation-message">
+                    @if (confirmationAction == "allow")
+                    {
+                        <text>Are you sure you want to ALLOW ENTRY for @confirmationInvitation.GuestName?</text>
+                    }
+                    else if (confirmationAction == "reject")
+                    {
+                        <text>Are you sure you want to REJECT ENTRY for @confirmationInvitation.GuestName?</text>
+                    }
+                </p>
+                <div class="confirmation-buttons">
+                    <button type="button" class="confirmation-cancel-button" @onclick="CancelConfirmation">Cancel</button>
+                    @if (confirmationAction == "allow")
+                    {
+                        <button type="button" class="confirmation-confirm-button allow-confirm" @onclick="ConfirmAction">Allow Entry</button>
+                    }
+                    else if (confirmationAction == "reject")
+                    {
+                        <button type="button" class="confirmation-confirm-button reject-confirm" @onclick="ConfirmAction">Reject</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string _searchTerm = string.Empty;
+    private string searchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            _searchTerm = value;
+        }
+    }
+    private List<ApprovedGuestDto> allInvitations = new();
+    private List<ApprovedGuestDto> filteredInvitations = new();
+    private bool isDetailsOpen = false;
+    private ApprovedGuestDto? selectedInvitation = null;
+    private bool isWalkInModalOpen = false;
+    private bool shouldShowWalkInModal => isWalkInModalOpen;
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+    private bool isConfirmationModalOpen = false;
+    private string? confirmationAction = null;
+    private ApprovedGuestDto? confirmationInvitation = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadApprovedGuests();
+    }
+
+    private async Task LoadApprovedGuests()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        
+        try
+        {
+            var httpResponse = await Http.GetAsync("api/Gate/approved-guests");
+            
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<BaseResponse<List<ApprovedGuestDto>>>();
+                
+                if (response != null && response.Success && response.Data != null)
+                {
+                    allInvitations = response.Data;
+                    filteredInvitations = allInvitations.ToList();
+                    
+                    if (allInvitations.Count == 0)
+                    {
+                        errorMessage = "No approved invitations found. Approved invitations that haven't been checked in will appear here.";
+                    }
+                }
+                else
+                {
+                    errorMessage = response?.Message ?? "Failed to load approved guests.";
+                    allInvitations = new List<ApprovedGuestDto>();
+                    filteredInvitations = new List<ApprovedGuestDto>();
+                }
+            }
+            else if (httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                errorMessage = "You are not authorized to view approved guests. Please check your permissions.";
+                allInvitations = new List<ApprovedGuestDto>();
+                filteredInvitations = new List<ApprovedGuestDto>();
+            }
+            else
+            {
+                var errorContent = await httpResponse.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to load approved guests. Status: {httpResponse.StatusCode}";
+                allInvitations = new List<ApprovedGuestDto>();
+                filteredInvitations = new List<ApprovedGuestDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading approved guests: {ex.Message}";
+            allInvitations = new List<ApprovedGuestDto>();
+            filteredInvitations = new List<ApprovedGuestDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            await LoadApprovedGuests();
+            isWalkInModalOpen = false;
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = string.Empty;
+        
+        try
+        {
+            // Search across multiple fields: Name, InvitationNo, and VehiclePlateNumber
+            // The API will use OR logic to find matches in any of these fields
+            var searchRequest = new SearchGuestQuery
+            {
+                Name = searchTerm,
+                InvitationNo = searchTerm,
+                VehiclePlateNumber = searchTerm
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Gate/search", searchRequest);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var searchResult = await response.Content.ReadFromJsonAsync<BaseResponse<SearchGuestResultDto>>();
+                
+                if (searchResult != null && searchResult.Success && searchResult.Data != null)
+                {
+                    if (searchResult.Data.Found && searchResult.Data.IsApproved && searchResult.Data.Guest != null)
+                    {
+                        filteredInvitations = new List<ApprovedGuestDto> { searchResult.Data.Guest };
+                        allInvitations = filteredInvitations.ToList();
+                        isWalkInModalOpen = false;
+                    }
+                    else if (searchResult.Data.Found && !searchResult.Data.IsApproved)
+                    {
+                        filteredInvitations = new List<ApprovedGuestDto>();
+                        isWalkInModalOpen = true;
+                    }
+                    else
+                    {
+                        filteredInvitations = new List<ApprovedGuestDto>();
+                        isWalkInModalOpen = true;
+                    }
+                }
+                else
+                {
+                    filteredInvitations = new List<ApprovedGuestDto>();
+                    isWalkInModalOpen = true;
+                }
+            }
+            else
+            {
+                errorMessage = "Search failed. Please try again.";
+                filteredInvitations = new List<ApprovedGuestDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred during search: {ex.Message}";
+            filteredInvitations = new List<ApprovedGuestDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleAllowEntry(ApprovedGuestDto invitation)
+    {
+        confirmationAction = "allow";
+        confirmationInvitation = invitation;
+        isConfirmationModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void HandleReject(ApprovedGuestDto invitation)
+    {
+        confirmationAction = "reject";
+        confirmationInvitation = invitation;
+        isConfirmationModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void NavigateToWalkIn()
+    {
+        Navigation.NavigateTo("/walk-in-request");
+    }
+
+    private void HandleCloseWalkInModal()
+    {
+        isWalkInModalOpen = false;
+        StateHasChanged();
+    }
+
+    private void HandleViewDetails(ApprovedGuestDto invitation)
+    {
+        selectedInvitation = invitation;
+        isDetailsOpen = true;
+        StateHasChanged();
+    }
+
+    private void HandleCloseDetails()
+    {
+        isDetailsOpen = false;
+        selectedInvitation = null;
+        StateHasChanged();
+    }
+
+    private void HandleBackdropClick()
+    {
+        HandleCloseDetails();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleSearch();
+        }
+    }
+
+    private async Task ConfirmAction()
+    {
+        if (confirmationInvitation == null || string.IsNullOrEmpty(confirmationAction))
+        {
+            CancelConfirmation();
+            return;
+        }
+
+        isConfirmationModalOpen = false;
+        var invitation = confirmationInvitation;
+        var action = confirmationAction;
+        CancelConfirmation();
+
+        try
+        {
+            if (action == "allow")
+            {
+                var response = await Http.PutAsync($"api/Gate/check-in/{invitation.GuestInvitationId}", null);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                    if (result != null && result.Success)
+                    {
+                        ToastService.ShowSuccess(result.Message ?? "Guest checked in successfully");
+                        await LoadApprovedGuests();
+                        if (isDetailsOpen)
+                        {
+                            HandleCloseDetails();
+                        }
+                    }
+                    else
+                    {
+                        ToastService.ShowError(result?.Message ?? "Failed to check in guest");
+                    }
+                }
+                else
+                {
+                    var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                    ToastService.ShowError(errorResult?.Message ?? "Failed to check in guest");
+                }
+            }
+            else if (action == "reject")
+            {
+                var response = await Http.PutAsync($"api/Gate/reject/{invitation.GuestInvitationId}", null);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                    if (result != null && result.Success)
+                    {
+                        ToastService.ShowSuccess(result.Message ?? "Guest entry rejected successfully");
+                        await LoadApprovedGuests();
+                        if (isDetailsOpen)
+                        {
+                            HandleCloseDetails();
+                        }
+                    }
+                    else
+                    {
+                        ToastService.ShowError(result?.Message ?? "Failed to reject guest");
+                    }
+                }
+                else
+                {
+                    var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                    ToastService.ShowError(errorResult?.Message ?? "Failed to reject guest");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private void CancelConfirmation()
+    {
+        isConfirmationModalOpen = false;
+        confirmationAction = null;
+        confirmationInvitation = null;
+        StateHasChanged();
+    }
+
+    private void HandleConfirmationBackdropClick()
+    {
+        CancelConfirmation();
+    }
+
+    private class SearchGuestQuery
+    {
+        public string? Name { get; set; }
+        public string? InvitationNo { get; set; }
+        public string? VehiclePlateNumber { get; set; }
+        public string? VehicleModel { get; set; }
+        public string? VehicleColor { get; set; }
+    }
+
+    private class SearchGuestResultDto
+    {
+        public bool Found { get; set; }
+        public bool IsApproved { get; set; }
+        public ApprovedGuestDto? Guest { get; set; }
+    }
+}
+

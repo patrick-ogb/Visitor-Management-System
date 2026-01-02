@@ -1,0 +1,180 @@
+﻿@* Professional Admin Sidebar Component *@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@* @inject TokenService TokenService *@
+@inject NavigationManager Navigation
+@inject VMS.Client.Services.AuthService AuthService
+@inject VMS.Client.Services.NotificationHubService NotificationHub
+
+
+<div class="sidebar-overlay @(isMobileMenuOpen ? "show" : "")" @onclick="CloseMobileMenuAndDropdown"></div>
+
+<nav class="sidebar-nav @(isMobileMenuOpen ? "show" : "") @(isCollapsed ? "collapsed" : "")" aria-label="Main navigation" role="navigation">
+    
+    <button class="sidebar-toggle" 
+            @onclick="ToggleMobileMenu" 
+            aria-label="Toggle navigation menu"
+            aria-expanded="@isMobileMenuOpen">
+        <span class="hamburger-icon"></span>
+    </button>
+
+    <button class="sidebar-collapse-toggle" 
+            @onclick="ToggleCollapse" 
+            aria-label="@(isCollapsed ? "Expand sidebar" : "Collapse sidebar")"
+            aria-expanded="@(!isCollapsed)">
+        <span class="sidebar-collapse-icon @(isCollapsed ? "collapsed" : "")"></span>
+    </button>
+
+    <div class="sidebar-header @(isCollapsed ? "hidden" : "")">
+        <NavLink href="/dashboard" Match="NavLinkMatch.All" @onclick="CloseMobileMenu">
+            <img src="/images/lfz-logo.png" alt="LFZ Logo" class="sidebar-logo" />
+        </NavLink>
+    </div>
+
+    <ul class="sidebar-menu" role="list">
+        <li class="sidebar-menu__item">
+            <NavLink href="/dashboard" Match="NavLinkMatch.All" class="sidebar-menu__link" @onclick="CloseMobileMenu">
+                <img src="/images/icon-dashboard.svg" alt="" class="sidebar-menu__icon" aria-hidden="true" />
+                <span class="sidebar-menu__text @(isCollapsed ? "hidden" : "")">Dashboard</span>
+            </NavLink>
+        </li>
+
+    </ul>
+
+    @if (showSettingsDropdown)
+    {
+        <div class="sidebar-footer">
+            <div class="sidebar-settings-container">
+                <button class="sidebar-settings-btn" 
+                        @onclick="ToggleSettingsDropdown" 
+                        @onclick:stopPropagation="true"
+                        aria-label="Settings"
+                        aria-expanded="@settingsDropdownOpen">
+                    <img src="/images/icon-settings.svg" alt="" class="sidebar-footer__icon" aria-hidden="true" />
+                    <span class="sidebar-footer__text @(isCollapsed ? "hidden" : "")">Configuration</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="settings-dropdown-icon @(settingsDropdownOpen ? "rotate" : "")">
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                @if (settingsDropdownOpen)
+                {
+                    <div class="sidebar-settings-dropdown" @onclick:stopPropagation="true">
+                        <div class="dropdown-header">Select</div>
+                        <div class="dropdown-item" @onclick='() => NavigateToSettings("/service-request-admin-department")'>Departments</div>
+                        <div class="dropdown-item" @onclick='() => NavigateToSettings("/service-request-admin-enterprises")'>Enterprises</div>
+                        <div class="dropdown-item" @onclick='() => NavigateToSettings("/service-request-admin-locations")'>Locations</div>
+                        <div class="dropdown-item" @onclick='() => NavigateToSettings("/service-request-admin-issues")'>Issues</div>
+                        <div class="dropdown-item" @onclick='() => NavigateToSettings("/service-request-admin-users")'>Users</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="sidebar-footer">
+        <NavLink href="/settings" class="sidebar-footer__link" @onclick="Logout">
+            <img src="/images/icon-settings.svg" alt="" class="sidebar-footer__icon" aria-hidden="true" />
+            <span class="sidebar-footer__text @(isCollapsed ? "hidden" : "")">Logout</span>
+        </NavLink>
+    </div>
+    
+</nav>
+
+@code {
+    private bool isMobileMenuOpen = false;
+    private bool isCollapsed = false; // Expanded by default
+    private bool showSettingsDropdown = false;
+    private bool settingsDropdownOpen = false;
+    private string userRole = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        await CheckSettingsVisibilityAsync();
+    }
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
+    }
+
+    private void CloseMobileMenuAndDropdown()
+    {
+        CloseMobileMenu();
+        settingsDropdownOpen = false;
+        StateHasChanged();
+    }
+
+    private void ToggleCollapse()
+    {
+        isCollapsed = !isCollapsed;
+        StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        try
+        {
+            await NotificationHub.StopAsync();
+            await AuthService.LogoutAsync();
+        }
+        catch
+        {
+            // If logout fails, still navigate to login page
+        }
+        finally
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Auto-close mobile menu and settings dropdown when route changes
+        CloseMobileMenu();
+        settingsDropdownOpen = false;
+        StateHasChanged();
+    }
+
+    private async Task CheckSettingsVisibilityAsync()
+    {
+        // var token = await TokenService.GetTokenAsync();
+        // if (token == null)
+        // {
+        //     showSettingsDropdown = false;
+        //     return;
+        // }
+
+        // userRole = token.Role ?? string.Empty;
+        // var isOnePortalUser = await TokenService.IsOnePortalUserAsync();
+
+        // var isAdmin = !string.IsNullOrEmpty(userRole) &&
+        //               (userRole.Equals("AdminUser", StringComparison.OrdinalIgnoreCase) ||
+        //                userRole.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase));
+
+        // showSettingsDropdown = isAdmin && isOnePortalUser;
+    }
+
+    private void ToggleSettingsDropdown()
+    {
+        settingsDropdownOpen = !settingsDropdownOpen;
+        StateHasChanged();
+    }
+
+    private void NavigateToSettings(string url)
+    {
+        settingsDropdownOpen = false;
+        CloseMobileMenu();
+        Navigation.NavigateTo(url);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}

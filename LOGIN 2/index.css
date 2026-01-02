@@ -1,0 +1,296 @@
+.visitor-management-login-page-optional-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.visitor-management-login-page-optional-visitor-management-login-page-optional {
+  width: 100%;
+  height: 1024px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.visitor-management-login-page-optional-frame327 {
+  top: 0px;
+  left: 0px;
+  width: 750px;
+  height: 1024px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-login-page-optionalnightrender2 {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  width: 768px;
+  bottom: 0px;
+  height: 1060px;
+  margin: auto;
+  position: absolute;
+}
+ 
+.visitor-management-login-page-optional-frame346 {
+  gap: 10px;
+  top: 856px;
+  left: 30px;
+  width: 610px;
+  height: 68px;
+  display: flex;
+  padding: 10px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.0010000000474974513);
+}
+ 
+.visitor-management-login-page-optional-text1 {
+  color: rgba(255, 255, 255, 1);
+  width: 590px;
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Poppins;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-login-page-optional-group237745 {
+  top: 354px;
+  left: 902px;
+  width: 409px;
+  height: 317px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.visitor-management-login-page-optional-frame32343318 {
+  gap: 16px;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.visitor-management-login-page-optional-text2 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 36px;
+  align-self: stretch;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-login-page-optional-text3 {
+  color: rgba(149, 149, 149, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-login-page-optional-text4 {
+  font-weight: 400;
+}
+ 
+.visitor-management-login-page-optional-frame32343317 {
+  gap: 8px;
+  top: 191px;
+  left: 131px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.visitor-management-login-page-optional-text6 {
+  color: rgba(149, 149, 149, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-login-page-optional-frame32343315 {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.visitor-management-login-page-optional-text7 {
+  color: rgba(71, 155, 194, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: underline;
+}
+ 
+.visitor-management-login-page-optional-ellipse27 {
+  width: 8px;
+  height: 8px;
+}
+ 
+.visitor-management-login-page-optional-text8 {
+  color: rgba(149, 149, 149, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.visitor-management-login-page-optional-number {
+  top: 117px;
+  left: 74px;
+  width: 260px;
+  height: 50px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.visitor-management-login-page-optional-frame32343314 {
+  top: 0px;
+  left: 0px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 16px;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.visitor-management-login-page-optional-frame32343313 {
+  top: 0px;
+  left: 70px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 16px;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.visitor-management-login-page-optional-frame32343312 {
+  top: 0px;
+  left: 140px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 16px;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.visitor-management-login-page-optional-frame32343311 {
+  top: 0px;
+  left: 210px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 16px;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.visitor-management-login-page-optional-verify {
+  gap: 10px;
+  top: 267px;
+  left: 4px;
+  width: 400px;
+  height: 50px;
+  display: flex;
+  padding: 16px 10px;
+  position: absolute;
+  box-sizing: content-box;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 16px;
+  justify-content: center;
+  background-color: rgba(230, 230, 230, 1);
+}
+ 
+.visitor-management-login-page-optional-text9 {
+  color: rgba(149, 149, 149, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Medium;
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}

@@ -1,0 +1,670 @@
+@page "/walk-in-request"
+@page "/walkin"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.JSInterop
+@using VMS.Client.Services
+@using VMS.Client.DTOs.Gate
+@using VMS.Client.DTOs.Common
+@using VMS.Client.DTOs.Users
+@using VMS.Client.DTOs.Invitations
+@using System.Linq
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject IToastService ToastService
+@inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "SUPERADMIN,GateAdmin")]
+
+<PageTitle>Walk-In Request Form</PageTitle>
+
+<div class="walkin-form-container">
+    <!-- Search Section -->
+    @* <div class="search-container">
+        <input type="text" 
+               class="search-input" 
+               placeholder="Search guest name, vehicle number or car model"
+               @bind="searchTerm" />
+        <button type="button" class="search-button" @onclick="HandleSearch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <span>Search</span>
+        </button>
+    </div> *@
+
+    <!-- Form Header -->
+    <h1 class="form-title">Walk-In Request Form</h1>
+
+    <!-- Form Content -->
+    <div class="form-content">
+        <!-- Guest Details Section (Left) -->
+        <div class="details-card">
+            <div class="form-section guest-section">
+                <h2 class="section-title">Guest Details</h2>
+            
+            <div class="form-group">
+                <label class="form-label">First Name *</label>
+                <input type="text" 
+                       class="form-input" 
+                       placeholder="First Name"
+                       @bind="guestDetails.FirstName" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Last Name *</label>
+                <input type="text" 
+                       class="form-input" 
+                       placeholder="Last Name"
+                       @bind="guestDetails.LastName" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Phone *</label>
+                <input type="text" 
+                       class="form-input" 
+                       placeholder="Phone"
+                       @bind="guestDetails.Phone" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email (Optional)</label>
+                <input type="email"
+                       class="form-input"
+                       placeholder="Email (Optional)"
+                       @bind="guestDetails.Email" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Expected Arrival *</label>
+                <div class="datetime-input-wrapper">
+                    <input type="datetime-local" id="arrival-datetime" class="form-input datetime-input" 
+                           value="@GetDateTimeLocalValue(guestDetails.ExpectedArrival)" 
+                           min="@GetMinDateTimeLocalValue()"
+                           @onchange="OnArrivalDateTimeChanged" 
+                           @onclick="OpenArrivalDateTimePicker" />
+                    <span class="datetime-icon" @onclick="OpenArrivalDateTimePicker" role="button" tabindex="0">📅</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Expected Departure *</label>
+                <div class="datetime-input-wrapper">
+                    <input type="datetime-local" id="departure-datetime" class="form-input datetime-input" 
+                           value="@GetDateTimeLocalValue(guestDetails.ExpectedDeparture)" 
+                           min="@GetMinDateTimeLocalValue()"
+                           @onchange="OnDepartureDateTimeChanged" 
+                           @onclick="OpenDepartureDateTimePicker" />
+                    <span class="datetime-icon" @onclick="OpenDepartureDateTimePicker" role="button" tabindex="0">📅</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Purpose Of Invitation</label>
+                <textarea class="form-input" 
+                          placeholder="Purpose Of Invitation"
+                          rows="3"
+                          @bind="guestDetails.PurposeOfInvitation"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Number of Guests</label>
+                <input type="number" 
+                       class="form-input" 
+                       placeholder="Number of Guests"
+                       @bind="guestDetails.NumberOfGuests"
+                       @bind:culture="System.Globalization.CultureInfo.InvariantCulture" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Number of Vehicles</label>
+                <input type="number" 
+                       class="form-input vehicle-count-input" 
+                       @bind="NumberOfVehicles"
+                       @bind:culture="System.Globalization.CultureInfo.InvariantCulture" />
+            </div>
+
+            @if (guestDetails.NumberOfVehicles > 0)
+            {
+                @for (int i = 0; i < guestDetails.NumberOfVehicles; i++)
+                {
+                    var index = i; // Capture loop variable
+                    <div class="form-group">
+                        <label class="form-label">Vehicle @(index + 1) - Plate Number</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="Plate Number"
+                               value="@(index < guestDetails.VehiclePlateNumbers.Count ? guestDetails.VehiclePlateNumbers[index] : string.Empty)"
+                               @oninput="@((ChangeEventArgs e) => {
+                                   var value = e.Value?.ToString() ?? string.Empty;
+                                   while (guestDetails.VehiclePlateNumbers.Count <= index)
+                                   {
+                                       guestDetails.VehiclePlateNumbers.Add(string.Empty);
+                                   }
+                                   guestDetails.VehiclePlateNumbers[index] = value;
+                               })" />
+                    </div>
+                }
+            }
+            </div>
+        </div>
+
+        <!-- Host Details Section (Right) -->
+        <div class="details-card">
+            <div class="form-section host-section">
+                <h2 class="section-title">Host Details</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Enterprise</label>
+                <select class="form-select" @bind="hostDetails.EnterpriseId" @bind:after="OnEnterpriseChanged">
+                    <option value="">Select Enterprise</option>
+                    @foreach (var enterprise in enterprises)
+                    {
+                        <option value="@enterprise.EnterpriseId">@enterprise.Name</option>
+                    }
+                </select>
+            </div>
+
+           
+
+            <div class="form-group">
+                <label class="form-label">Name of Host/Employee *</label>
+                <select class="form-select" @bind="hostDetails.EnterpriseUserId">
+                    <option value="">Select Host/Employee</option>
+                    @foreach (var host in hostUsers)
+                    {
+                        <option value="@host.UserId">@($"{host.FirstName} {host.LastName}")</option>
+                    }
+                </select>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+        <button type="button" class="btn-cancel" @onclick="HandleCancel">Cancel</button>
+        <button type="button" class="btn-submit" @onclick="HandleRequestApproval" disabled="@isSubmitting">
+            @if (isSubmitting)
+            {
+                <span>Submitting...</span>
+            }
+            else
+            {
+                <span>Create Request</span>
+            }
+        </button>
+    </div>
+</div>
+
+@code {
+    private string searchTerm = string.Empty;
+
+    private GuestDetails guestDetails = new GuestDetails
+    {
+        FirstName = string.Empty,
+        LastName = string.Empty,
+        Phone = string.Empty,
+        NumberOfGuests = 0,
+        Email = string.Empty,
+        PurposeOfInvitation = string.Empty,
+        NumberOfVehicles = 0,
+        VehiclePlateNumbers = new List<string>(),
+        ExpectedArrival = null,
+        ExpectedDeparture = null
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Ensure VehiclePlateNumbers list is initialized
+        if (guestDetails.VehiclePlateNumbers == null)
+        {
+            guestDetails.VehiclePlateNumbers = new List<string>();
+        }
+        await LoadEnterprisesAsync();
+    }
+
+    private int NumberOfVehicles
+    {
+        get => guestDetails.NumberOfVehicles;
+        set
+        {
+            var count = value < 0 ? 0 : value;
+            
+            // Adjust VehiclePlateNumbers list to match the count
+            while (guestDetails.VehiclePlateNumbers.Count < count)
+            {
+                guestDetails.VehiclePlateNumbers.Add(string.Empty);
+            }
+            while (guestDetails.VehiclePlateNumbers.Count > count)
+            {
+                guestDetails.VehiclePlateNumbers.RemoveAt(guestDetails.VehiclePlateNumbers.Count - 1);
+            }
+            
+            guestDetails.NumberOfVehicles = count;
+            StateHasChanged();
+        }
+    }
+
+    private HostDetails hostDetails = new HostDetails
+    {
+        EnterpriseId = null,
+        EnterpriseUserId = null
+    };
+
+    private List<EnterpriseDto> enterprises = new();
+    private List<UserDto> hostUsers = new();
+    private bool isLoadingHosts = false;
+    private string hostErrorMessage = string.Empty;
+    
+    // Form submission state
+    private bool isSubmitting = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    private void HandleSearch()
+    {
+        // Placeholder search functionality
+        // Backend implementation will be added later
+    }
+
+    private void HandleCancel()
+    {
+        // Navigate back or clear form
+        Navigation.NavigateTo("/gate-operations");
+    }
+
+    private async Task HandleRequestApproval()
+    {
+        // Clear previous messages
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        // Validate required fields
+        if (string.IsNullOrWhiteSpace(guestDetails.FirstName))
+        {
+            errorMessage = "First name is required.";
+            ToastService.ShowError("First name is required");
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(guestDetails.LastName))
+        {
+            errorMessage = "Last name is required.";
+            ToastService.ShowError("Last name is required");
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(guestDetails.Phone))
+        {
+            errorMessage = "Phone number is required.";
+            ToastService.ShowError("Phone number is required");
+            StateHasChanged();
+            return;
+        }
+
+        if (!hostDetails.EnterpriseId.HasValue)
+        {
+            errorMessage = "Enterprise is required.";
+            ToastService.ShowError("Please select an enterprise");
+            StateHasChanged();
+            return;
+        }
+
+        if (!hostDetails.EnterpriseUserId.HasValue)
+        {
+            errorMessage = "Host/Employee is required.";
+            ToastService.ShowError("Please select a host/employee");
+            StateHasChanged();
+            return;
+        }
+
+        // Validate datetime fields
+        if (guestDetails.ExpectedArrival == null || guestDetails.ExpectedArrival == default(DateTime?))
+        {
+            errorMessage = "Expected arrival date and time is required.";
+            ToastService.ShowError("Expected arrival date and time is required");
+            StateHasChanged();
+            return;
+        }
+
+        if (guestDetails.ExpectedDeparture == null || guestDetails.ExpectedDeparture == default(DateTime?))
+        {
+            errorMessage = "Expected departure date and time is required.";
+            ToastService.ShowError("Expected departure date and time is required");
+            StateHasChanged();
+            return;
+        }
+
+        // Validate that dates are not in the past
+        var now = DateTime.Now;
+        if (guestDetails.ExpectedArrival.Value < now)
+        {
+            errorMessage = "Expected arrival date and time cannot be in the past. Please select a current or future date.";
+            ToastService.ShowError("Expected arrival date and time cannot be in the past");
+            StateHasChanged();
+            return;
+        }
+
+        if (guestDetails.ExpectedDeparture.Value < now)
+        {
+            errorMessage = "Expected departure date and time cannot be in the past. Please select a current or future date.";
+            ToastService.ShowError("Expected departure date and time cannot be in the past");
+            StateHasChanged();
+            return;
+        }
+
+        if (guestDetails.NumberOfGuests < 0)
+        {
+            errorMessage = "Number of guests cannot be negative.";
+            ToastService.ShowError("Number of guests cannot be negative");
+            StateHasChanged();
+            return;
+        }
+
+        // Validate vehicle plate numbers if vehicles are specified
+        if (guestDetails.NumberOfVehicles > 0)
+        {
+            var hasPlateNumbers = guestDetails.VehiclePlateNumbers != null && 
+                                  guestDetails.VehiclePlateNumbers.Any(v => !string.IsNullOrWhiteSpace(v));
+            if (!hasPlateNumbers)
+            {
+                errorMessage = "Vehicle plate number(s) are required when number of vehicles is greater than 0.";
+                ToastService.ShowError("Please provide vehicle plate number(s)");
+                StateHasChanged();
+                return;
+            }
+        }
+
+        isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            // Prepare vehicle plate numbers list (filter out empty entries)
+            var vehiclePlateNumbers = guestDetails.VehiclePlateNumbers?
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .ToList() ?? new List<string>();
+
+            var request = new CreateInvitationRequestDto
+            {
+                // Guest Details
+                FirstName = guestDetails.FirstName,
+                LastName = guestDetails.LastName,
+                PhoneNumber = guestDetails.Phone,
+                Email = string.IsNullOrWhiteSpace(guestDetails.Email) ? null : guestDetails.Email,
+                
+                // Visit Details
+                ExpectedArrival = guestDetails.ExpectedArrival!.Value,
+                ExpectedDeparture = guestDetails.ExpectedDeparture!.Value,
+                
+                // Group & Vehicle
+                NumberOfAdditionalGuests = guestDetails.NumberOfGuests > 0 ? guestDetails.NumberOfGuests : 0,
+                VehiclePlateNumbers = vehiclePlateNumbers,
+                
+                // Purpose
+                PurposeOfInvitation = string.IsNullOrWhiteSpace(guestDetails.PurposeOfInvitation) ? null : guestDetails.PurposeOfInvitation,
+                
+                // Proxy Invitation (walk-ins are not proxy invitations)
+                IsProxyInvitation = false,
+                InvitedOnBehalfOf = null,
+                
+                // Host/Enterprise (for walk-in requests)
+                EnterpriseId = hostDetails.EnterpriseId,
+                EnterpriseUserId = hostDetails.EnterpriseUserId
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Invitations", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<BaseResponse<InvitationResponseDto>>();
+                
+                if (result != null && result.Success)
+                {
+                    var invitationNo = result.Data?.InvitationNo ?? "N/A";
+                    successMessage = result.Message ?? $"Walk-in request created successfully! Invitation Number: {invitationNo}";
+                    ToastService.ShowSuccess(result.Message ?? $"Walk-in request created successfully! Invitation Number: {invitationNo}");
+                    
+                    // Reset form after successful submission
+                    await Task.Delay(1500); // Give user time to see success message
+                    ResetForm();
+                }
+                else
+                {
+                    errorMessage = result?.Message ?? "Failed to create walk-in request. Please try again.";
+                    ToastService.ShowError(result?.Message ?? "Failed to create walk-in request. Please try again.");
+                }
+            }
+            else
+            {
+                try
+                {
+                    var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<InvitationResponseDto>>();
+                    errorMessage = errorResult?.Message ?? $"Error: {response.StatusCode}";
+                    ToastService.ShowError(errorResult?.Message ?? $"Error: {response.StatusCode}. Please try again.");
+                }
+                catch
+                {
+                    errorMessage = $"Error: {response.StatusCode}. Please try again.";
+                    ToastService.ShowError($"Error: {response.StatusCode}. Please try again.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while creating the walk-in request: {ex.Message}";
+            ToastService.ShowError($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ResetForm()
+    {
+        guestDetails = new GuestDetails
+        {
+            FirstName = string.Empty,
+            LastName = string.Empty,
+            Phone = string.Empty,
+            NumberOfGuests = 0,
+            Email = string.Empty,
+            PurposeOfInvitation = string.Empty,
+            NumberOfVehicles = 0,
+            VehiclePlateNumbers = new List<string>(),
+            ExpectedArrival = null,
+            ExpectedDeparture = null
+        };
+        hostDetails = new HostDetails
+        {
+            EnterpriseId = null,
+            EnterpriseUserId = null
+        };
+        hostUsers.Clear();
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    private async Task LoadEnterprisesAsync()
+    {
+        try
+        {
+            // Load enterprises from local database
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<EnterpriseDto>>>("api/Enterprises");
+            
+            // OnePortal service call (commented for future use):
+            // var response = await Http.GetFromJsonAsync<BaseResponse<List<EnterpriseDto>>>("api/Users/enterprises");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                enterprises = response.Data;
+                // Auto-selection removed - let GateAdmin explicitly select enterprise
+                // hostDetails.EnterpriseId ??= enterprises.FirstOrDefault()?.EnterpriseId;
+                // await LoadHostsAsync(hostDetails.EnterpriseId);
+            }
+            else if (response != null && !string.IsNullOrWhiteSpace(response.Message))
+            {
+                Console.WriteLine($"Info: {response.Message}");
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            // Log error but don't block page load
+            Console.WriteLine($"Error loading enterprises: {httpEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't block page load
+            Console.WriteLine($"Error loading enterprises: {ex.Message}");
+        }
+    }
+
+    private async Task LoadHostsAsync(int? enterpriseId)
+    {
+        hostUsers.Clear();
+        hostErrorMessage = string.Empty;
+        if (!enterpriseId.HasValue)
+        {
+            return;
+        }
+
+        try
+        {
+            isLoadingHosts = true;
+            
+            // Load users from local EnterpriseUsers table
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<UserDto>>>($"api/EnterpriseUsers/by-enterprise/{enterpriseId.Value}");
+            
+            // ApplicationUser service call (commented for future use):
+            // var url = $"api/Users?EnterpriseId={enterpriseId.Value}&PageNumber=1&PageSize=100";
+            // var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<UserDto>>>(url);
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                hostUsers = response.Data;
+                // Auto-selection removed - let GateAdmin explicitly select host
+                hostDetails.EnterpriseUserId = null;
+            }
+            else
+            {
+                hostErrorMessage = response?.Message ?? "Unable to load hosts.";
+                hostDetails.EnterpriseUserId = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            hostErrorMessage = $"Error loading hosts: {ex.Message}";
+            hostDetails.EnterpriseUserId = null;
+        }
+        finally
+        {
+            isLoadingHosts = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnEnterpriseChanged()
+    {
+        hostDetails.EnterpriseUserId = null;
+        await LoadHostsAsync(hostDetails.EnterpriseId);
+        if (!hostDetails.EnterpriseId.HasValue)
+        {
+            hostUsers.Clear();
+        }
+    }
+
+    private string GetDateTimeLocalValue(DateTime? dateTime)
+    {
+        if (dateTime == null || dateTime == default(DateTime))
+            return string.Empty;
+        return dateTime.Value.ToString("yyyy-MM-ddTHH:mm");
+    }
+
+    private string GetMinDateTimeLocalValue()
+    {
+        return DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    }
+
+    private void OnArrivalDateTimeChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            guestDetails.ExpectedArrival = null;
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out DateTime dateTime))
+        {
+            guestDetails.ExpectedArrival = dateTime;
+        }
+        else
+        {
+            guestDetails.ExpectedArrival = null;
+        }
+    }
+
+    private void OnDepartureDateTimeChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            guestDetails.ExpectedDeparture = null;
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out DateTime dateTime))
+        {
+            guestDetails.ExpectedDeparture = dateTime;
+        }
+        else
+        {
+            guestDetails.ExpectedDeparture = null;
+        }
+    }
+
+    private async Task OpenArrivalDateTimePicker()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('arrival-datetime').showPicker()");
+        }
+        catch
+        {
+            // Fallback: trigger click event if showPicker() is not supported
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('arrival-datetime').click()");
+        }
+    }
+
+    private async Task OpenDepartureDateTimePicker()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('departure-datetime').showPicker()");
+        }
+        catch
+        {
+            // Fallback: trigger click event if showPicker() is not supported
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('departure-datetime').click()");
+        }
+    }
+
+    private class GuestDetails
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public int NumberOfGuests { get; set; } = 0;
+        public string Email { get; set; } = string.Empty;
+        public string PurposeOfInvitation { get; set; } = string.Empty;
+        public int NumberOfVehicles { get; set; } = 0;
+        public List<string> VehiclePlateNumbers { get; set; } = new();
+        public DateTime? ExpectedArrival { get; set; }
+        public DateTime? ExpectedDeparture { get; set; }
+    }
+
+    private class HostDetails
+    {
+        public int? EnterpriseId { get; set; }
+        public int? EnterpriseUserId { get; set; }
+    }
+}

@@ -1,0 +1,560 @@
+@page "/create-invitation"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@using System.ComponentModel.DataAnnotations
+@using VMS.Client.DTOs.Invitations
+@using VMS.Client.DTOs.Common
+@using VMS.Client.Services
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject IToastService ToastService
+@attribute [Authorize(Roles = "SUPERADMIN,LFZStaff,EnterpriseUser")]
+
+<PageTitle>Create Invitation</PageTitle>
+
+<div class="create-invitation-container">
+    <div class="create-invitation-form">
+        <div class="create-invitation-header">
+            <h1 class="create-invitation-title">Create Invitation</h1>
+            <p class="create-invitation-subtitle">Fill the details below to create a visitor invitation.</p>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert" style="margin-bottom: 20px;">
+                @errorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <div class="alert alert-success" role="alert" style="margin-bottom: 20px;">
+                @successMessage
+            </div>
+        }
+
+        <EditForm Model="@invitationModel" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <!-- Guest Details Section -->
+            <div class="form-section">
+                <h2 class="section-title">Guest Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name *</label>
+                        <InputText class="form-control" @bind-Value="invitationModel.FirstName" />
+                        <ValidationMessage For="@(() => invitationModel.FirstName)" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name *</label>
+                        <InputText class="form-control" @bind-Value="invitationModel.LastName" />
+                        <ValidationMessage For="@(() => invitationModel.LastName)" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <InputText type="email" class="form-control" @bind-Value="invitationModel.Email" />
+                        <ValidationMessage For="@(() => invitationModel.Email)" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone *</label>
+                        <InputText class="form-control" @bind-Value="invitationModel.PhoneNumber" />
+                        <ValidationMessage For="@(() => invitationModel.PhoneNumber)" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visit Details Section -->
+            <div class="form-section">
+                <h2 class="section-title">Visit Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Expected Arrival *</label>
+                        <div class="datetime-input-wrapper">
+                            <input type="datetime-local" id="arrival-datetime" class="form-control datetime-input" 
+                                   value="@GetDateTimeLocalValue(invitationModel.ExpectedArrival)" 
+                                   min="@GetMinDateTimeLocalValue()"
+                                   @onchange="OnArrivalDateTimeChanged" 
+                                   @onclick="OpenArrivalDateTimePicker" />
+                            <span class="datetime-icon" @onclick="OpenArrivalDateTimePicker" role="button" tabindex="0">📅</span>
+                        </div>
+                        <ValidationMessage For="@(() => invitationModel.ExpectedArrival)" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expected Departure *</label>
+                        <div class="datetime-input-wrapper">
+                            <input type="datetime-local" id="departure-datetime" class="form-control datetime-input" 
+                                   value="@GetDateTimeLocalValue(invitationModel.ExpectedDeparture)" 
+                                   min="@GetMinDateTimeLocalValue()"
+                                   @onchange="OnDepartureDateTimeChanged" 
+                                   @onclick="OpenDepartureDateTimePicker" />
+                            <span class="datetime-icon" @onclick="OpenDepartureDateTimePicker" role="button" tabindex="0">📅</span>
+                        </div>
+                        <ValidationMessage For="@(() => invitationModel.ExpectedDeparture)" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Purpose Of Invitation *</label>
+                        <InputTextArea class="form-control" @bind-Value="invitationModel.PurposeOfInvitation" rows="3" />
+                        <ValidationMessage For="@(() => invitationModel.PurposeOfInvitation)" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <InputCheckbox class="form-checkbox" @bind-Value="invitationModel.IsProxyInvitation" @bind-Value:after="OnProxyInvitationChanged" />
+                        <label class="checkbox-label">Inviting on behalf of someone else</label>
+                    </div>
+                </div>
+                @if (invitationModel.IsProxyInvitation)
+                {
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Name of Person *</label>
+                            <InputText class="@($"form-control {(showProxyNameError ? "is-invalid" : "")}")" @bind-Value="invitationModel.InvitedOnBehalfOf" @bind-Value:after="OnInvitedOnBehalfOfChanged" />
+                            @if (showProxyNameError)
+                            {
+                                <div class="validation-message">Name of person is required when inviting on behalf of someone</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Group & Vehicle Details Section -->
+            <div class="form-section">
+                <h2 class="section-title">Group & Vehicle Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Number of Guests</label>
+                        <InputNumber class="form-control" @bind-Value="invitationModel.NumberOfAdditionalGuests" min="0" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Vehicles</label>
+                        <InputNumber class="form-control" @bind-Value="numberOfVehicles" min="0" @onchange="OnVehicleCountChanged" />
+                    </div>
+                </div>
+                @if (numberOfVehicles > 0)
+                {
+                    <div class="vehicle-help-text">
+                        Plate numbers are required for each vehicle
+                    </div>
+                    <div class="vehicle-fields">
+                        @for (int i = 0; i < numberOfVehicles; i++)
+                        {
+                            var index = i;
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Vehicle @(i + 1) - Plate Number *</label>
+                                    <input type="text" 
+                                           class="@($"form-control {GetVehiclePlateNumberValidationClass(index)}")" 
+                                           value="@GetVehiclePlateNumber(index)" 
+                                           @onchange="@((ChangeEventArgs e) => SetVehiclePlateNumber(index, e.Value?.ToString() ?? string.Empty))" 
+                                           @onblur="@(() => { if (showVehicleValidationErrors) StateHasChanged(); })" />
+                                    @if (HasVehiclePlateNumberError(index))
+                                    {
+                                        <div class="validation-message">Plate number is required</div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" @onclick="HandleCancel">Cancel</button>
+                <button type="submit" class="btn-submit" disabled="@isSubmitting">
+                    @(isSubmitting ? "Submitting..." : "Submit Invitation")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private InvitationFormModel invitationModel = new();
+    private int numberOfVehicles = 0;
+    private List<string> vehiclePlateNumbers = new();
+    private bool isSubmitting = false;
+    private bool showVehicleValidationErrors = false;
+    private bool showProxyNameError = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Initialize with default values
+        invitationModel.NumberOfAdditionalGuests = 0;
+        numberOfVehicles = 0;
+    }
+
+    private string GetDateTimeLocalValue(DateTime? dateTime)
+    {
+        if (dateTime == null || dateTime == default(DateTime))
+            return string.Empty;
+        return dateTime.Value.ToString("yyyy-MM-ddTHH:mm");
+    }
+
+    private string GetMinDateTimeLocalValue()
+    {
+        return DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    }
+
+    private void OnArrivalDateTimeChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            invitationModel.ExpectedArrival = null;
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out DateTime dateTime))
+        {
+            invitationModel.ExpectedArrival = dateTime;
+        }
+        else
+        {
+            invitationModel.ExpectedArrival = null;
+        }
+    }
+
+    private void OnDepartureDateTimeChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            invitationModel.ExpectedDeparture = null;
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out DateTime dateTime))
+        {
+            invitationModel.ExpectedDeparture = dateTime;
+        }
+        else
+        {
+            invitationModel.ExpectedDeparture = null;
+        }
+    }
+
+    private void OnProxyInvitationChanged()
+    {
+        // Clear the field when unchecking the checkbox
+        if (!invitationModel.IsProxyInvitation)
+        {
+            invitationModel.InvitedOnBehalfOf = null;
+            showProxyNameError = false;
+        }
+        else
+        {
+            // Validate when checking the checkbox
+            ValidateProxyName();
+        }
+        StateHasChanged();
+    }
+
+    private void OnInvitedOnBehalfOfChanged()
+    {
+        ValidateProxyName();
+    }
+
+    private void ValidateProxyName()
+    {
+        if (invitationModel.IsProxyInvitation)
+        {
+            showProxyNameError = string.IsNullOrWhiteSpace(invitationModel.InvitedOnBehalfOf);
+        }
+        else
+        {
+            showProxyNameError = false;
+        }
+    }
+
+    private async Task OpenArrivalDateTimePicker()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('arrival-datetime').showPicker()");
+        }
+        catch
+        {
+            // Fallback: trigger click event if showPicker() is not supported
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('arrival-datetime').click()");
+        }
+    }
+
+    private async Task OpenDepartureDateTimePicker()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('departure-datetime').showPicker()");
+        }
+        catch
+        {
+            // Fallback: trigger click event if showPicker() is not supported
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('departure-datetime').click()");
+        }
+    }
+
+    private void OnVehicleCountChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newCount))
+        {
+            numberOfVehicles = Math.Max(0, newCount);
+            
+            // Adjust vehicle plate numbers list
+            EnsureVehiclePlateNumbersListSize();
+        }
+    }
+
+    private void EnsureVehiclePlateNumbersListSize()
+    {
+        while (vehiclePlateNumbers.Count < numberOfVehicles)
+        {
+            vehiclePlateNumbers.Add(string.Empty);
+        }
+        while (vehiclePlateNumbers.Count > numberOfVehicles)
+        {
+            vehiclePlateNumbers.RemoveAt(vehiclePlateNumbers.Count - 1);
+        }
+    }
+
+    private string GetVehiclePlateNumber(int index)
+    {
+        EnsureVehiclePlateNumbersListSize();
+        if (index >= 0 && index < vehiclePlateNumbers.Count)
+        {
+            return vehiclePlateNumbers[index];
+        }
+        return string.Empty;
+    }
+
+    private void SetVehiclePlateNumber(int index, string value)
+    {
+        EnsureVehiclePlateNumbersListSize();
+        if (index >= 0 && index < vehiclePlateNumbers.Count)
+        {
+            vehiclePlateNumbers[index] = value ?? string.Empty;
+            // Clear validation error for this field when user starts typing
+            if (showVehicleValidationErrors && !string.IsNullOrWhiteSpace(value))
+            {
+                // Check if all vehicle fields are now valid
+                if (ValidateVehiclePlateNumbers())
+                {
+                    showVehicleValidationErrors = false;
+                }
+            }
+            StateHasChanged();
+        }
+    }
+
+    private bool HasVehiclePlateNumberError(int index)
+    {
+        if (showVehicleValidationErrors && numberOfVehicles > 0 && index < vehiclePlateNumbers.Count)
+        {
+            return string.IsNullOrWhiteSpace(vehiclePlateNumbers[index]);
+        }
+        return false;
+    }
+
+    private string GetVehiclePlateNumberValidationClass(int index)
+    {
+        return HasVehiclePlateNumberError(index) ? "is-invalid" : string.Empty;
+    }
+
+    private bool ValidateVehiclePlateNumbers()
+    {
+        EnsureVehiclePlateNumbersListSize();
+        if (numberOfVehicles > 0)
+        {
+            for (int i = 0; i < numberOfVehicles; i++)
+            {
+                if (string.IsNullOrWhiteSpace(GetVehiclePlateNumber(i)))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private async Task HandleSubmit()
+    {
+        // Validate datetime fields explicitly
+        if (invitationModel.ExpectedArrival == null || invitationModel.ExpectedArrival == default(DateTime?))
+        {
+            errorMessage = "Expected arrival date and time is required.";
+            StateHasChanged();
+            return;
+        }
+
+        if (invitationModel.ExpectedDeparture == null || invitationModel.ExpectedDeparture == default(DateTime?))
+        {
+            errorMessage = "Expected departure date and time is required.";
+            StateHasChanged();
+            return;
+        }
+
+        // Validate that dates are not in the past
+        var now = DateTime.Now;
+        if (invitationModel.ExpectedArrival.Value < now)
+        {
+            errorMessage = "Expected arrival date and time cannot be in the past. Please select a current or future date.";
+            StateHasChanged();
+            return;
+        }
+
+        if (invitationModel.ExpectedDeparture.Value < now)
+        {
+            errorMessage = "Expected departure date and time cannot be in the past. Please select a current or future date.";
+            StateHasChanged();
+            return;
+        }
+
+        // Validate Purpose Of Invitation
+        if (string.IsNullOrWhiteSpace(invitationModel.PurposeOfInvitation))
+        {
+            errorMessage = "Purpose of invitation is required.";
+            StateHasChanged();
+            return;
+        }
+
+        // Validate Name of Person if proxy invitation is checked
+        if (invitationModel.IsProxyInvitation && string.IsNullOrWhiteSpace(invitationModel.InvitedOnBehalfOf))
+        {
+            showProxyNameError = true;
+            StateHasChanged();
+            return;
+        }
+
+        // Validate vehicle plate numbers
+        if (!ValidateVehiclePlateNumbers())
+        {
+            showVehicleValidationErrors = true;
+            StateHasChanged();
+            return;
+        }
+
+            showVehicleValidationErrors = false;
+            showProxyNameError = false;
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+            isSubmitting = true;
+            StateHasChanged();
+        
+        try
+        {
+            // Update vehicle plate numbers
+            invitationModel.VehiclePlateNumbers = vehiclePlateNumbers.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
+            
+            // Create request DTO
+            var request = new CreateInvitationRequestDto
+            {
+                FirstName = invitationModel.FirstName,
+                LastName = invitationModel.LastName,
+                PhoneNumber = invitationModel.PhoneNumber,
+                Email = invitationModel.Email,
+                ExpectedArrival = invitationModel.ExpectedArrival!.Value, // Safe to use ! since we validated above
+                ExpectedDeparture = invitationModel.ExpectedDeparture!.Value, // Safe to use ! since we validated above
+                IsProxyInvitation = invitationModel.IsProxyInvitation,
+                InvitedOnBehalfOf = invitationModel.InvitedOnBehalfOf,
+                NumberOfAdditionalGuests = invitationModel.NumberOfAdditionalGuests,
+                VehiclePlateNumbers = invitationModel.VehiclePlateNumbers,
+                PurposeOfInvitation = invitationModel.PurposeOfInvitation
+            };
+
+            // Call API
+            var response = await Http.PostAsJsonAsync("api/Invitations", request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<BaseResponse<InvitationResponseDto>>();
+                
+                if (result != null && result.Success)
+                {
+                    successMessage = result.Message ?? "Invitation created successfully!";
+                    StateHasChanged();
+                    
+                    // Navigate to invitations list with invitation number in query parameter
+                    var invitationNo = result.Data?.InvitationNo ?? string.Empty;
+                    Navigation.NavigateTo($"/invitation?created={Uri.EscapeDataString(invitationNo)}");
+                }
+                else
+                {
+                    errorMessage = result?.Message ?? "Failed to create invitation. Please try again.";
+                    ToastService.ShowError("Failed to create Invitation, ensure to fill all required fields");
+                    isSubmitting = false;
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                // Try to read error message from response
+                try
+                {
+                    var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<InvitationResponseDto>>();
+                    errorMessage = errorResult?.Message ?? $"Error: {response.StatusCode}";
+                }
+                catch
+                {
+                    errorMessage = $"Error: {response.StatusCode}. Please try again.";
+                }
+                ToastService.ShowError("Failed to create Invitation, ensure to fill all required fields");
+                isSubmitting = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while creating the invitation: {ex.Message}";
+            ToastService.ShowError("Failed to create Invitation, ensure to fill all required fields");
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleCancel()
+    {
+        Navigation.NavigateTo("/invitation");
+    }
+
+    private void ResetForm()
+    {
+        invitationModel = new InvitationFormModel();
+        numberOfVehicles = 0;
+        vehiclePlateNumbers.Clear();
+    }
+
+    public class InvitationFormModel
+    {
+        [Required(ErrorMessage = "First name is required")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Expected arrival is required")]
+        public DateTime? ExpectedArrival { get; set; }
+
+        [Required(ErrorMessage = "Expected departure is required")]
+        public DateTime? ExpectedDeparture { get; set; }
+
+        [Required(ErrorMessage = "Purpose of invitation is required")]
+        public string PurposeOfInvitation { get; set; } = string.Empty;
+
+        public bool IsProxyInvitation { get; set; }
+        public string? InvitedOnBehalfOf { get; set; }
+
+        public int NumberOfAdditionalGuests { get; set; } = 0;
+        public List<string> VehiclePlateNumbers { get; set; } = new();
+    }
+}
+

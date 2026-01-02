@@ -1,0 +1,219 @@
+@page "/invitation"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Invitations
+@using VMS.Client.DTOs.Common
+@using VMS.Client.Services
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+@attribute [Authorize(Roles = "SUPERADMIN,LFZStaff,EnterpriseUser")]
+
+<PageTitle>Invitations</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>My Invitations</h3>
+    <a href="/create-invitation" class="btn btn-primary">Create Invitation</a>
+</div>
+
+@if (isLoading)
+{
+    <p><em>Loading invitations...</em></p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+else if (invitations == null || invitations.Count == 0)
+{
+    <p>No invitations found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Invitation No</th>
+                <th>Guest Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+                @* 
+                <th>Host Name</th>
+                <th>Enterprise</th>
+                <th>Expected Arrival</th>
+                <th>Expected Departure</th>
+                <th>Additional Guests</th>
+                <th>Vehicles</th> 
+                <th>Created At</th>
+                *@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invitation in invitations)
+            {
+                <tr>
+                    <td>@invitation.InvitationNo</td>
+                    <td>@invitation.GuestName</td>
+                    <td>@invitation.GuestPhone</td>
+                    <td>@(invitation.GuestEmail ?? "-")</td>
+                    <td>
+                        <span class="badge bg-@GetStatusBadgeClass(invitation.Status)">@invitation.Status</span>
+                    </td>
+                    <td>
+                        <button class="btn-action" @onclick="() => ViewInvitationDetails(invitation)" title="View Details" type="button">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </td>
+                    @* <td>@invitation.HostName</td> *@
+                    @* <td>@(invitation.EnterpriseName ?? "-")</td> *@
+                   
+                   @*  <td>@invitation.ExpectedArrival.ToString("g")</td>
+                    <td>@invitation.ExpectedDeparture.ToString("g")</td>
+                    <td>@invitation.NumberOfAdditionalGuests</td> *@
+                    @* <td>
+                        @if (invitation.Vehicles != null && invitation.Vehicles.Any())
+                        {
+                            @foreach (var vehicle in invitation.Vehicles)
+                            {
+                                <span class="badge bg-secondary me-1">@vehicle.PlateNumber</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td> *@
+                    @* <td>@invitation.CreatedAt.ToString("g")</td> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (pagedResponse != null && pagedResponse.TotalPages > 1)
+    {
+        <div class="pagination-info">
+            <p>Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount invitations)</p>
+        </div>
+    }
+}
+
+@code {
+    private List<InvitationDto> invitations = new();
+    private PagedResponse<InvitationDto>? pagedResponse;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    private InvitationDetailsModal? detailsModal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check for success message from query parameter
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (!string.IsNullOrEmpty(uri.Query))
+        {
+            var queryString = uri.Query.TrimStart('?');
+            var queryParams = queryString.Split('&')
+                .Select(p => p.Split('='))
+                .Where(p => p.Length == 2)
+                .ToDictionary(p => Uri.UnescapeDataString(p[0]), p => Uri.UnescapeDataString(p[1]));
+            
+            if (queryParams.TryGetValue("created", out var invitationNo))
+            {
+                if (!string.IsNullOrWhiteSpace(invitationNo))
+                {
+                    ToastService.ShowSuccess($"Invitation successfully created. {invitationNo}");
+                    
+                    // Remove query parameter from URL
+                    var baseUri = uri.GetLeftPart(UriPartial.Path);
+                    Navigation.NavigateTo(baseUri, replace: true);
+                }
+            }
+        }
+        
+        await LoadInvitations();
+    }
+
+    private async Task LoadInvitations()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>("api/Invitations");
+
+            if (response != null && response.Success && response.Data != null)
+            {
+                pagedResponse = response.Data;
+                invitations = response.Data.Items;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load invitations.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading invitations: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "approved" => "success",
+            "pendingapproval" => "warning",
+            "rejected" => "danger",
+            "cancelled" => "secondary",
+            "checkedin" => "info",
+            "expired" => "secondary",
+            _ => "secondary"
+        };
+    }
+
+    private void ViewInvitationDetails(InvitationDto invitation)
+    {
+        detailsModal?.Open(invitation);
+    }
+
+    private async Task HandleInvitationCreated()
+    {
+        await LoadInvitations();
+    }
+}
+
+<InvitationDetailsModal @ref="detailsModal" OnInvitationCreated="HandleInvitationCreated" />
+
+<style>
+    .btn-action {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 4px 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+
+    .btn-action:hover {
+        color: #0d6efd;
+    }
+
+    .btn-action:focus {
+        outline: 2px solid #0d6efd;
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+</style>

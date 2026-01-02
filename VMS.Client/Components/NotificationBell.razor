@@ -1,0 +1,233 @@
+@using VMS.Client.DTOs.Notifications
+@using VMS.Client.Services
+@using Microsoft.JSInterop
+@inject NotificationHubService NotificationHub
+@inject HttpClient Http
+@inject IToastService ToastService
+@inject IJSRuntime JSRuntime
+
+<div class="notification-bell-container" @ref="containerRef" @onclick:stopPropagation="true">
+    <button class="notification-bell-btn" @onclick="ToggleDropdown" title="Notifications">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        @if (unreadCount > 0)
+        {
+            <span class="notification-badge">@unreadCount</span>
+        }
+    </button>
+
+    @if (showDropdown)
+    {
+        <div class="notification-dropdown" @onclick:stopPropagation="true">
+            <div class="notification-dropdown-header">
+                <h3>Notifications</h3>
+                @if (unreadCount > 0)
+                {
+                    <button class="mark-all-read-btn" @onclick="MarkAllAsRead">Mark all as read</button>
+                }
+            </div>
+            <div class="notification-list">
+                @if (notifications == null)
+                {
+                    <div class="notification-loading">Loading...</div>
+                }
+                else if (!notifications.Any())
+                {
+                    <div class="notification-empty">No notifications</div>
+                }
+                else
+                {
+                    @foreach (var notification in notifications)
+                    {
+                        <div class="notification-item @(notification.IsRead ? "read" : "unread")" @onclick="() => HandleNotificationClick(notification)">
+                            <div class="notification-content">
+                                <div class="notification-message">@notification.Message</div>
+                                <div class="notification-time">@GetTimeAgo(notification.CreatedAt)</div>
+                            </div>
+                            @if (!notification.IsRead)
+                            {
+                                <div class="notification-dot"></div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+            <div class="notification-dropdown-footer">
+                <a href="/notifications">View all notifications</a>
+            </div>
+        </div>
+    }
+</div>
+
+@implements IDisposable
+
+@code {
+    private bool showDropdown = false;
+    private int unreadCount = 0;
+    private List<NotificationDto>? notifications;
+    private ElementReference containerRef;
+    private DotNetObjectReference<NotificationBell>? objRef;
+    private IJSObjectReference? jsModule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NotificationHub.OnNotificationReceived += HandleNotificationReceived;
+        NotificationHub.OnUnreadCountChanged += HandleUnreadCountChanged;
+        
+        await LoadNotifications();
+        await NotificationHub.StartAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/notifications.js");
+                objRef = DotNetObjectReference.Create(this);
+                await jsModule.InvokeVoidAsync("setupNotificationClickOutside", containerRef, objRef);
+            }
+            catch
+            {
+                // JavaScript interop failed, continue without click-outside handler
+            }
+        }
+    }
+
+    private async Task LoadNotifications()
+    {
+        try
+        {
+            var response = await Http.GetAsync("api/Notifications/unread?limit=10");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<VMS.Client.DTOs.Common.BaseResponse<List<NotificationDto>>>();
+                if (result?.Data != null)
+                {
+                    notifications = result.Data;
+                    unreadCount = notifications.Count(n => !n.IsRead);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Silently fail - notifications are not critical
+        }
+    }
+
+    private void ToggleDropdown()
+    {
+        showDropdown = !showDropdown;
+        if (showDropdown)
+        {
+            _ = LoadNotifications();
+        }
+    }
+
+    private void HandleNotificationReceived(NotificationDto notification)
+    {
+        notifications?.Insert(0, notification);
+        if (notifications?.Count > 10)
+        {
+            notifications = notifications.Take(10).ToList();
+        }
+        unreadCount = notifications?.Count(n => !n.IsRead) ?? 0;
+        StateHasChanged();
+        ToastService.ShowInfo(notification.Message);
+    }
+
+    private void HandleUnreadCountChanged(int count)
+    {
+        unreadCount = count;
+        StateHasChanged();
+    }
+
+    private async Task HandleNotificationClick(NotificationDto notification)
+    {
+        if (!notification.IsRead)
+        {
+            await MarkAsRead(notification.Id);
+        }
+        
+        // Navigate based on notification type and reference
+        // This can be enhanced based on business requirements
+    }
+
+    private async Task MarkAsRead(Guid notificationId)
+    {
+        try
+        {
+            var response = await Http.PutAsync($"api/Notifications/{notificationId}/read", null);
+            if (response.IsSuccessStatusCode)
+            {
+                var notification = notifications?.FirstOrDefault(n => n.Id == notificationId);
+                if (notification != null)
+                {
+                    notification.IsRead = true;
+                    unreadCount = notifications?.Count(n => !n.IsRead) ?? 0;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Failed to mark notification as read");
+        }
+    }
+
+    private async Task MarkAllAsRead()
+    {
+        try
+        {
+            if (notifications != null)
+            {
+                var unreadNotifications = notifications.Where(n => !n.IsRead).ToList();
+                foreach (var notification in unreadNotifications)
+                {
+                    await MarkAsRead(notification.Id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Failed to mark all as read");
+        }
+    }
+
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.UtcNow - dateTime;
+        if (timeSpan.TotalSeconds < 60)
+            return "Just now";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes}m ago";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours}h ago";
+        return $"{(int)timeSpan.TotalDays}d ago";
+    }
+
+    [JSInvokable]
+    public void CloseDropdown()
+    {
+        if (showDropdown)
+        {
+            showDropdown = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NotificationHub.OnNotificationReceived -= HandleNotificationReceived;
+        NotificationHub.OnUnreadCountChanged -= HandleUnreadCountChanged;
+        objRef?.Dispose();
+        if (jsModule != null)
+        {
+            _ = jsModule.DisposeAsync();
+        }
+    }
+}
+

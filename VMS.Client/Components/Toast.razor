@@ -1,0 +1,127 @@
+@using VMS.Client.Services
+@inject IToastService ToastService
+@implements IDisposable
+
+<div class="toast-container">
+    @foreach (var toast in toasts)
+    {
+        <div class="toast toast-@toast.Type.ToString().ToLower() @(toast.IsVisible ? "show" : "")" role="alert">
+            <div class="toast-content">
+                <div class="toast-icon">
+                    @if (toast.Type == ToastType.Success)
+                    {
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z" fill="currentColor"/>
+                        </svg>
+                    }
+                    else if (toast.Type == ToastType.Error)
+                    {
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z" fill="currentColor"/>
+                        </svg>
+                    }
+                    else if (toast.Type == ToastType.Info)
+                    {
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9V9h2v6zm0-8H9V5h2v2z" fill="currentColor"/>
+                        </svg>
+                    }
+                    else
+                    {
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z" fill="currentColor"/>
+                        </svg>
+                    }
+                </div>
+                <div class="toast-message">@toast.Message</div>
+                <button class="toast-close" @onclick="() => DismissToast(toast)" aria-label="Close">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ToastItem> toasts = new();
+    private int nextId = 0;
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += HandleToastShow;
+    }
+
+    private void HandleToastShow(ToastMessage message)
+    {
+        var toast = new ToastItem
+        {
+            Id = nextId++,
+            Type = message.Type,
+            Message = message.Message,
+            Duration = message.Duration,
+            IsVisible = false
+        };
+
+        toasts.Add(toast);
+        StateHasChanged();
+
+        // Trigger animation
+        InvokeAsync(async () =>
+        {
+            await Task.Delay(10);
+            toast.IsVisible = true;
+            StateHasChanged();
+
+            // Auto-dismiss
+            if (toast.Duration > 0)
+            {
+                await Task.Delay(toast.Duration);
+                DismissToast(toast);
+            }
+        });
+    }
+
+    private void DismissToast(ToastItem toast)
+    {
+        toast.IsVisible = false;
+        StateHasChanged();
+
+        InvokeAsync(async () =>
+        {
+            await Task.Delay(300); // Wait for fade-out animation
+            toasts.Remove(toast);
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= HandleToastShow;
+    }
+
+    private class ToastItem
+    {
+        public int Id { get; set; }
+        public ToastType Type { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public int Duration { get; set; }
+        public bool IsVisible { get; set; }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

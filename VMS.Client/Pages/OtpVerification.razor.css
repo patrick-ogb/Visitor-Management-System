@@ -1,0 +1,507 @@
+.visitor-management-login-page-optional-container {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    min-height: 100vh;
+    max-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+}
+
+.visitor-management-login-page-optional-visitor-management-login-page-optional {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.visitor-management-login-page-optional-frame327 {
+    top: 0px;
+    left: 0px;
+    width: 750px;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.visitor-management-login-page-optionalnightrender2 {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    bottom: 0px;
+    height: 100%;
+    margin: auto;
+    position: absolute;
+    object-fit: cover;
+    object-position: center;
+}
+
+.visitor-management-login-page-optional-frame346 {
+    gap: 10px;
+    bottom: 100px;
+    left: 30px;
+    width: 610px;
+    height: 68px;
+    display: flex;
+    padding: 10px;
+    position: absolute;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.0010000000474974513);
+}
+
+.visitor-management-login-page-optional-text1 {
+    color: rgba(255, 255, 255, 1);
+    width: 590px;
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-group237745 {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 50px;
+    width: 409px;
+    min-width: 320px;
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+    overflow: visible;
+    gap: 0;
+}
+
+.visitor-management-login-page-optional-frame32343318 {
+    gap: 16px;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.visitor-management-login-page-optional-text2 {
+    color: rgba(20, 20, 20, 1);
+    height: auto;
+    font-size: 36px;
+    align-self: stretch;
+    font-style: Bold;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-text3 {
+    color: rgba(149, 149, 149, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-text4 {
+    font-weight: 400;
+}
+
+.visitor-management-login-page-optional-frame32343317 {
+    gap: 8px;
+    margin-top: 0;
+    left: 0;
+    display: flex;
+    position: relative;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.visitor-management-login-page-optional-text6 {
+    color: rgba(149, 149, 149, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: center;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-frame32343315 {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visitor-management-login-page-optional-text7 {
+    color: rgba(71, 155, 194, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Medium;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 500;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.visitor-management-login-page-optional-text7:hover {
+    opacity: 0.8;
+}
+
+.visitor-management-login-page-optional-ellipse27 {
+    width: 8px;
+    height: 8px;
+}
+
+.visitor-management-login-page-optional-text8 {
+    color: rgba(149, 149, 149, 1);
+    height: auto;
+    font-size: 14px;
+    font-style: Bold;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-number {
+    width: 100%;
+    min-width: 280px;
+    height: 50px;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 15px;
+    margin-top: 0;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    overflow: visible;
+    clear: both;
+}
+
+.visitor-management-login-page-optional-number input:nth-child(1),
+.visitor-management-login-page-optional-number input:nth-child(2),
+.visitor-management-login-page-optional-number input:nth-child(3),
+.visitor-management-login-page-optional-number input:nth-child(4) {
+    position: relative;
+    left: auto;
+    flex: 0 0 auto;
+    min-width: 50px;
+}
+
+.visitor-management-login-page-optional-frame32343314-empty,
+.visitor-management-login-page-optional-frame32343314-filled {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 20px;
+    font-family: Ubuntu;
+    font-weight: 500;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Ensure OTP inputs are properly styled with Blazor scoped CSS */
+input.visitor-management-login-page-optional-frame32343314-empty,
+input.visitor-management-login-page-optional-frame32343314-filled {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 20px;
+    font-family: Ubuntu;
+    font-weight: 500;
+}
+
+.visitor-management-login-page-optional-frame32343314-empty {
+    border-color: rgba(204, 204, 204, 1);
+    border-style: solid;
+    border-width: 1px;
+    background-color: rgba(246, 246, 246, 1);
+    color: rgba(20, 20, 20, 1);
+}
+
+.visitor-management-login-page-optional-frame32343314-filled {
+    border-color: rgba(71, 155, 194, 1);
+    border-style: solid;
+    border-width: 1px;
+    background-color: rgba(71, 155, 194, 0.11999999731779099);
+    color: rgba(20, 20, 20, 1);
+}
+
+.visitor-management-login-page-optional-verify {
+    gap: 10px;
+    top: auto;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    padding: 16px 10px;
+    position: relative;
+    box-sizing: border-box;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 0;
+}
+
+.visitor-management-login-page-optional-verify.disabled {
+    background-color: rgba(230, 230, 230, 1);
+    cursor: not-allowed;
+}
+
+.visitor-management-login-page-optional-verify.enabled {
+    background-color: rgba(26, 36, 85, 1);
+    cursor: pointer;
+}
+
+.visitor-management-login-page-optional-verify.enabled:hover {
+    background-color: rgba(20, 28, 68, 1);
+}
+
+.visitor-management-login-page-optional-text9 {
+    height: auto;
+    font-size: 16px;
+    font-style: Medium;
+    text-align: center;
+    font-family: Ubuntu;
+    font-weight: 500;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-optional-verify.disabled .visitor-management-login-page-optional-text9 {
+    color: rgba(149, 149, 149, 1);
+}
+
+.visitor-management-login-page-optional-verify.enabled .visitor-management-login-page-optional-text9 {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Responsive Design - Mobile (< 768px) */
+@media (max-width: 767px) {
+    .visitor-management-login-page-optional-container {
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: none;
+    }
+
+    .visitor-management-login-page-optional-visitor-management-login-page-optional {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: visible;
+        overflow-x: hidden;
+    }
+
+    .visitor-management-login-page-optional-frame327 {
+        width: 100%;
+        height: 40vh;
+        min-height: 250px;
+        position: relative;
+    }
+
+    .visitor-management-login-page-optional-frame346 {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+        max-width: calc(100% - 40px);
+    }
+
+    .visitor-management-login-page-optional-text1 {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .visitor-management-login-page-optional-group237745 {
+        top: auto;
+        transform: none;
+        right: auto;
+        left: auto;
+        width: 100%;
+        position: relative;
+        padding: 30px 20px;
+        box-sizing: border-box;
+        margin: 0;
+    }
+
+    .visitor-management-login-page-optional-group237745 {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .visitor-management-login-page-optional-frame32343318 {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .visitor-management-login-page-optional-text2 {
+        font-size: 28px;
+    }
+
+    .visitor-management-login-page-optional-text3 {
+        font-size: 14px;
+    }
+
+    .visitor-management-login-page-optional-number {
+        width: 100%;
+        min-width: 100%;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        left: auto;
+        margin-top: 0;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        overflow: visible;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .visitor-management-login-page-optional-frame32343317 {
+        width: 100%;
+        left: auto;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .visitor-management-login-page-optional-frame32343314-empty,
+    .visitor-management-login-page-optional-frame32343314-filled,
+    input.visitor-management-login-page-optional-frame32343314-empty,
+    input.visitor-management-login-page-optional-frame32343314-filled {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+        flex: 0 0 50px;
+        min-width: 50px;
+        max-width: 50px;
+    }
+
+    .visitor-management-login-page-optional-verify {
+        width: 100%;
+        left: auto;
+        top: auto;
+        margin-top: 30px;
+    }
+}
+
+/* Extra small screens - ensure OTP inputs wrap if needed */
+@media (max-width: 400px) {
+    .visitor-management-login-page-optional-number {
+        gap: 8px;
+        padding: 0 5px;
+    }
+
+    .visitor-management-login-page-optional-frame32343314-empty,
+    .visitor-management-login-page-optional-frame32343314-filled,
+    input.visitor-management-login-page-optional-frame32343314-empty,
+    input.visitor-management-login-page-optional-frame32343314-filled {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        max-width: 45px;
+    }
+}
+
+/* Responsive Design - Tablet (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .visitor-management-login-page-optional-frame327 {
+        width: 50%;
+        max-width: 500px;
+    }
+
+    .visitor-management-login-page-optional-frame346 {
+        width: calc(100% - 60px);
+        max-width: 500px;
+    }
+
+    .visitor-management-login-page-optional-text1 {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .visitor-management-login-page-optional-group237745 {
+        right: 30px;
+        width: 45%;
+        min-width: 350px;
+        max-width: 409px;
+    }
+
+    .visitor-management-login-page-optional-text2 {
+        font-size: 32px;
+    }
+
+    .visitor-management-login-page-optional-number {
+        gap: 18px;
+    }
+}
+
+/* Responsive Design - Large Desktop (> 1440px) */
+@media (min-width: 1440px) {
+    .visitor-management-login-page-optional-frame327 {
+        width: 750px;
+    }
+
+    .visitor-management-login-page-optional-group237745 {
+        right: calc((100% - 1440px) / 2 + 50px);
+        max-width: 409px;
+    }
+}

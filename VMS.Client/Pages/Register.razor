@@ -1,0 +1,148 @@
+@page "/register"
+@layout LoginLayout
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Register SUPERADMIN</PageTitle>
+
+@if (isChecking)
+{
+    <p><em>Checking system status...</em></p>
+}
+else if (!canRegister)
+{
+    <p>Registration is disabled. Redirecting to login...</p>
+}
+else
+{
+    <div class="container mt-5" style="max-width: 540px;">
+        <h3 class="mb-4">Create SUPERADMIN Account</h3>
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+        <EditForm Model="@registerRequest" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label class="form-label">Email *</label>
+                <InputText class="form-control" @bind-Value="registerRequest.Email" />
+                <ValidationMessage For="@(() => registerRequest.Email)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password *</label>
+                <InputText type="password" class="form-control" @bind-Value="registerRequest.Password" />
+                <ValidationMessage For="@(() => registerRequest.Password)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">First Name *</label>
+                <InputText class="form-control" @bind-Value="registerRequest.FirstName" />
+                <ValidationMessage For="@(() => registerRequest.FirstName)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name *</label>
+                <InputText class="form-control" @bind-Value="registerRequest.LastName" />
+                <ValidationMessage For="@(() => registerRequest.LastName)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <InputText class="form-control" @bind-Value="registerRequest.Phone" />
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-secondary" type="button" @onclick="NavigateToLogin">Back to Login</button>
+                <button class="btn btn-primary" type="submit" disabled="@isSubmitting">@(isSubmitting ? "Registering..." : "Register")</button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    private bool isChecking = true;
+    private bool canRegister = false;
+    private bool isSubmitting = false;
+    private string errorMessage = string.Empty;
+
+    private RegisterRequest registerRequest = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var hasUsers = await Http.GetFromJsonAsync<bool>("api/auth/has-users");
+            canRegister = hasUsers == false;
+            if (!canRegister)
+            {
+                Navigation.NavigateTo("/login", forceLoad: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to determine registration status: {ex.Message}";
+        }
+        finally
+        {
+            isChecking = false;
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        if (!canRegister)
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/register", registerRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/login", forceLoad: true);
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                errorMessage = "Registration is no longer available because a user already exists.";
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                errorMessage = string.IsNullOrWhiteSpace(error) ? "Registration failed." : error;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void NavigateToLogin() => Navigation.NavigateTo("/login", forceLoad: true);
+
+    public class RegisterRequest
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required, MinLength(6)]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        public string LastName { get; set; } = string.Empty;
+
+        public string? Phone { get; set; }
+    }
+}
+

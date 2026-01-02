@@ -1,0 +1,250 @@
+@page "/sync-enterprises"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Common
+@using VMS.Client.DTOs.Enterprises
+@inject HttpClient Http
+@attribute [Authorize(Roles = "SUPERADMIN")]
+
+<PageTitle>Sync Enterprises</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Sync Enterprises from OnePortal</h3>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (syncResult != null && syncResult.Success)
+    {
+        <div class="alert alert-success" role="alert">
+            <h5>Sync Completed Successfully!</h5>
+            <p><strong>Total Enterprises:</strong> @syncResult.Data.Total</p>
+            <p><strong>Created:</strong> @syncResult.Data.Created</p>
+            <p><strong>Updated:</strong> @syncResult.Data.Updated</p>
+            @if (syncResult.Data.Errors != null && syncResult.Data.Errors.Count > 0)
+            {
+                <div class="mt-3">
+                    <strong>Errors:</strong>
+                    <ul>
+                        @foreach (var error in syncResult.Data.Errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Sync Enterprises</h5>
+            <p class="card-text">
+                This will synchronize enterprises from OnePortal to the local database. 
+                New enterprises will be created and existing ones will be updated with the latest information.
+            </p>
+            <button class="btn btn-primary" @onclick="HandleSync" disabled="@isSyncing">
+                @if (isSyncing)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Syncing...</span>
+                }
+                else
+                {
+                    <span>Sync Enterprises</span>
+                }
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Sync Enterprise Users</h5>
+            <p class="card-text">
+                Select an enterprise from the local database and synchronize its users from OnePortal.
+            </p>
+            
+            <div class="mb-3">
+                <label for="enterpriseSelect" class="form-label">Select Enterprise</label>
+                <select id="enterpriseSelect" class="form-select" @bind="selectedEnterpriseId" @bind:event="onchange">
+                    <option value="0">-- Select an Enterprise --</option>
+                    @foreach (var enterprise in enterprises)
+                    {
+                        <option value="@enterprise.EnterpriseId">@enterprise.Name (@(enterprise.Code ?? "N/A"))</option>
+                    }
+                </select>
+            </div>
+
+            @if (!string.IsNullOrEmpty(userSyncErrorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @userSyncErrorMessage
+                </div>
+            }
+
+            @if (userSyncResult != null && userSyncResult.Success)
+            {
+                <div class="alert alert-success" role="alert">
+                    <h6>User Sync Completed Successfully!</h6>
+                    <p><strong>Total Users:</strong> @userSyncResult.Data.Total</p>
+                    <p><strong>Created:</strong> @userSyncResult.Data.Created</p>
+                    <p><strong>Updated:</strong> @userSyncResult.Data.Updated</p>
+                    @if (userSyncResult.Data.Errors != null && userSyncResult.Data.Errors.Count > 0)
+                    {
+                        <div class="mt-3">
+                            <strong>Errors:</strong>
+                            <ul>
+                                @foreach (var error in userSyncResult.Data.Errors)
+                                {
+                                    <li>@error</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
+
+            <button class="btn btn-primary" @onclick="HandleSyncUsers" disabled="@(isSyncingUsers || selectedEnterpriseId == 0)">
+                @if (isSyncingUsers)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Syncing Users...</span>
+                }
+                else
+                {
+                    <span>Sync Users</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isSyncing = false;
+    private string errorMessage = string.Empty;
+    private BaseResponse<SyncEnterprisesResponseDto>? syncResult;
+
+    private bool isSyncingUsers = false;
+    private string userSyncErrorMessage = string.Empty;
+    private BaseResponse<SyncEnterpriseUsersResponseDto>? userSyncResult;
+    private List<EnterpriseDto> enterprises = new();
+    private int selectedEnterpriseId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEnterprises();
+    }
+
+    private async Task LoadEnterprises()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<EnterpriseDto>>>("api/Enterprises");
+            if (response != null && response.Success && response.Data != null)
+            {
+                enterprises = response.Data;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load enterprises: {ex.Message}";
+        }
+    }
+
+    private async Task HandleSync()
+    {
+        isSyncing = true;
+        errorMessage = string.Empty;
+        syncResult = null;
+
+        try
+        {
+            var response = await Http.PostAsync("api/Enterprises/sync", null);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                syncResult = await response.Content.ReadFromJsonAsync<BaseResponse<SyncEnterprisesResponseDto>>();
+                // Reload enterprises after sync
+                await LoadEnterprises();
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<object>>();
+                errorMessage = errorResponse?.Message ?? "Failed to sync enterprises.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isSyncing = false;
+        }
+    }
+
+    private async Task HandleSyncUsers()
+    {
+        if (selectedEnterpriseId == 0)
+        {
+            userSyncErrorMessage = "Please select an enterprise.";
+            return;
+        }
+
+        var selectedEnterprise = enterprises.FirstOrDefault(e => e.EnterpriseId == selectedEnterpriseId);
+        if (selectedEnterprise == null || !selectedEnterprise.OnePortalId.HasValue)
+        {
+            userSyncErrorMessage = "Selected enterprise does not have a OnePortal ID. Please sync enterprises first.";
+            return;
+        }
+
+        isSyncingUsers = true;
+        userSyncErrorMessage = string.Empty;
+        userSyncResult = null;
+
+        try
+        {
+            var response = await Http.PostAsync($"api/EnterpriseUsers/sync/{selectedEnterprise.OnePortalId.Value}", null);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                userSyncResult = await response.Content.ReadFromJsonAsync<BaseResponse<SyncEnterpriseUsersResponseDto>>();
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<object>>();
+                userSyncErrorMessage = errorResponse?.Message ?? "Failed to sync enterprise users.";
+            }
+        }
+        catch (Exception ex)
+        {
+            userSyncErrorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isSyncingUsers = false;
+        }
+    }
+
+    public class SyncEnterprisesResponseDto
+    {
+        public int Created { get; set; }
+        public int Updated { get; set; }
+        public int Total { get; set; }
+        public List<string> Errors { get; set; } = new();
+    }
+
+    public class SyncEnterpriseUsersResponseDto
+    {
+        public int Created { get; set; }
+        public int Updated { get; set; }
+        public int Total { get; set; }
+        public List<string> Errors { get; set; } = new();
+    }
+}
+

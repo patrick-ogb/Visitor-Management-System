@@ -1,0 +1,425 @@
+.visitor-management-login-page-container {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    min-height: 100vh;
+    max-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+}
+
+.visitor-management-login-page-visitor-management-login-page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.visitor-management-login-page-frame327 {
+    top: 0px;
+    left: 0px;
+    width: 750px;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.visitor-management-login-page-nightrender2 {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    bottom: 0px;
+    height: 100%;
+    margin: auto;
+    position: absolute;
+    object-fit: cover;
+    object-position: center;
+}
+
+.visitor-management-login-page-frame346 {
+    gap: 10px;
+    bottom: 100px;
+    left: 30px;
+    width: 610px;
+    height: 68px;
+    display: flex;
+    padding: 10px;
+    position: absolute;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.0010000000474974513);
+}
+
+.visitor-management-login-page-text1 {
+    color: rgba(255, 255, 255, 1);
+    width: 590px;
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Poppins;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-group237744 {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 50px;
+    width: 400px;
+    height: auto;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+}
+
+.visitor-management-login-page-frame1618868702 {
+    gap: 40px;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    display: flex;
+    position: relative;
+    align-items: center;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.visitor-management-login-page-lfzlogo231 {
+    width: 160px;
+    height: 71px;
+    object-fit: contain;
+}
+
+.visitor-management-login-page-frame1618868701 {
+    gap: 44px;
+    width: 100%;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.visitor-management-login-page-frame1618868700 {
+    gap: 24px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.visitor-management-login-page-email1 {
+    gap: 8px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.visitor-management-login-page-text2 {
+    color: rgba(20, 20, 20, 1);
+    height: auto;
+    font-size: 20px;
+    align-self: stretch;
+    font-style: Regular;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-email2 {
+    gap: 10px;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    padding: 16px 12px;
+    box-sizing: border-box;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(204, 204, 204, 1);
+    border-style: solid;
+    border-width: 0.5px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.visitor-management-login-page-email-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: rgba(20, 20, 20, 1);
+    font-size: 16px;
+    font-family: Ubuntu;
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
+}
+
+.visitor-management-login-page-email-input::placeholder {
+    color: rgba(149, 149, 149, 1);
+}
+
+.visitor-management-login-page-text3 {
+    color: rgba(149, 149, 149, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-password1 {
+    gap: 8px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.visitor-management-login-page-text4 {
+    color: rgba(20, 20, 20, 1);
+    height: auto;
+    font-size: 20px;
+    align-self: stretch;
+    font-style: Regular;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-password2 {
+    gap: 10px;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    padding: 16px 12px;
+    box-sizing: border-box;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(204, 204, 204, 1);
+    border-style: solid;
+    border-width: 0.5px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.visitor-management-login-page-password-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: rgba(20, 20, 20, 1);
+    font-size: 16px;
+    font-family: Ubuntu;
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
+}
+
+.visitor-management-login-page-password-input::placeholder {
+    color: rgba(149, 149, 149, 1);
+}
+
+.visitor-management-login-page-text5 {
+    color: rgba(149, 149, 149, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Ubuntu;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.visitor-management-login-page-viewoffslash {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.visitor-management-login-page-viewoffslash:hover {
+    opacity: 0.7;
+}
+
+.visitor-management-login-page-sign-in-button {
+    gap: 10px;
+    display: flex;
+    padding: 16px 10px;
+    align-self: stretch;
+    box-sizing: border-box;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    justify-content: center;
+    background-color: rgba(26, 36, 85, 1);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.visitor-management-login-page-sign-in-button:hover {
+    background-color: rgba(20, 28, 68, 1);
+}
+
+.visitor-management-login-page-text6 {
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    font-size: 20px;
+    font-style: Medium;
+    text-align: center;
+    font-family: Ubuntu;
+    font-weight: 500;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+/* Responsive Design - Mobile (< 768px) */
+@media (max-width: 767px) {
+    .visitor-management-login-page-container {
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: none;
+    }
+
+    .visitor-management-login-page-visitor-management-login-page {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: visible;
+        overflow-x: hidden;
+    }
+
+    .visitor-management-login-page-frame327 {
+        width: 100%;
+        height: 40vh;
+        min-height: 250px;
+        position: relative;
+    }
+
+    .visitor-management-login-page-frame346 {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+        max-width: calc(100% - 40px);
+    }
+
+    .visitor-management-login-page-text1 {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .visitor-management-login-page-group237744 {
+        top: auto;
+        transform: none;
+        right: auto;
+        left: auto;
+        width: 100%;
+        position: relative;
+        padding: 30px 20px;
+        box-sizing: border-box;
+        margin: 0;
+    }
+
+    .visitor-management-login-page-frame1618868702 {
+        gap: 30px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .visitor-management-login-page-lfzlogo231 {
+        width: 140px;
+        height: 62px;
+    }
+
+    .visitor-management-login-page-frame1618868701 {
+        gap: 32px;
+        width: 100%;
+    }
+
+    .visitor-management-login-page-text2,
+    .visitor-management-login-page-text4 {
+        font-size: 18px;
+    }
+
+    .visitor-management-login-page-email-input,
+    .visitor-management-login-page-password-input {
+        font-size: 14px;
+    }
+
+    .visitor-management-login-page-text6 {
+        font-size: 18px;
+    }
+}
+
+/* Responsive Design - Tablet (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .visitor-management-login-page-frame327 {
+        width: 50%;
+        max-width: 500px;
+    }
+
+    .visitor-management-login-page-frame346 {
+        width: calc(100% - 60px);
+        max-width: 500px;
+    }
+
+    .visitor-management-login-page-text1 {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .visitor-management-login-page-group237744 {
+        right: 30px;
+        width: 45%;
+        min-width: 350px;
+        max-width: 400px;
+    }
+
+    .visitor-management-login-page-text2,
+    .visitor-management-login-page-text4 {
+        font-size: 19px;
+    }
+}
+
+/* Responsive Design - Large Desktop (> 1440px) */
+@media (min-width: 1440px) {
+    .visitor-management-login-page-frame327 {
+        width: 750px;
+    }
+
+    .visitor-management-login-page-group237744 {
+        right: calc((100% - 1440px) / 2 + 50px);
+        max-width: 400px;
+    }
+}
