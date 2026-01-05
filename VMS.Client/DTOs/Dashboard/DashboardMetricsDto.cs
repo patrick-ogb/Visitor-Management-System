@@ -7,3 +7,4 @@ public class DashboardMetricsDto
     public int WalkInRequests { get; set; }
 }
 
+

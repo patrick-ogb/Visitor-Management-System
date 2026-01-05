@@ -24,6 +24,15 @@ public class CheckInGuestCommandHandler : IRequestHandler<CheckInGuestCommand, B
                 return BaseResponse<bool>.ErrorResponse("Invitation not found");
             }
 
+            // Validate date constraints: departure must be today or in the future (arrival date check removed to allow override)
+            var today = DateTime.UtcNow.Date;
+            var departureDate = invitation.ExpectedDeparture.Date;
+            
+            if (departureDate < today)
+            {
+                return BaseResponse<bool>.ErrorResponse("Cannot check in: Expected departure date has passed");
+            }
+
             if (invitation.Status != InvitationStatus.Approved)
             {
                 return BaseResponse<bool>.ErrorResponse("Only approved invitations can be checked in");

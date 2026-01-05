@@ -36,6 +36,7 @@ public class GetApprovedGuestsQueryHandler : IRequestHandler<GetApprovedGuestsQu
         var guests = invitations.Select(i => new ApprovedGuestDto
         {
             GuestInvitationId = i.GuestInvitationId,
+            InvitationNo = i.InvitationNo,
             GuestName = i.Guest.Name,
             PhoneNumber = i.Guest.PhoneNumber,
             Email = i.Guest.Email,

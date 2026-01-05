@@ -201,7 +201,42 @@
     font-size: 20px;
     font-weight: 400;
     font-family: 'Ubuntu', sans-serif;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+}
+
+.chart-view-toggle {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.toggle-btn {
+    padding: 8px 16px;
+    border: 1px solid rgba(204, 204, 204, 1);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 1);
+    color: rgba(20, 20, 20, 1);
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Ubuntu', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.toggle-btn:hover {
+    background-color: rgba(242, 245, 253, 1);
+    border-color: rgba(0, 31, 87, 1);
+}
+
+.toggle-btn.active {
+    background-color: rgba(0, 31, 87, 1);
+    color: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 31, 87, 1);
+}
+
+.toggle-btn.active:hover {
+    background-color: rgba(0, 25, 70, 1);
 }
 
 .chart-content {
@@ -344,7 +379,6 @@
     color: rgba(134, 134, 134, 1);
 }
 
-.filter-dropdown,
 .export-dropdown {
     display: flex;
     align-items: center;
@@ -363,21 +397,142 @@
     flex-shrink: 0;
 }
 
-.filter-dropdown svg,
-.export-dropdown svg {
+.filter-dropdown-container {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    height: 42px;
+    background-color: #CCCCCC;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Ubuntu', sans-serif;
+    color: rgba(20, 20, 20, 1);
+    white-space: nowrap;
+    min-width: 120px;
+    transition: background-color 0.2s ease;
+}
+
+.filter-header:hover {
+    background-color: #B8B8B8;
+}
+
+.filter-header svg {
     width: 20px;
     height: 20px;
     color: rgba(20, 20, 20, 1);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
 }
 
-.export-dropdown {
-    background-color: rgba(0, 31, 87, 1);
-    color: rgba(255, 255, 255, 1);
-    border-color: rgba(0, 31, 87, 1);
+.filter-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    min-width: 180px;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+    margin-top: 4px;
 }
 
-.export-dropdown svg {
+.filter-option {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Ubuntu', sans-serif;
+    color: rgba(20, 20, 20, 1);
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(240, 240, 240, 1);
+}
+
+.filter-option:last-child {
+    border-bottom: none;
+}
+
+.filter-option:hover {
+    background-color: rgba(0, 31, 87, 0.05);
+}
+
+.export-dropdown-container {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.export-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    height: 42px;
+    background-color: #001F57;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Ubuntu', sans-serif;
     color: rgba(255, 255, 255, 1);
+    white-space: nowrap;
+    min-width: 120px;
+    transition: background-color 0.2s ease;
+}
+
+.export-header:hover {
+    background-color: #001a4a;
+}
+
+.export-header svg {
+    width: 20px;
+    height: 20px;
+    color: rgba(255, 255, 255, 1);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.export-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    min-width: 180px;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.export-option {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Ubuntu', sans-serif;
+    color: rgba(20, 20, 20, 1);
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(240, 240, 240, 1);
+}
+
+.export-option:last-child {
+    border-bottom: none;
+}
+
+.export-option:hover {
+    background-color: rgba(0, 31, 87, 0.05);
 }
 
 /* Table */

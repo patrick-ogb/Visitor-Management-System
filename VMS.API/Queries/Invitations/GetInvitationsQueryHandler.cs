@@ -42,6 +42,13 @@ public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, B
                 if (Enum.TryParse<InvitationStatus>(request.Status, out var status))
                 {
                     query = query.Where(i => i.Status == status);
+                    
+                    // For Approved status, also filter out already checked-in invitations
+                    // This ensures GateAdmin only sees approved invitations awaiting check-in
+                    if (status == InvitationStatus.Approved)
+                    {
+                        query = query.Where(i => i.CheckedInAt == null);
+                    }
                 }
             }
 
@@ -53,6 +60,16 @@ public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, B
             if (request.ToDate.HasValue)
             {
                 query = query.Where(i => i.ExpectedArrival <= request.ToDate.Value);
+            }
+
+            // Apply search filter for GuestName or InvitationNo
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var searchTerm = request.SearchTerm.Trim().ToLower();
+                query = query.Where(i => 
+                    (i.Guest != null && i.Guest.Name != null && i.Guest.Name.ToLower().Contains(searchTerm)) ||
+                    (i.InvitationNo != null && i.InvitationNo.ToLower().Contains(searchTerm))
+                );
             }
 
             // Note: We use null-conditional operators in the mapping below to handle null Guest navigation properties

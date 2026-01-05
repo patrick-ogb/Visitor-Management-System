@@ -12,7 +12,7 @@ namespace VMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "SUPERADMIN,LFZStaff,EnterpriseUser,EnterpriseAdmin,GateAdmin")]
+[Authorize(Roles = "SUPERADMIN,LFZAdmin,LFZStaff,EnterpriseUser,EnterpriseAdmin,GateAdmin")]
 public class InvitationsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -150,11 +150,13 @@ public class InvitationsController : ControllerBase
             ?? User.FindFirst("sub")?.Value;
         
         var isSuperadmin = User.IsInRole("SUPERADMIN");
+        var isLFZAdmin = User.IsInRole("LFZAdmin");
         var isEnterpriseAdmin = User.IsInRole("EnterpriseAdmin");
+        var isGateAdmin = User.IsInRole("GateAdmin");
         
         // Only auto-filter by HostId if not SUPERADMIN and not EnterpriseAdmin and not already specified
         // EnterpriseAdmin should see all invitations for their enterprise (not filtered by HostId)
-        if (!isSuperadmin && !isEnterpriseAdmin)
+        if (!isSuperadmin && !isEnterpriseAdmin && !isLFZAdmin && !isGateAdmin)
         {
             if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
             {
@@ -166,8 +168,19 @@ public class InvitationsController : ControllerBase
             }
         }
 
-        // Set EnterpriseId for non-SUPERADMIN users (including EnterpriseAdmin)
-        if (!isSuperadmin)
+        // GateAdmin: See all approved, unchecked-in invitations across all enterprises
+        if (isGateAdmin)
+        {
+            // Automatically apply Approved status filter for GateAdmin
+            if (string.IsNullOrWhiteSpace(query.Status))
+            {
+                query.Status = "Approved";
+            }
+        }
+
+        // Set EnterpriseId for non-SUPERADMIN, non-LFZAdmin, and non-GateAdmin users (including EnterpriseAdmin)
+        // GateAdmin needs to see invitations across all enterprises
+        if (!isSuperadmin && !isLFZAdmin && !isGateAdmin)
         {
             var enterpriseIdClaim = User.FindFirst("enterpriseId")?.Value;
             if (!string.IsNullOrEmpty(enterpriseIdClaim) && int.TryParse(enterpriseIdClaim, out var enterpriseId))

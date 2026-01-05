@@ -1,0 +1,702 @@
+.gate-operations-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.gate-operations-thq-gate-operations-elm {
+  width: 100%;
+  height: 1043px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-color: rgba(246, 246, 246, 1);
+}
+ 
+.gate-operations-thq-lfzlogo231-elm {
+  top: 30px;
+  left: 30px;
+  width: 120px;
+  height: 53px;
+  position: absolute;
+}
+ 
+.gate-operations-thq-line3-elm1 {
+  top: 107px;
+  left: 30px;
+  width: 200px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.gate-operations-thq-frame491-elm {
+  top: 16px;
+  left: 260px;
+  width: 1164px;
+  height: 1011px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.gate-operations-thq-line3-elm2 {
+  top: 60px;
+  left: 0px;
+  width: 1164px;
+  height: 1px;
+  position: absolute;
+}
+ 
+.gate-operations-thq-frame1618868809-elm {
+  gap: 703px;
+  top: 14px;
+  left: 14px;
+  width: 1136px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+ 
+.gate-operations-thq-text-elm10 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 28px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-frame496-elm {
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-mingcutenotificationline-elm {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.gate-operations-thq-group-elm {
+  top: 2px;
+  left: 3.0618371963500977px;
+  width: 17.876325607299805px;
+  height: 21.81442642211914px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.gate-operations-thq-vector-elm {
+  top: 0px;
+  left: 0px;
+  width: 18px;
+  height: 19px;
+  position: absolute;
+}
+ 
+.gate-operations-thq-frame399-elm {
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+ 
+.gate-operations-thq-ellipse161-elm {
+  width: 30px;
+  height: 30px;
+}
+ 
+.gate-operations-thq-frame398-elm {
+  gap: 2px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-text-elm11 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  align-self: stretch;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-text-elm12 {
+  color: rgba(20, 20, 20, 0.6499999761581421);
+  height: auto;
+  font-size: 12px;
+  align-self: stretch;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-activeusers-elm {
+  top: 84px;
+  left: 22px;
+  width: 1120px;
+  height: 913px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.gate-operations-thq-cancel-elm1 {
+  gap: 8px;
+  top: 20px;
+  left: 20px;
+  width: 915px;
+  height: 50px;
+  display: flex;
+  padding: 16px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 12px;
+}
+ 
+.gate-operations-thq-text-elm13 {
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-cancel-elm2 {
+  gap: 8px;
+  top: 167px;
+  left: 20px;
+  width: 1080px;
+  height: 78px;
+  display: flex;
+  padding: 16px 12px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 12px;
+  background-color: rgba(249, 249, 249, 1);
+}
+ 
+.gate-operations-thq-frame1618868821-elm1 {
+  gap: 12px;
+  top: 30px;
+  left: 16px;
+  width: 380px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-text-elm14 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-bookappointment-elm1 {
+  gap: 12px;
+  top: 22px;
+  left: 998px;
+  width: 60px;
+  display: flex;
+  padding: 8px 16px;
+  position: absolute;
+  align-items: center;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.gate-operations-thq-text-elm15 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: right;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-text-elm16 {
+  top: 133px;
+  left: 20px;
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  position: absolute;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-cancel-elm3 {
+  gap: 8px;
+  top: 363px;
+  left: 20px;
+  width: 1080px;
+  height: 78px;
+  display: flex;
+  padding: 16px 12px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 12px;
+  background-color: rgba(249, 249, 249, 1);
+}
+ 
+.gate-operations-thq-frame1618868821-elm2 {
+  gap: 12px;
+  top: 30px;
+  left: 16px;
+  width: 104px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-text-elm17 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-bookappointment-elm2 {
+  gap: 12px;
+  top: 22px;
+  left: 998px;
+  width: 60px;
+  display: flex;
+  padding: 8px 16px;
+  position: absolute;
+  align-items: center;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.gate-operations-thq-text-elm18 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: right;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-cancel-elm4 {
+  gap: 8px;
+  top: 265px;
+  left: 20px;
+  width: 1080px;
+  height: 78px;
+  display: flex;
+  padding: 16px 12px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 12px;
+  background-color: rgba(249, 249, 249, 1);
+}
+ 
+.gate-operations-thq-frame1618868821-elm3 {
+  gap: 10px;
+  top: 30.5px;
+  left: 16px;
+  width: 112px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-text-elm19 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-bookappointment-elm3 {
+  gap: 12px;
+  top: 22px;
+  left: 998px;
+  width: 60px;
+  display: flex;
+  padding: 8px 16px;
+  position: absolute;
+  align-items: center;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.gate-operations-thq-text-elm20 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: right;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-cancel-elm5 {
+  gap: 8px;
+  top: 461px;
+  left: 20px;
+  width: 1080px;
+  height: 78px;
+  display: flex;
+  padding: 16px 12px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-color: rgba(204, 204, 204, 1);
+  border-style: solid;
+  border-width: 0.5px;
+  border-radius: 12px;
+  background-color: rgba(249, 249, 249, 1);
+}
+ 
+.gate-operations-thq-frame1618868821-elm4 {
+  gap: 10px;
+  top: 30.5px;
+  left: 16px;
+  width: 139px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-text-elm21 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-bookappointment-elm4 {
+  gap: 12px;
+  top: 22px;
+  left: 998px;
+  width: 60px;
+  display: flex;
+  padding: 8px 16px;
+  position: absolute;
+  align-items: center;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.gate-operations-thq-text-elm22 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: right;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-text-elm23 {
+  top: 102px;
+  left: 20px;
+  color: rgba(0, 31, 87, 1);
+  height: auto;
+  position: absolute;
+  font-size: 20px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-bookappointment-elm5 {
+  gap: 12px;
+  top: 20px;
+  left: 955px;
+  width: 145px;
+  height: 50px;
+  display: flex;
+  padding: 16px 24px;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  justify-content: center;
+  background-color: rgba(0, 31, 87, 1);
+}
+ 
+.gate-operations-thq-materialsymbolssearchrounded-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.gate-operations-thq-text-elm24 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 20px;
+  font-style: Regular;
+  text-align: right;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-group237773-elm {
+  top: 147px;
+  left: 30px;
+  width: 188px;
+  height: 52px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.gate-operations-thq-frame492-elm {
+  gap: 12px;
+  top: 0px;
+  left: 0px;
+  width: 188px;
+  height: 24px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.gate-operations-thq-materialsymbolsnestdoorbellvisitoroutline-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.gate-operations-thq-text-elm25 {
+  color: rgba(134, 134, 134, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-frame1618868627-elm {
+  gap: 16px;
+  top: 36px;
+  left: 24px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.gate-operations-thq-frame1618868625-elm {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.gate-operations-thq-ellipse179-elm {
+  width: 6px;
+  height: 6px;
+}
+ 
+.gate-operations-thq-text-elm26 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 14px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-group237762-elm {
+  top: 918px;
+  left: 32px;
+  width: 96px;
+  height: 80px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+ 
+.gate-operations-thq-settings-elm {
+  gap: 12px;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.gate-operations-thq-carbonsettings-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.gate-operations-thq-text-elm27 {
+  color: rgba(20, 20, 20, 1);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.gate-operations-thq-logout-elm {
+  gap: 12px;
+  top: 56px;
+  left: 0px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+}
+ 
+.gate-operations-thq-hugeiconslogout02-elm {
+  width: 24px;
+  height: 24px;
+}
+ 
+.gate-operations-thq-text-elm28 {
+  color: var(--dl-color-default-red);
+  height: auto;
+  font-size: 16px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Ubuntu;
+  font-weight: 400;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}

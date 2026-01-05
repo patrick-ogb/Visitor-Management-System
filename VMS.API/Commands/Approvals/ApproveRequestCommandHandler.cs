@@ -1,8 +1,10 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using VMS.API.Common.Models;
 using VMS.Core.Entities;
 using VMS.Core.Enums;
+using VMS.Infrastructure.Data;
 using VMS.Infrastructure.Repositories;
 using VMS.Infrastructure.Services;
 
@@ -36,7 +38,17 @@ public class ApproveRequestCommandHandler : IRequestHandler<ApproveRequestComman
             // Walk-ins are now GuestInvitations, so handle all as invitations
             if (request.Type == "Invitation" || request.Type == "WalkIn")
             {
-                var invitation = await _unitOfWork.GuestInvitations.GetByIdAsync(request.RequestId);
+                // Load invitation with Guest navigation property included
+                var dbContext = _unitOfWork.GetDbContext() as VmsDbContext;
+                if (dbContext == null)
+                {
+                    return BaseResponse<bool>.ErrorResponse("Database context error");
+                }
+                
+                var invitation = await dbContext.GuestInvitations
+                    .Include(i => i.Guest)
+                    .FirstOrDefaultAsync(i => i.GuestInvitationId == request.RequestId, cancellationToken);
+                
                 if (invitation == null)
                 {
                     return BaseResponse<bool>.ErrorResponse("Invitation not found");
@@ -59,11 +71,11 @@ public class ApproveRequestCommandHandler : IRequestHandler<ApproveRequestComman
                 await _unitOfWork.Approvals.AddAsync(approval);
 
                 // Send notification
-                if (invitation.Guest.Email != null)
+                if (invitation.Guest != null && invitation.Guest.Email != null)
                 {
                     await _emailService.SendApprovalConfirmationAsync(
                         invitation.Guest.Email,
-                        invitation.Guest.Name,
+                        invitation.Guest.Name ?? string.Empty,
                         request.IsApproved,
                         request.Comments);
                 }

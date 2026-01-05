@@ -25,6 +25,7 @@
     color: #333333;
     outline: none;
     transition: border-color 0.2s ease;
+    max-width: 300px;
 }
 
 .search-input:focus {
@@ -69,6 +70,13 @@
     line-height: 1;
 }
 
+.work-in-and-check-out {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-left: auto;
+}
+
 .walkin-button {
     padding: 12px 20px;
     background-color: #0f2340;
@@ -83,9 +91,23 @@
     white-space: nowrap;
 }
 
-.walkin-button:hover {
-    background-color: #0c1b33;
+.walkout-button {
+    padding: 12px 20px;
+    background-color: #666666;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
 }
+
+    .walkin-button:hover {
+        background-color: #0c1b33;
+    }
 
 .walkin-button:active {
     background-color: #0a152a;
@@ -123,13 +145,26 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.guest-name-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
 .guest-name {
     font-weight: 600;
     color: #333333;
     font-size: 16px;
     font-family: 'Poppins', 'Inter', sans-serif;
     text-align: left;
-    flex: 1;
+}
+
+.guest-invitation-no {
+    color: rgba(134, 134, 134, 1);
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Poppins', 'Inter', sans-serif;
 }
 
 .card-actions {
@@ -165,41 +200,48 @@
 }
 
 .allow-entry-button {
-    padding: 10px 20px;
+    padding: 6px 12px;
     background-color: #1A3B6A;
     color: #FFFFFF;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     font-family: 'Poppins', 'Inter', sans-serif;
     cursor: pointer;
     transition: background-color 0.2s ease;
     white-space: nowrap;
-    min-width: 120px;
+    min-width: 0;
 }
 
-.allow-entry-button:hover {
+.allow-entry-button:hover:not(:disabled) {
     background-color: #153055;
 }
 
-.allow-entry-button:active {
+.allow-entry-button:active:not(:disabled) {
     background-color: #0f2340;
 }
 
+.allow-entry-button:disabled {
+    background-color: #CCCCCC;
+    color: #FFFFFF;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .reject-entry-button {
-    padding: 10px 20px;
+    padding: 6px 12px;
     background-color: #DC3545;
     color: #FFFFFF;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     font-family: 'Poppins', 'Inter', sans-serif;
     cursor: pointer;
     transition: background-color 0.2s ease;
     white-space: nowrap;
-    min-width: 120px;
+    min-width: 0;
 }
 
 .reject-entry-button:hover {
@@ -256,8 +298,12 @@
         padding: 16px;
     }
 
-    .guest-name {
+    .guest-name-container {
         width: 100%;
+    }
+    
+    .guest-name {
+        width: auto;
     }
 
     .card-actions {
@@ -749,6 +795,165 @@
 
     .confirmation-cancel-button,
     .confirmation-confirm-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* Reschedule Modal Styles */
+.reschedule-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.reschedule-modal {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 600px;
+    animation: slideInUp 0.3s ease;
+}
+
+.reschedule-modal-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.reschedule-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333333;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    margin: 0;
+}
+
+.reschedule-modal-message {
+    font-size: 16px;
+    font-weight: 400;
+    color: #666666;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.reschedule-date-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.reschedule-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reschedule-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+    font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+.reschedule-date-input {
+    padding: 12px 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    font-size: 14px;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    color: #333333;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.reschedule-date-input:focus {
+    border-color: #1A3B6A;
+    box-shadow: 0 0 0 3px rgba(26, 59, 106, 0.1);
+}
+
+.reschedule-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.reschedule-cancel-button {
+    padding: 12px 24px;
+    background-color: #F5F5F5;
+    color: #333333;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reschedule-cancel-button:hover {
+    background-color: #E8E8E8;
+}
+
+.reschedule-submit-button {
+    padding: 12px 24px;
+    background-color: #1A3B6A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reschedule-submit-button:hover {
+    background-color: #153055;
+}
+
+.reschedule-submit-button:active {
+    background-color: #0f2340;
+}
+
+@media (max-width: 768px) {
+    .reschedule-modal {
+        width: 95%;
+        max-width: none;
+    }
+
+    .reschedule-modal-content {
+        padding: 24px;
+        gap: 20px;
+    }
+
+    .reschedule-modal-title {
+        font-size: 18px;
+    }
+
+    .reschedule-modal-message {
+        font-size: 14px;
+    }
+
+    .reschedule-buttons {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .reschedule-cancel-button,
+    .reschedule-submit-button {
         width: 100%;
         min-width: 0;
     }

@@ -7,3 +7,4 @@ public class TopEnterpriseDto
     public double Percentage { get; set; }
 }
 
+

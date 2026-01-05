@@ -62,6 +62,41 @@ public class GateController : ControllerBase
         
         return BadRequest(result);
     }
+
+    [HttpGet("checked-in-guests")]
+    public async Task<ActionResult> GetCheckedInGuests()
+    {
+        var query = new GetCheckedInGuestsQuery();
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPut("check-out/{id}")]
+    public async Task<ActionResult> CheckOutGuest(int id)
+    {
+        var command = new CheckOutGuestCommand { GuestInvitationId = id };
+        var result = await _mediator.Send(command);
+        
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+        
+        return BadRequest(result);
+    }
+
+    [HttpPost("reschedule-invitation")]
+    public async Task<ActionResult> RescheduleInvitation([FromBody] RescheduleGuestInvitationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+        
+        return BadRequest(result);
+    }
 }
 
 

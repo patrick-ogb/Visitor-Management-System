@@ -36,43 +36,72 @@ public class GetVisitorsByDayQueryHandler : IRequestHandler<GetVisitorsByDayQuer
                 query = query.Where(i => i.EnterpriseId == request.EnterpriseId.Value);
             }
 
-            // Group by day of week and count
-            var visitorsByDay = await query
-                .GroupBy(i => i.CheckedInAt!.Value.DayOfWeek)
-                .Select(g => new
-                {
-                    DayOfWeek = g.Key,
-                    Count = g.Count()
-                })
-                .ToListAsync(cancellationToken);
-
-            // Map DayOfWeek enum to abbreviated day names
-            var dayNameMap = new Dictionary<DayOfWeek, string>
+            if (request.ViewMode == VisitorsByDayViewMode.ByDate)
             {
-                { DayOfWeek.Monday, "Mon" },
-                { DayOfWeek.Tuesday, "Tue" },
-                { DayOfWeek.Wednesday, "Wed" },
-                { DayOfWeek.Thursday, "Thur" },
-                { DayOfWeek.Friday, "Fri" },
-                { DayOfWeek.Saturday, "Sat" },
-                { DayOfWeek.Sunday, "Sun" }
-            };
+                // ByDate mode: Group by specific date and count
+                var visitorsByDate = await query
+                    .GroupBy(i => i.CheckedInAt!.Value.Date)
+                    .Select(g => new
+                    {
+                        Date = g.Key,
+                        Count = g.Count()
+                    })
+                    .OrderBy(x => x.Date)
+                    .ToListAsync(cancellationToken);
 
-            // Convert to DTOs and ensure all days are represented
-            var allDays = new List<VisitorsByDayDto>();
-            var dayOrder = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday };
-
-            foreach (var day in dayOrder)
-            {
-                var dayData = visitorsByDay.FirstOrDefault(v => v.DayOfWeek == day);
-                allDays.Add(new VisitorsByDayDto
+                // Convert to DTOs with formatted date labels
+                var allDates = visitorsByDate.Select(v => new VisitorsByDayDto
                 {
-                    Day = dayNameMap[day],
-                    Count = dayData?.Count ?? 0
-                });
+                    Date = v.Date,
+                    DateLabel = v.Date.ToString("MMM dd"), // e.g., "Jan 15"
+                    Day = string.Empty, // Not used in ByDate mode
+                    Count = v.Count
+                }).ToList();
+
+                return BaseResponse<List<VisitorsByDayDto>>.SuccessResponse(allDates);
             }
+            else
+            {
+                // ByDayOfWeek mode: Group by day of week and count (existing logic)
+                var visitorsByDay = await query
+                    .GroupBy(i => i.CheckedInAt!.Value.DayOfWeek)
+                    .Select(g => new
+                    {
+                        DayOfWeek = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToListAsync(cancellationToken);
 
-            return BaseResponse<List<VisitorsByDayDto>>.SuccessResponse(allDays);
+                // Map DayOfWeek enum to abbreviated day names
+                var dayNameMap = new Dictionary<DayOfWeek, string>
+                {
+                    { DayOfWeek.Monday, "Mon" },
+                    { DayOfWeek.Tuesday, "Tue" },
+                    { DayOfWeek.Wednesday, "Wed" },
+                    { DayOfWeek.Thursday, "Thur" },
+                    { DayOfWeek.Friday, "Fri" },
+                    { DayOfWeek.Saturday, "Sat" },
+                    { DayOfWeek.Sunday, "Sun" }
+                };
+
+                // Convert to DTOs and ensure all days are represented
+                var allDays = new List<VisitorsByDayDto>();
+                var dayOrder = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday };
+
+                foreach (var day in dayOrder)
+                {
+                    var dayData = visitorsByDay.FirstOrDefault(v => v.DayOfWeek == day);
+                    allDays.Add(new VisitorsByDayDto
+                    {
+                        Day = dayNameMap[day],
+                        Date = null, // Not used in ByDayOfWeek mode
+                        DateLabel = string.Empty, // Not used in ByDayOfWeek mode
+                        Count = dayData?.Count ?? 0
+                    });
+                }
+
+                return BaseResponse<List<VisitorsByDayDto>>.SuccessResponse(allDays);
+            }
         }
         catch (Exception ex)
         {

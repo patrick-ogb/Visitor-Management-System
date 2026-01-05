@@ -1,11 +1,14 @@
 @page "/dashboard"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
 @using VMS.Client.DTOs.Invitations
 @using VMS.Client.DTOs.Common
 @using VMS.Client.DTOs.Dashboard
+@using ClosedXML.Excel
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
 @attribute [Authorize(Policy = "RequireAdmin")]
 
 <PageTitle>Dashboard</PageTitle>
@@ -14,7 +17,7 @@
     <div class="lfz-admin-main">
         <!-- Header Section -->
         <div class="lfz-admin-header">
-            <span class="lfz-admin-title">LFZ ADMIN</span>
+            <span class="lfz-admin-title">ADMIN</span>
             <div class="lfz-admin-user-section">
                 <div class="lfz-admin-notification-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -84,7 +87,17 @@
         <div class="lfz-admin-charts">
             <!-- Visitors by Day Chart -->
             <div class="lfz-admin-chart-container">
-                <span class="chart-title">Visitors by Day</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span class="chart-title">Visitors by Day</span>
+                    <div class="chart-view-toggle">
+                        <button class="toggle-btn @(chartViewMode == "ByDate" ? "active" : "")" @onclick='() => SwitchChartView("ByDate")'>
+                            By Date
+                        </button>
+                        <button class="toggle-btn @(chartViewMode == "ByDayOfWeek" ? "active" : "")" @onclick='() => SwitchChartView("ByDayOfWeek")'>
+                            By Day of Week
+                        </button>
+                    </div>
+                </div>
                 <div class="chart-content">
                     @if (isLoadingChart)
                     {
@@ -109,7 +122,8 @@
                             var startX = 50;
                             var startY = 20;
                             var endY = 200;
-                            var daySpacing = chartWidth / 6.0;
+                            var dataPointCount = visitorsByDay.Count > 0 ? visitorsByDay.Count : 1;
+                            var daySpacing = dataPointCount > 1 ? chartWidth / (dataPointCount - 1.0) : chartWidth;
                             
                             // Y-axis labels
                             @for (int i = 0; i <= 5; i++)
@@ -119,12 +133,26 @@
                                 @((MarkupString)$"<text x=\"10\" y=\"{yPos + 5}\" class=\"axis-label\">{value}</text>")
                             }
                             
-                            // X-axis labels
-                            var days = new[] { "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun" };
-                            @for (int i = 0; i < visitorsByDay.Count; i++)
+                            // X-axis labels - adapt based on view mode
+                            @if (chartViewMode == "ByDate")
                             {
-                                var xPos = startX + (daySpacing * i);
-                                @((MarkupString)$"<text x=\"{xPos - 15}\" y=\"220\" class=\"axis-label\">{days[i]}</text>")
+                                // ByDate: Show formatted dates
+                                @for (int i = 0; i < visitorsByDay.Count; i++)
+                                {
+                                    var xPos = startX + (daySpacing * i);
+                                    var dateLabel = visitorsByDay[i].DateLabel;
+                                    @((MarkupString)$"<text x=\"{xPos - 20}\" y=\"220\" class=\"axis-label\">{dateLabel}</text>")
+                                }
+                            }
+                            else
+                            {
+                                // ByDayOfWeek: Show day names
+                                @for (int i = 0; i < visitorsByDay.Count; i++)
+                                {
+                                    var xPos = startX + (daySpacing * i);
+                                    var dayName = visitorsByDay[i].Day;
+                                    @((MarkupString)$"<text x=\"{xPos - 15}\" y=\"220\" class=\"axis-label\">{dayName}</text>")
+                                }
                             }
                             
                             // Grid lines
@@ -163,13 +191,16 @@
                                     <circle cx="@point.x" cy="@point.y" r="4" fill="#4CAF50"/>
                                 }
                                 
-                                // Tooltip for highest point (or Tue if available)
+                                // Tooltip for highest point
                                 @if (pathPoints.Count > 1 && visitorsByDay.Count > 1)
                                 {
                                     var maxIndex = pathPoints.Select((p, idx) => (p.y, idx)).OrderBy(x => x.y).First().idx;
+                                    var tooltipLabel = chartViewMode == "ByDate" 
+                                        ? visitorsByDay[maxIndex].DateLabel 
+                                        : visitorsByDay[maxIndex].Day;
                                     <g class="chart-tooltip" transform="translate(@(pathPoints[maxIndex].x), @(pathPoints[maxIndex].y - 30))">
                                         <rect x="-40" y="-25" width="80" height="30" rx="4" fill="white" stroke="#E0E0E0"/>
-                                        @((MarkupString)$"<text x=\"0\" y=\"-8\" text-anchor=\"middle\" class=\"tooltip-text\">{visitorsByDay[maxIndex].Day}</text>")
+                                        @((MarkupString)$"<text x=\"0\" y=\"-8\" text-anchor=\"middle\" class=\"tooltip-text\">{tooltipLabel}</text>")
                                         @((MarkupString)$"<text x=\"0\" y=\"5\" text-anchor=\"middle\" class=\"tooltip-text\">visitors : {visitorsByDay[maxIndex].Count}</text>")
                                     </g>
                                 }
@@ -263,19 +294,49 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" placeholder="Search by name or ID" class="search-input" />
+                    <input type="text" placeholder="Search by name or Invitation ID" class="search-input" @bind="searchTerm" @bind:event="oninput" @onkeydown="HandleSearchKeyDown" />
                 </div>
-                <div class="filter-dropdown">
-                    <span>Filters</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                <div class="filter-dropdown-container" @onclick:stopPropagation="true">
+                    <div class="filter-header" @onclick="ToggleFilterDropdown">
+                        <span>@GetFilterDisplayText()</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="@(showFilterDropdown ? "caret-up" : "caret-down")">
+                            <polyline points="@(showFilterDropdown ? "18 15 12 9 6 15" : "6 9 12 15 18 9")"></polyline>
+                        </svg>
+                    </div>
+                    @if (showFilterDropdown)
+                    {
+                        <div class="filter-dropdown-menu">
+                            <div class="filter-option" @onclick='() => SelectFilter("")'>Select</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("Approved")'>Approved</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("Pending")'>Pending</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("CheckIn")'>Checked In</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("CheckOut")'>Check Out</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("Rejected")'>Rejected</div>
+                            <div class="filter-option" @onclick='() => SelectFilter("Cancelled")'>Cancelled</div>
+                        </div>
+                    }
                 </div>
-                <div class="export-dropdown">
-                    <span>Export</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                <div class="export-dropdown-container" @onclick:stopPropagation="true">
+                    <div class="export-header" @onclick="ToggleExportDropdown" style="@(isExporting ? "opacity: 0.6; pointer-events: none;" : "")">
+                        <span>Export</span>
+                        @if (isExporting)
+                        {
+                            <span style="margin-left: 8px; font-size: 12px;">Exporting...</span>
+                        }
+                        else
+                        {
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="@(showExportDropdown ? "caret-up" : "caret-down")">
+                                <polyline points="@(showExportDropdown ? "18 15 12 9 6 15" : "6 9 12 15 18 9")"></polyline>
+                            </svg>
+                        }
+                    </div>
+                    @if (showExportDropdown && !isExporting)
+                    {
+                        <div class="export-dropdown-menu">
+                            <div class="export-option" @onclick='() => SelectExport("CSV")'>CSV</div>
+                            <div class="export-option" @onclick='() => SelectExport("Excel")'>Excel</div>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -454,7 +515,7 @@
     // Real data - Invitations
     private List<InvitationDto> invitations = new();
     private PagedResponse<InvitationDto>? pagedResponse;
-    private int currentPage = 1;
+    private int? currentPage = 1;
     private int pageSize = 10;
 
     // Loading and error states
@@ -463,10 +524,24 @@
     private bool isLoadingInvitations = true;
     private string? errorMessage;
 
+    // Chart view mode
+    private string chartViewMode = "ByDate"; // Default to ByDate
+
     // Modal state
     private bool showDetailsModal = false;
     private bool isModalVisible = false;
     private InvitationDto? selectedInvitation = null;
+
+    // Filter state
+    private string selectedFilter = string.Empty;
+    private bool showFilterDropdown = false;
+
+    // Export state
+    private bool showExportDropdown = false;
+    private bool isExporting = false;
+
+    // Search state
+    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -508,7 +583,8 @@
         isLoadingChart = true;
         try
         {
-            var response = await Http.GetFromJsonAsync<BaseResponse<List<VisitorsByDayDto>>>("api/Dashboard/visitors-by-day");
+            var url = $"api/Dashboard/visitors-by-day?viewMode={chartViewMode}";
+            var response = await Http.GetFromJsonAsync<BaseResponse<List<VisitorsByDayDto>>>(url);
             if (response != null && response.Success && response.Data != null)
             {
                 visitorsByDay = response.Data;
@@ -525,6 +601,15 @@
         finally
         {
             isLoadingChart = false;
+        }
+    }
+
+    private async Task SwitchChartView(string viewMode)
+    {
+        if (chartViewMode != viewMode)
+        {
+            chartViewMode = viewMode;
+            await LoadVisitorsByDay();
         }
     }
 
@@ -553,13 +638,26 @@
         }
     }
 
-    private async Task LoadInvitations(int? pageNumber = null)
+    private async Task LoadInvitations(int? pageNumber = null, string? searchTermParam = null, string? statusFilter = null)
     {
         isLoadingInvitations = true;
         try
         {
             var page = pageNumber ?? currentPage;
-            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/Invitations?PageNumber={page}&PageSize={pageSize}");
+            var search = searchTermParam ?? searchTerm;
+            var status = statusFilter ?? MapFilterToApiStatus(selectedFilter);
+            
+            var queryParams = $"PageNumber={page}&PageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                queryParams += $"&SearchTerm={Uri.EscapeDataString(search.Trim())}";
+            }
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                queryParams += $"&Status={Uri.EscapeDataString(status)}";
+            }
+            
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/Invitations?{queryParams}");
             if (response != null && response.Success && response.Data != null)
             {
                 pagedResponse = response.Data;
@@ -579,6 +677,36 @@
         {
             isLoadingInvitations = false;
         }
+    }
+
+    private async Task HandleSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            // Reset to page 1 when performing a new search
+            currentPage = 1;
+            var status = MapFilterToApiStatus(selectedFilter);
+            await LoadInvitations(1, searchTerm, status);
+        }
+    }
+
+    private string? MapFilterToApiStatus(string filterValue)
+    {
+        if (string.IsNullOrEmpty(filterValue) || filterValue == "Select")
+        {
+            return null;
+        }
+
+        return filterValue switch
+        {
+            "Pending" => "PendingApproval",
+            "CheckIn" => "CheckedIn",
+            "CheckOut" => "Completed",
+            "Approved" => "Approved",
+            "Rejected" => "Rejected",
+            "Cancelled" => "Cancelled",
+            _ => null
+        };
     }
 
     private string GetDisplayStatus(string status)
@@ -635,7 +763,8 @@
     {
         if (pagedResponse != null && pagedResponse.HasPreviousPage)
         {
-            await LoadInvitations(currentPage - 1);
+            var status = MapFilterToApiStatus(selectedFilter);
+            await LoadInvitations(currentPage - 1, null, status);
         }
     }
 
@@ -643,7 +772,265 @@
     {
         if (pagedResponse != null && pagedResponse.HasNextPage)
         {
-            await LoadInvitations(currentPage + 1);
+            var status = MapFilterToApiStatus(selectedFilter);
+            await LoadInvitations(currentPage + 1, null, status);
+        }
+    }
+
+    private void ToggleFilterDropdown()
+    {
+        showFilterDropdown = !showFilterDropdown;
+        StateHasChanged();
+    }
+
+    private async Task SelectFilter(string filterValue)
+    {
+        selectedFilter = filterValue;
+        showFilterDropdown = false;
+        
+        // Reset to page 1 when filter changes
+        currentPage = 1;
+        
+        // Map filter value to API status and load invitations
+        var status = MapFilterToApiStatus(filterValue);
+        await LoadInvitations(1, null, status);
+        
+        StateHasChanged();
+    }
+
+    private string GetFilterDisplayText()
+    {
+        if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select")
+        {
+            return "Filters";
+        }
+
+        return selectedFilter switch
+        {
+            "CheckIn" => "Checked In",
+            "CheckOut" => "Check Out",
+            _ => selectedFilter
+        };
+    }
+
+    private void ToggleExportDropdown()
+    {
+        showExportDropdown = !showExportDropdown;
+        StateHasChanged();
+    }
+
+    private async Task<List<InvitationDto>> FetchAllInvitationsForExport()
+    {
+        var allInvitations = new List<InvitationDto>();
+        var page = 1;
+        var hasMorePages = true;
+        var search = searchTerm;
+        var status = MapFilterToApiStatus(selectedFilter);
+
+        while (hasMorePages)
+        {
+            var queryParams = $"PageNumber={page}&PageSize=1000"; // Use large page size to minimize API calls
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                queryParams += $"&SearchTerm={Uri.EscapeDataString(search.Trim())}";
+            }
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                queryParams += $"&Status={Uri.EscapeDataString(status)}";
+            }
+
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/Invitations?{queryParams}");
+            if (response != null && response.Success && response.Data != null)
+            {
+                allInvitations.AddRange(response.Data.Items);
+                hasMorePages = response.Data.HasNextPage;
+                page++;
+            }
+            else
+            {
+                hasMorePages = false;
+            }
+        }
+
+        return allInvitations;
+    }
+
+    private string GenerateCsvContent(List<InvitationDto> invitations)
+    {
+        var csv = new System.Text.StringBuilder();
+        
+        // Headers
+        csv.AppendLine("Invitation ID,Visitor Name,Visitor Phone,Visitor Email,Host Name,Host Email,Enterprise,Status,Expected Arrival,Expected Departure,Checked In At,Number of Guests,Vehicles,Created At");
+        
+        // Data rows
+        foreach (var invitation in invitations)
+        {
+            var vehicles = invitation.Vehicles != null && invitation.Vehicles.Count > 0
+                ? string.Join("; ", invitation.Vehicles.Select(v => $"{v.PlateNumber} ({v.Model ?? "N/A"} {v.Color ?? ""})".Trim()))
+                : "None";
+            
+            var displayStatus = GetDisplayStatus(invitation.Status);
+            
+            csv.AppendLine($"{EscapeCsvField(invitation.InvitationNo)}," +
+                          $"{EscapeCsvField(invitation.GuestName)}," +
+                          $"{EscapeCsvField(invitation.GuestPhone)}," +
+                          $"{EscapeCsvField(invitation.GuestEmail ?? "")}," +
+                          $"{EscapeCsvField(invitation.HostName)}," +
+                          $"{EscapeCsvField(invitation.HostEmail ?? "")}," +
+                          $"{EscapeCsvField(invitation.EnterpriseName ?? "")}," +
+                          $"{EscapeCsvField(displayStatus)}," +
+                          $"{EscapeCsvField(invitation.ExpectedArrival.ToString("yyyy-MM-dd HH:mm"))}," +
+                          $"{EscapeCsvField(invitation.ExpectedDeparture.ToString("yyyy-MM-dd HH:mm"))}," +
+                          $"{EscapeCsvField(invitation.CheckedInAt?.ToString("yyyy-MM-dd HH:mm") ?? "")}," +
+                          $"{(invitation.NumberOfAdditionalGuests + 1)}," +
+                          $"{EscapeCsvField(vehicles)}," +
+                          $"{EscapeCsvField(invitation.CreatedAt.ToString("yyyy-MM-dd HH:mm"))}");
+        }
+        
+        return csv.ToString();
+    }
+
+    private string EscapeCsvField(string field)
+    {
+        if (string.IsNullOrEmpty(field))
+            return "";
+        
+        // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+        if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
+        {
+            return "\"" + field.Replace("\"", "\"\"") + "\"";
+        }
+        
+        return field;
+    }
+
+    private byte[] GenerateExcelFile(List<InvitationDto> invitations)
+    {
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Invitations");
+        
+        // Headers
+        worksheet.Cell(1, 1).Value = "Invitation ID";
+        worksheet.Cell(1, 2).Value = "Visitor Name";
+        worksheet.Cell(1, 3).Value = "Visitor Phone";
+        worksheet.Cell(1, 4).Value = "Visitor Email";
+        worksheet.Cell(1, 5).Value = "Host Name";
+        worksheet.Cell(1, 6).Value = "Host Email";
+        worksheet.Cell(1, 7).Value = "Enterprise";
+        worksheet.Cell(1, 8).Value = "Status";
+        worksheet.Cell(1, 9).Value = "Expected Arrival";
+        worksheet.Cell(1, 10).Value = "Expected Departure";
+        worksheet.Cell(1, 11).Value = "Checked In At";
+        worksheet.Cell(1, 12).Value = "Number of Guests";
+        worksheet.Cell(1, 13).Value = "Vehicles";
+        worksheet.Cell(1, 14).Value = "Created At";
+        
+        // Format header row
+        var headerRange = worksheet.Range(1, 1, 1, 14);
+        headerRange.Style.Font.Bold = true;
+        headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+        
+        // Data rows
+        for (int i = 0; i < invitations.Count; i++)
+        {
+            var invitation = invitations[i];
+            var row = i + 2;
+            
+            var vehicles = invitation.Vehicles != null && invitation.Vehicles.Count > 0
+                ? string.Join("; ", invitation.Vehicles.Select(v => $"{v.PlateNumber} ({v.Model ?? "N/A"} {v.Color ?? ""})".Trim()))
+                : "None";
+            
+            var displayStatus = GetDisplayStatus(invitation.Status);
+            
+            worksheet.Cell(row, 1).Value = invitation.InvitationNo;
+            worksheet.Cell(row, 2).Value = invitation.GuestName;
+            worksheet.Cell(row, 3).Value = invitation.GuestPhone;
+            worksheet.Cell(row, 4).Value = invitation.GuestEmail ?? "";
+            worksheet.Cell(row, 5).Value = invitation.HostName;
+            worksheet.Cell(row, 6).Value = invitation.HostEmail ?? "";
+            worksheet.Cell(row, 7).Value = invitation.EnterpriseName ?? "";
+            worksheet.Cell(row, 8).Value = displayStatus;
+            worksheet.Cell(row, 9).Value = invitation.ExpectedArrival;
+            worksheet.Cell(row, 9).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
+            worksheet.Cell(row, 10).Value = invitation.ExpectedDeparture;
+            worksheet.Cell(row, 10).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
+            if (invitation.CheckedInAt.HasValue)
+            {
+                worksheet.Cell(row, 11).Value = invitation.CheckedInAt.Value;
+                worksheet.Cell(row, 11).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
+            }
+            worksheet.Cell(row, 12).Value = invitation.NumberOfAdditionalGuests + 1;
+            worksheet.Cell(row, 13).Value = vehicles;
+            worksheet.Cell(row, 14).Value = invitation.CreatedAt;
+            worksheet.Cell(row, 14).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
+        }
+        
+        // Auto-size columns
+        worksheet.Columns().AdjustToContents();
+        
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return stream.ToArray();
+    }
+
+    private async Task DownloadFile(string content, string fileName, string contentType)
+    {
+        await JSRuntime.InvokeVoidAsync("downloadFile.downloadTextFile", content, fileName, contentType);
+    }
+
+    private async Task DownloadFile(byte[] content, string fileName, string contentType)
+    {
+        var base64String = Convert.ToBase64String(content);
+        await JSRuntime.InvokeVoidAsync("downloadFile.downloadBinaryFile", base64String, fileName, contentType);
+    }
+
+    private async Task SelectExport(string exportType)
+    {
+        isExporting = true;
+        showExportDropdown = false;
+        StateHasChanged();
+        
+        try
+        {
+            // Fetch all invitations matching current filters/search
+            var allInvitations = await FetchAllInvitationsForExport();
+            
+            if (allInvitations.Count == 0)
+            {
+                errorMessage = "No invitations to export.";
+                isExporting = false;
+                StateHasChanged();
+                return;
+            }
+            
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string fileName;
+            string contentType;
+            object fileContent;
+            
+            if (exportType == "CSV")
+            {
+                fileName = $"invitations_{timestamp}.csv";
+                contentType = "text/csv";
+                fileContent = GenerateCsvContent(allInvitations);
+                await DownloadFile((string)fileContent, fileName, contentType);
+            }
+            else if (exportType == "Excel")
+            {
+                fileName = $"invitations_{timestamp}.xlsx";
+                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                fileContent = GenerateExcelFile(allInvitations);
+                await DownloadFile((byte[])fileContent, fileName, contentType);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error exporting invitations: {ex.Message}";
+        }
+        finally
+        {
+            isExporting = false;
+            StateHasChanged();
         }
     }
 }

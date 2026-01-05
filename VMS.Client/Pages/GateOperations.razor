@@ -26,9 +26,14 @@
             </svg>
             <span>Search</span>
         </button>
+        <div class="work-in-and-check-out">
         <button type="button" class="walkin-button" @onclick="NavigateToWalkIn">
             Initiate walk in request
         </button>
+            <button type="button" class="walkout-button" @onclick="NavigateToCheckOut">
+               Guest Check Out
+            </button>
+        </div>
     </div>
 
     <!-- Header -->
@@ -53,10 +58,13 @@
             @foreach (var invitation in filteredInvitations)
             {
                 <div class="invitation-card">
-                    <span class="guest-name">@invitation.GuestName</span>
+                    <div class="guest-name-container">
+                        <span class="guest-name">@invitation.GuestName</span>
+                        <span class="guest-invitation-no">@invitation.InvitationNo</span>
+                    </div>
                     <div class="card-actions">
-                        <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(invitation)">
-                            Allow Entry
+                        <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(invitation)" disabled="@(!CanAllowEntry(invitation))">
+                            @(ShouldShowOverride(invitation) ? "Override" : "Allow Entry")
                         </button>
                         <button type="button" class="reject-entry-button" @onclick="() => HandleReject(invitation)">
                             Reject
@@ -170,7 +178,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(selectedInvitation)">Allow Entry</button>
+                <button type="button" class="allow-entry-button" @onclick="() => HandleAllowEntry(selectedInvitation)" disabled="@(selectedInvitation == null || !CanAllowEntry(selectedInvitation))">@(selectedInvitation != null && ShouldShowOverride(selectedInvitation) ? "Override" : "Allow Entry")</button>
                 <button type="button" class="reject-entry-button" @onclick="() => HandleReject(selectedInvitation)">Reject</button>
                 <button type="button" class="modal-close-btn" @onclick="HandleCloseDetails">Close</button>
             </div>
@@ -220,12 +228,47 @@
                     <button type="button" class="confirmation-cancel-button" @onclick="CancelConfirmation">Cancel</button>
                     @if (confirmationAction == "allow")
                     {
-                        <button type="button" class="confirmation-confirm-button allow-confirm" @onclick="ConfirmAction">Allow Entry</button>
+                        <button type="button" class="confirmation-confirm-button allow-confirm" @onclick="ConfirmAction">@(confirmationInvitation != null && ShouldShowOverride(confirmationInvitation) ? "Override" : "Allow Entry")</button>
                     }
                     else if (confirmationAction == "reject")
                     {
                         <button type="button" class="confirmation-confirm-button reject-confirm" @onclick="ConfirmAction">Reject</button>
                     }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Reschedule Modal -->
+@if (isRescheduleModalOpen && rescheduleInvitation != null)
+{
+    <div class="reschedule-modal-overlay" @onclick="HandleRescheduleBackdropClick">
+        <div class="reschedule-modal" @onclick:stopPropagation="true">
+            <div class="reschedule-modal-content">
+                <h3 class="reschedule-modal-title">Reschedule Visit Dates</h3>
+                <p class="reschedule-modal-message">
+                    Please select new arrival and departure dates for @rescheduleInvitation.GuestName
+                </p>
+                <div class="reschedule-date-fields">
+                    <div class="reschedule-date-field">
+                        <label class="reschedule-label">Expected Arrival</label>
+                        <input type="datetime-local" 
+                               class="reschedule-date-input" 
+                               value="@(newExpectedArrival.HasValue ? newExpectedArrival.Value.ToString("yyyy-MM-ddTHH:mm") : "")"
+                               @onchange="@((ChangeEventArgs e) => { if (DateTime.TryParse(e.Value?.ToString(), out var dt)) newExpectedArrival = dt; })" />
+                    </div>
+                    <div class="reschedule-date-field">
+                        <label class="reschedule-label">Expected Departure</label>
+                        <input type="datetime-local" 
+                               class="reschedule-date-input" 
+                               value="@(newExpectedDeparture.HasValue ? newExpectedDeparture.Value.ToString("yyyy-MM-ddTHH:mm") : "")"
+                               @onchange="@((ChangeEventArgs e) => { if (DateTime.TryParse(e.Value?.ToString(), out var dt)) newExpectedDeparture = dt; })" />
+                    </div>
+                </div>
+                <div class="reschedule-buttons">
+                    <button type="button" class="reschedule-cancel-button" @onclick="CancelReschedule">Cancel</button>
+                    <button type="button" class="reschedule-submit-button" @onclick="HandleRescheduleSubmit">Reschedule</button>
                 </div>
             </div>
         </div>
@@ -253,6 +296,10 @@
     private bool isConfirmationModalOpen = false;
     private string? confirmationAction = null;
     private ApprovedGuestDto? confirmationInvitation = null;
+    private bool isRescheduleModalOpen = false;
+    private ApprovedGuestDto? rescheduleInvitation = null;
+    private DateTime? newExpectedArrival = null;
+    private DateTime? newExpectedDeparture = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -388,11 +435,40 @@
         }
     }
 
+    private bool CanAllowEntry(ApprovedGuestDto invitation)
+    {
+        var today = DateTime.Today;
+        var departureDate = invitation.ExpectedDeparture.Date;
+        
+        // Only disable if departure has passed
+        return departureDate >= today;
+    }
+
+    private bool ShouldShowOverride(ApprovedGuestDto invitation)
+    {
+        var today = DateTime.Today;
+        var arrivalDate = invitation.ExpectedArrival.Date;
+        
+        // Show "Override" if ExpectedArrival is in the future
+        return arrivalDate > today;
+    }
+
     private void HandleAllowEntry(ApprovedGuestDto invitation)
     {
-        confirmationAction = "allow";
-        confirmationInvitation = invitation;
-        isConfirmationModalOpen = true;
+        // If ExpectedArrival is in the future, show reschedule modal instead
+        if (ShouldShowOverride(invitation))
+        {
+            rescheduleInvitation = invitation;
+            newExpectedArrival = invitation.ExpectedArrival;
+            newExpectedDeparture = invitation.ExpectedDeparture;
+            isRescheduleModalOpen = true;
+        }
+        else
+        {
+            confirmationAction = "allow";
+            confirmationInvitation = invitation;
+            isConfirmationModalOpen = true;
+        }
         StateHasChanged();
     }
 
@@ -407,6 +483,11 @@
     private void NavigateToWalkIn()
     {
         Navigation.NavigateTo("/walk-in-request");
+    }
+
+    private void NavigateToCheckOut()
+    {
+        Navigation.NavigateTo("/check-out-request");
     }
 
     private void HandleCloseWalkInModal()
@@ -529,6 +610,75 @@
     private void HandleConfirmationBackdropClick()
     {
         CancelConfirmation();
+    }
+
+    private void HandleRescheduleBackdropClick()
+    {
+        // Prevent closing on backdrop click - require explicit cancel
+    }
+
+    private void CancelReschedule()
+    {
+        isRescheduleModalOpen = false;
+        rescheduleInvitation = null;
+        newExpectedArrival = null;
+        newExpectedDeparture = null;
+        StateHasChanged();
+    }
+
+    private async Task HandleRescheduleSubmit()
+    {
+        if (rescheduleInvitation == null || !newExpectedArrival.HasValue || !newExpectedDeparture.HasValue)
+        {
+            ToastService.ShowError("Please select both arrival and departure dates");
+            return;
+        }
+
+        if (newExpectedDeparture.Value <= newExpectedArrival.Value)
+        {
+            ToastService.ShowError("Departure date must be after arrival date");
+            return;
+        }
+
+        try
+        {
+            var command = new
+            {
+                GuestInvitationId = rescheduleInvitation.GuestInvitationId,
+                NewExpectedArrival = newExpectedArrival.Value,
+                NewExpectedDeparture = newExpectedDeparture.Value
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Gate/reschedule-invitation", command);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                if (result != null && result.Success)
+                {
+                    ToastService.ShowSuccess(result.Message ?? "Invitation rescheduled successfully. Waiting for host approval.");
+                    CancelReschedule();
+                    await LoadApprovedGuests();
+                    if (isDetailsOpen)
+                    {
+                        HandleCloseDetails();
+                    }
+                }
+                else
+                {
+                    ToastService.ShowError(result?.Message ?? "Failed to reschedule invitation");
+                }
+            }
+            else
+            {
+                var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                ToastService.ShowError(errorResult?.Message ?? "Failed to reschedule invitation");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error rescheduling invitation: {ex.Message}");
+        }
     }
 
     private class SearchGuestQuery

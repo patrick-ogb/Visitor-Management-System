@@ -3,6 +3,7 @@ namespace VMS.Client.DTOs.Gate;
 public class ApprovedGuestDto
 {
     public int GuestInvitationId { get; set; }
+    public string InvitationNo { get; set; } = string.Empty;
     public string GuestName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string? Email { get; set; }

@@ -1,0 +1,303 @@
+@page "/check-out-request"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.Services
+@using VMS.Client.DTOs.Gate
+@using VMS.Client.DTOs.Common
+@inject IToastService ToastService
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "SUPERADMIN,GateAdmin")]
+
+<PageTitle>Check Out Request</PageTitle>
+
+<div class="gate-operations-container">
+    <div class="gate-operations-thq-gate-operations-elm">
+        <div class="gate-operations-thq-frame491-elm">
+            <img
+                src="images/line38592-wwyg.svg"
+                alt="Line38592"
+                class="gate-operations-thq-line3-elm2" />
+            <div class="gate-operations-thq-frame1618868809-elm">
+                <span class="gate-operations-thq-text-elm10">
+                    Gate Operations
+                </span>
+                <div class="gate-operations-thq-frame496-elm">
+                    <div class="gate-operations-thq-mingcutenotificationline-elm">
+                        <div class="gate-operations-thq-group-elm">
+                            <img
+                                src="images/vector8592-ws2i.svg"
+                                alt="Vector8592"
+                                class="gate-operations-thq-vector-elm" />
+                        </div>
+                    </div>
+                    <div class="gate-operations-thq-frame399-elm">
+                        <img
+                            src="images/ellipse1618592-2kls-200h.png"
+                            alt="Ellipse1618592"
+                            class="gate-operations-thq-ellipse161-elm" />
+                        <div class="gate-operations-thq-frame398-elm">
+                            <span class="gate-operations-thq-text-elm11">
+                                Tochukwu Ndefo
+                            </span>
+                            <span class="gate-operations-thq-text-elm12">
+                                tndefo@lfz.com
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="gate-operations-thq-activeusers-elm">
+                <div class="gate-operations-thq-cancel-elm1">
+                    <input type="text"
+                           class="gate-operations-thq-search-input"
+                           placeholder="Search guest name, invitationNo, or vehicle number"
+                           @bind="searchTerm"
+                           @bind:event="oninput"
+                           @onkeypress="HandleKeyPress" />
+                </div>
+                <span class="gate-operations-thq-text-elm23">
+                    Visitor Exit Log
+                </span>
+                <button class="gate-operations-thq-bookappointment-elm5" @onclick="HandleSearch">
+                    <img
+                        src="images/materialsymbolssearchrounded8592-af4.svg"
+                        alt="materialsymbolssearchrounded8592"
+                        class="gate-operations-thq-materialsymbolssearchrounded-elm" />
+                    <span class="gate-operations-thq-text-elm24">Search</span>
+                </button>
+                @if (isLoading)
+                {
+                    <p class="no-results">Loading checked-in guests...</p>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <p class="no-results" style="color: #DC3545;">@errorMessage</p>
+                }
+                else if (filteredGuests == null || !filteredGuests.Any())
+                {
+                    <p class="no-results">No checked-in guests found.</p>
+                }
+                else
+                {
+                    @if (filteredGuests.Any())
+                    {
+                        <span class="gate-operations-thq-text-elm16">
+                            Click 'EXIT' to confirm that the visitor has left the premises.
+                        </span>
+                    }
+                    @for (int i = 0; i < filteredGuests.Count; i++)
+                    {
+                        var guest = filteredGuests[i];
+                        var topPosition = 167 + (i * 120);
+                        var cardStyle = $"top: {topPosition}px;";
+
+                        <div class="gate-operations-thq-guest-card" style="@cardStyle">
+                            <div class="gate-operations-thq-guest-frame">
+                                <div class="gate-operations-thq-guest-name-row">
+                                    <span class="gate-operations-thq-guest-name">
+                                        @guest.GuestName
+                                    </span>
+                                    <span class="gate-operations-thq-invitation-no">
+                                        @guest.InvitationNo
+                                    </span>
+                                </div>
+                                <span class="gate-operations-thq-date-info">
+                                    Check-In: @guest.CheckedInAt.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                <span class="gate-operations-thq-date-info">
+                                    Expires: @guest.ExpectedDeparture.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                            </div>
+                            <button class="gate-operations-thq-exit-button"
+                                    @onclick="() => HandleExit(guest)"
+                                    disabled="@(!CanCheckOut(guest))">
+                                <span class="gate-operations-thq-exit-text">Exit</span>
+                            </button>
+                        </div>
+                    }
+                }
+                <div class="done-button-container">
+                    <button type="button" class="done-button" @onclick="NavigateToGateOperations">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+@if (isConfirmationModalOpen && confirmationGuest != null)
+{
+    <div class="confirmation-modal-overlay" @onclick="HandleConfirmationBackdropClick">
+        <div class="confirmation-modal" @onclick:stopPropagation="true">
+            <div class="confirmation-modal-content">
+                <p class="confirmation-message">
+                    Are you sure you want to check out @confirmationGuest.GuestName?
+                </p>
+                <div class="confirmation-buttons">
+                    <button type="button" class="confirmation-cancel-button" @onclick="CancelConfirmation">Cancel</button>
+                    <button type="button" class="confirmation-confirm-button exit-confirm" @onclick="ConfirmExit">Check Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string searchTerm = string.Empty;
+    private List<CheckedInGuestDto> allGuests = new();
+    private List<CheckedInGuestDto> filteredGuests = new();
+    private bool isConfirmationModalOpen = false;
+    private CheckedInGuestDto? confirmationGuest = null;
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCheckedInGuests();
+    }
+
+    private async Task LoadCheckedInGuests()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var httpResponse = await Http.GetAsync("api/Gate/checked-in-guests");
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<BaseResponse<List<CheckedInGuestDto>>>();
+
+                if (response != null && response.Success && response.Data != null)
+                {
+                    allGuests = response.Data;
+                    filteredGuests = allGuests.ToList();
+                }
+                else
+                {
+                    errorMessage = response?.Message ?? "Failed to load checked-in guests.";
+                    allGuests = new List<CheckedInGuestDto>();
+                    filteredGuests = new List<CheckedInGuestDto>();
+                }
+            }
+            else
+            {
+                errorMessage = $"Failed to load checked-in guests. Status: {httpResponse.StatusCode}";
+                allGuests = new List<CheckedInGuestDto>();
+                filteredGuests = new List<CheckedInGuestDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading checked-in guests: {ex.Message}";
+            allGuests = new List<CheckedInGuestDto>();
+            filteredGuests = new List<CheckedInGuestDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredGuests = allGuests.ToList();
+        }
+        else
+        {
+            var searchLower = searchTerm.ToLowerInvariant();
+            filteredGuests = allGuests.Where(g =>
+                g.GuestName.ToLowerInvariant().Contains(searchLower) ||
+                g.InvitationNo.ToLowerInvariant().Contains(searchLower) ||
+                g.PhoneNumber.Contains(searchTerm) ||
+                g.Vehicles.Any(v => v.PlateNumber.ToLowerInvariant().Contains(searchLower) ||
+                                   (v.Model != null && v.Model.ToLowerInvariant().Contains(searchLower))
+                )
+            ).ToList();
+        }
+    }
+
+    private bool CanCheckOut(CheckedInGuestDto guest)
+    {
+        var currentTime = DateTime.UtcNow;
+        return currentTime >= guest.ExpectedArrival && currentTime <= guest.ExpectedDeparture;
+    }
+
+    private void HandleExit(CheckedInGuestDto guest)
+    {
+        confirmationGuest = guest;
+        isConfirmationModalOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmExit()
+    {
+        if (confirmationGuest == null)
+        {
+            CancelConfirmation();
+            return;
+        }
+
+        var guest = confirmationGuest;
+        CancelConfirmation();
+
+        try
+        {
+            var response = await Http.PutAsync($"api/Gate/check-out/{guest.GuestInvitationId}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                if (result != null && result.Success)
+                {
+                    ToastService.ShowSuccess(result.Message ?? "Guest checked out successfully");
+                    await LoadCheckedInGuests();
+                }
+                else
+                {
+                    ToastService.ShowError(result?.Message ?? "Failed to check out guest");
+                }
+            }
+            else
+            {
+                var errorResult = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                ToastService.ShowError(errorResult?.Message ?? "Failed to check out guest");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private void CancelConfirmation()
+    {
+        isConfirmationModalOpen = false;
+        confirmationGuest = null;
+        StateHasChanged();
+    }
+
+    private void HandleConfirmationBackdropClick()
+    {
+        CancelConfirmation();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            HandleSearch();
+        }
+    }
+
+    private void NavigateToGateOperations()
+    {
+        Navigation.NavigateTo("/gate-operations");
+    }
+}

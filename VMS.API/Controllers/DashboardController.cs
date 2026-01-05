@@ -71,14 +71,22 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("visitors-by-day")]
-    public async Task<ActionResult> GetVisitorsByDay([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+    public async Task<ActionResult> GetVisitorsByDay([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? viewMode)
     {
         var isSuperadmin = User.IsInRole("SUPERADMIN");
+
+        // Parse viewMode parameter (default to ByDate)
+        VisitorsByDayViewMode parsedViewMode = VisitorsByDayViewMode.ByDate;
+        if (!string.IsNullOrWhiteSpace(viewMode) && Enum.TryParse<VisitorsByDayViewMode>(viewMode, true, out var parsed))
+        {
+            parsedViewMode = parsed;
+        }
 
         var query = new GetVisitorsByDayQuery
         {
             FromDate = fromDate,
-            ToDate = toDate
+            ToDate = toDate,
+            ViewMode = parsedViewMode
         };
 
         // Auto-filter by enterprise for non-SUPERADMIN users
