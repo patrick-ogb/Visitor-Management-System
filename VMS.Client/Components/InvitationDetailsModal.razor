@@ -27,12 +27,25 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Status:</span>
-                            <span class="badge bg-@GetStatusBadgeClass(SelectedInvitation.Status)">@SelectedInvitation.Status</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="badge bg-@GetStatusBadgeClass(SelectedInvitation.Status)">@SelectedInvitation.Status</span>
+                                @if (SelectedInvitation.IsRescheduled)
+                                {
+                                    <span class="rescheduled-badge">Rescheduled</span>
+                                }
+                            </div>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Created Date:</span>
                             <span>@SelectedInvitation.CreatedAt.ToString("g")</span>
                         </div>
+                        @if (SelectedInvitation.IsRescheduled && SelectedInvitation.RescheduledAt.HasValue)
+                        {
+                            <div class="detail-row">
+                                <span class="detail-label">Rescheduled At:</span>
+                                <span>@SelectedInvitation.RescheduledAt.Value.ToString("g")</span>
+                            </div>
+                        }
                     </div>
 
                     <div class="details-section">

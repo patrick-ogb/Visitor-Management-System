@@ -10,3 +10,4 @@ public class RescheduleGuestInvitationCommand : IRequest<BaseResponse<bool>>
     public DateTime NewExpectedDeparture { get; set; }
 }
 
+

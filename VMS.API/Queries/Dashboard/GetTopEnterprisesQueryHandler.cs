@@ -76,3 +76,4 @@ public class GetTopEnterprisesQueryHandler : IRequestHandler<GetTopEnterprisesQu
 }
 
 
+

@@ -8,3 +8,4 @@ public class CheckOutGuestCommand : IRequest<BaseResponse<bool>>
     public int GuestInvitationId { get; set; }
 }
 
+

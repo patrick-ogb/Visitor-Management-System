@@ -581,6 +581,17 @@
 }
 
 /* Status Badges */
+.rescheduled-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: #e7f3ff;
+    color: #0066cc;
+    border: 1px solid #b3d9ff;
+}
+
 .status-badge {
     display: inline-block;
     padding: 4px 8px;

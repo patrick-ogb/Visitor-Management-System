@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using VMS.API.Common.Models;
 using VMS.Core.Enums;
 using VMS.Infrastructure.Repositories;
@@ -11,15 +12,18 @@ public class RescheduleGuestInvitationCommandHandler : IRequestHandler<Reschedul
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotificationEventService _notificationEventService;
     private readonly NotificationEventQueue _eventQueue;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public RescheduleGuestInvitationCommandHandler(
         IUnitOfWork unitOfWork,
         INotificationEventService notificationEventService,
-        NotificationEventQueue eventQueue)
+        NotificationEventQueue eventQueue,
+        IHttpContextAccessor httpContextAccessor)
     {
         _unitOfWork = unitOfWork;
         _notificationEventService = notificationEventService;
         _eventQueue = eventQueue;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<BaseResponse<bool>> Handle(RescheduleGuestInvitationCommand request, CancellationToken cancellationToken)
@@ -38,12 +42,26 @@ public class RescheduleGuestInvitationCommandHandler : IRequestHandler<Reschedul
                 return BaseResponse<bool>.ErrorResponse("Departure date must be after arrival date");
             }
 
+            // Get current user ID (GateAdmin who is rescheduling)
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
+            int? rescheduledById = null;
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
+            {
+                rescheduledById = userId;
+            }
+
             // Update invitation dates
             invitation.ExpectedArrival = request.NewExpectedArrival;
             invitation.ExpectedDeparture = request.NewExpectedDeparture;
             
             // Set status back to PendingApproval to require host re-approval
             invitation.Status = InvitationStatus.PendingApproval;
+            
+            // Set reschedule tracking fields
+            invitation.IsRescheduled = true;
+            invitation.RescheduledById = rescheduledById;
+            invitation.RescheduledAt = DateTime.UtcNow;
             
             // Update timestamp
             invitation.UpdatedAt = DateTime.UtcNow;
@@ -62,7 +80,7 @@ public class RescheduleGuestInvitationCommandHandler : IRequestHandler<Reschedul
                     var additionalData = System.Text.Json.JsonSerializer.Serialize(new 
                     { 
                         InvitationNo = invitation.InvitationNo,
-                        Message = $"Guest {guestName} has requested to reschedule their visit. Please review and approve."
+                        Message = $"Your invitation for {guestName} has been rescheduled by Gate Admin. Please review the new dates and approve."
                     });
 
                     var notificationEvent = await _notificationEventService.CreateNotificationEventAsync(

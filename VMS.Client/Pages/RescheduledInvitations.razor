@@ -1,0 +1,367 @@
+@page "/rescheduled-invitations"
+@using Microsoft.AspNetCore.Authorization
+@using VMS.Client.DTOs.Invitations
+@using VMS.Client.DTOs.Common
+@using VMS.Client.DTOs.Approvals
+@using VMS.Client.Components
+@inject HttpClient Http
+@inject IToastService ToastService
+@attribute [Authorize(Roles = "SUPERADMIN,LFZUser,EnterpriseUser")]
+
+<PageTitle>Rescheduled Invitations</PageTitle>
+
+<div class="rescheduled-invitations-container">
+    <div class="page-header">
+        <h1 class="page-title">Rescheduled Invitations</h1>
+        <p class="page-subtitle">Review and approve invitations that have been rescheduled by Gate Admin</p>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="invitations-controls">
+        <div class="search-container">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search by name or Invitation ID" 
+                   @bind="searchTerm"
+                   @bind:event="oninput"
+                   @onkeydown="HandleSearchKeyDown" />
+        </div>
+        
+        <div class="filter-buttons">
+            <button class="filter-btn @(selectedFilter == "All" ? "active" : "")" @onclick='() => SetFilter("All")'>All</button>
+            <button class="filter-btn @(selectedFilter == "Pending" ? "active" : "")" @onclick='() => SetFilter("Pending")'>Pending</button>
+            <button class="filter-btn @(selectedFilter == "Approved" ? "active" : "")" @onclick='() => SetFilter("Approved")'>Approved</button>
+            <button class="filter-btn @(selectedFilter == "Rejected" ? "active" : "")" @onclick='() => SetFilter("Rejected")'>Rejected</button>
+        </div>
+    </div>
+
+    <!-- Invitations Table -->
+    <div class="table-container">
+        <table class="invitations-table">
+            <thead>
+                <tr>
+                    <th>INVITATION ID</th>
+                    <th>VISITOR</th>
+                    <th>HOST</th>
+                    <th>NEW ARRIVAL</th>
+                    <th>NEW DEPARTURE</th>
+                    <th>RESCHEDULED AT</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading)
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem;">
+                            <span>Loading rescheduled invitations...</span>
+                        </td>
+                    </tr>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: red;">
+                            <span>@errorMessage</span>
+                        </td>
+                    </tr>
+                }
+                else if (invitations.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem;">
+                            <span>No rescheduled invitations found.</span>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var invitation in invitations)
+                    {
+                        <tr>
+                            <td>@invitation.InvitationNo</td>
+                            <td>@invitation.GuestName</td>
+                            <td>@invitation.HostName</td>
+                            <td>@FormatDate(invitation.ExpectedArrival)</td>
+                            <td>@FormatDate(invitation.ExpectedDeparture)</td>
+                            <td>@(invitation.RescheduledAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="status-badge status-@GetStatusBadgeClass(invitation.Status)">@FormatStatus(invitation.Status)</span>
+                                    @if (invitation.IsRescheduled)
+                                    {
+                                        <span class="rescheduled-badge">Rescheduled</span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view-btn" @onclick="() => ViewInvitation(invitation.GuestInvitationId)" title="View Details">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </button>
+                                    @if (invitation.Status == "PendingApproval")
+                                    {
+                                        <button class="action-btn approve-btn" @onclick="() => ApproveInvitation(invitation.GuestInvitationId)">Approve</button>
+                                        <button class="action-btn reject-btn" @onclick="() => RejectInvitation(invitation.GuestInvitationId)">Reject</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (pagedResponse != null)
+    {
+        <div class="pagination">
+            <button class="pagination-btn" @onclick="PreviousPage" disabled="@(!pagedResponse.HasPreviousPage || isLoading)">
+                ← Previous Page
+            </button>
+            <span class="pagination-info">Page @pagedResponse.PageNumber of @pagedResponse.TotalPages (Total: @pagedResponse.TotalCount invitations)</span>
+            <button class="pagination-btn" @onclick="NextPage" disabled="@(!pagedResponse.HasNextPage || isLoading)">
+                Next Page →
+            </button>
+        </div>
+    }
+</div>
+
+<InvitationDetailsModal @ref="detailsModal" OnInvitationCreated="HandleInvitationCreated" />
+<ApprovalConfirmationModal @ref="approvalModal" OnConfirmed="HandleApprovalConfirmed" />
+
+@code {
+    private string searchTerm = string.Empty;
+    private string selectedFilter = "All";
+    private int pageSize = 10;
+    
+    private List<InvitationDto> invitations = new();
+    private PagedResponse<InvitationDto>? pagedResponse;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    
+    private InvitationDetailsModal? detailsModal;
+    private ApprovalConfirmationModal? approvalModal;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRescheduledInvitations();
+    }
+    
+    private async Task LoadRescheduledInvitations(int? pageNumber = null)
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        
+        try
+        {
+            var queryParams = new List<string>();
+            
+            // Map filter to API status
+            if (selectedFilter != "All")
+            {
+                var statusMap = selectedFilter switch
+                {
+                    "Pending" => "PendingApproval",
+                    "Approved" => "Approved",
+                    "Rejected" => "Rejected",
+                    _ => selectedFilter
+                };
+                queryParams.Add($"Status={Uri.EscapeDataString(statusMap)}");
+            }
+            
+            var currentPage = pageNumber ?? pagedResponse?.PageNumber ?? 1;
+            queryParams.Add($"PageNumber={currentPage}");
+            queryParams.Add($"PageSize={pageSize}");
+            
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                queryParams.Add($"SearchTerm={Uri.EscapeDataString(searchTerm.Trim())}");
+            }
+            
+            var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+            var response = await Http.GetFromJsonAsync<BaseResponse<PagedResponse<InvitationDto>>>($"api/RescheduledInvitations{queryString}");
+            
+            if (response != null && response.Success && response.Data != null)
+            {
+                pagedResponse = response.Data;
+                invitations = response.Data.Items;
+            }
+            else
+            {
+                errorMessage = response?.Message ?? "Failed to load rescheduled invitations.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred while loading rescheduled invitations: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task HandleSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadRescheduledInvitations(1);
+        }
+    }
+    
+    private async Task SetFilter(string filter)
+    {
+        selectedFilter = filter;
+        await LoadRescheduledInvitations(1);
+    }
+    
+    private async Task PreviousPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasPreviousPage)
+        {
+            await LoadRescheduledInvitations(pagedResponse.PageNumber - 1);
+        }
+    }
+    
+    private async Task NextPage()
+    {
+        if (pagedResponse != null && pagedResponse.HasNextPage)
+        {
+            await LoadRescheduledInvitations(pagedResponse.PageNumber + 1);
+        }
+    }
+    
+    private string FormatDate(DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd / HH:mm");
+    }
+    
+    private string FormatStatus(string status)
+    {
+        return status switch
+        {
+            "PendingApproval" => "Pending",
+            "CheckedIn" => "Checked In",
+            _ => status
+        };
+    }
+    
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "approved" => "approved",
+            "pendingapproval" => "pending",
+            "rejected" => "rejected",
+            "checkedin" => "checkedin",
+            "completed" => "completed",
+            "cancelled" => "cancelled",
+            _ => "pending"
+        };
+    }
+    
+    private void ViewInvitation(int invitationId)
+    {
+        var invitation = invitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            detailsModal?.Open(invitation);
+        }
+    }
+    
+    private async Task HandleInvitationCreated()
+    {
+        await LoadRescheduledInvitations();
+    }
+    
+    private void ApproveInvitation(int invitationId)
+    {
+        var invitation = invitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            approvalModal?.Open(invitation, isApproval: true);
+        }
+    }
+    
+    private void RejectInvitation(int invitationId)
+    {
+        var invitation = invitations.FirstOrDefault(i => i.GuestInvitationId == invitationId);
+        if (invitation != null)
+        {
+            approvalModal?.Open(invitation, isApproval: false);
+        }
+    }
+    
+    private async Task HandleApprovalConfirmed(ApprovalConfirmationModal.ApprovalModalResult result)
+    {
+        try
+        {
+            var request = new ApproveRequestDto
+            {
+                Type = "Invitation",
+                RequestId = result.InvitationId,
+                IsApproved = result.IsApproved,
+                Comments = result.Comments
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Approvals/approve", request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                
+                if (apiResponse != null && apiResponse.Success)
+                {
+                    approvalModal?.Close();
+                    ToastService.ShowSuccess(apiResponse.Message ?? "Invitation approval processed successfully");
+                    await LoadRescheduledInvitations();
+                }
+                else
+                {
+                    var errorMsg = apiResponse?.Message ?? "Failed to process approval request.";
+                    if (apiResponse?.Errors != null && apiResponse.Errors.Any())
+                    {
+                        errorMsg = string.Join(" ", apiResponse.Errors);
+                    }
+                    approvalModal?.SetError(errorMsg);
+                    ToastService.ShowError(errorMsg);
+                }
+            }
+            else
+            {
+                BaseResponse<bool>? errorResponse = null;
+                try
+                {
+                    errorResponse = await response.Content.ReadFromJsonAsync<BaseResponse<bool>>();
+                }
+                catch
+                {
+                }
+
+                var errorMsg = errorResponse?.Message ?? $"Request failed with status: {response.StatusCode}";
+                if (errorResponse?.Errors != null && errorResponse.Errors.Any())
+                {
+                    errorMsg = string.Join(" ", errorResponse.Errors);
+                }
+                approvalModal?.SetError(errorMsg);
+                ToastService.ShowError(errorMsg);
+            }
+        }
+        catch (Exception ex)
+        {
+            approvalModal?.SetError($"An error occurred: {ex.Message}");
+            ToastService.ShowError($"An error occurred: {ex.Message}");
+        }
+    }
+}
+

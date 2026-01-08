@@ -62,3 +62,4 @@ public class CheckOutGuestCommandHandler : IRequestHandler<CheckOutGuestCommand,
     }
 }
 
+

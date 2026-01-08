@@ -21,6 +21,9 @@ public class InvitationDto
     public List<VehicleDto> Vehicles { get; set; } = new();
     public DateTime CreatedAt { get; set; }
     public DateTime? CheckedInAt { get; set; }
+    public bool IsRescheduled { get; set; }
+    public int? RescheduledById { get; set; }
+    public DateTime? RescheduledAt { get; set; }
 }
 
 public class VehicleDto

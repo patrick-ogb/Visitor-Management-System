@@ -26,6 +26,9 @@ public class GuestInvitation : IAuditableEntity
     public int? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public int? UpdatedBy { get; set; }
+    public bool IsRescheduled { get; set; } = false;
+    public int? RescheduledById { get; set; }
+    public DateTime? RescheduledAt { get; set; }
 
     // Navigation properties
     public virtual Guest Guest { get; set; } = null!;

@@ -6,60 +6,39 @@ using VMS.Infrastructure.Data;
 
 namespace VMS.API.Queries.Invitations;
 
-public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, BaseResponse<PagedResponse<InvitationDto>>>
+public class GetRescheduledInvitationsQueryHandler : IRequestHandler<GetRescheduledInvitationsQuery, BaseResponse<PagedResponse<InvitationDto>>>
 {
     private readonly VmsDbContext _context;
 
-    public GetInvitationsQueryHandler(VmsDbContext context)
+    public GetRescheduledInvitationsQueryHandler(VmsDbContext context)
     {
         _context = context;
     }
 
-    public async Task<BaseResponse<PagedResponse<InvitationDto>>> Handle(GetInvitationsQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<PagedResponse<InvitationDto>>> Handle(GetRescheduledInvitationsQuery request, CancellationToken cancellationToken)
     {
-       
         try
         {
             var query = _context.GuestInvitations
-           .Include(i => i.Guest)
-           .Include(i => i.Vehicles)
-           .Include(i => i.Enterprise)
-           .AsQueryable();
+                .Include(i => i.Guest)
+                .Include(i => i.Vehicles)
+                .Include(i => i.Enterprise)
+                .Where(i => i.IsRescheduled == true) // Only rescheduled invitations
+                .AsQueryable();
 
-            // Apply filters
+            // Filter by HostId (required for rescheduled invitations)
             if (request.HostId.HasValue)
             {
                 query = query.Where(i => i.HostId == request.HostId.Value);
             }
 
-            if (request.EnterpriseId.HasValue)
-            {
-                query = query.Where(i => i.EnterpriseId == request.EnterpriseId.Value);
-            }
-
+            // Filter by status if provided
             if (!string.IsNullOrWhiteSpace(request.Status))
             {
                 if (Enum.TryParse<InvitationStatus>(request.Status, out var status))
                 {
                     query = query.Where(i => i.Status == status);
-                    
-                    // For Approved status, also filter out already checked-in invitations
-                    // This ensures GateAdmin only sees approved invitations awaiting check-in
-                    if (status == InvitationStatus.Approved)
-                    {
-                        query = query.Where(i => i.CheckedInAt == null);
-                    }
                 }
-            }
-
-            if (request.FromDate.HasValue)
-            {
-                query = query.Where(i => i.ExpectedArrival >= request.FromDate.Value);
-            }
-
-            if (request.ToDate.HasValue)
-            {
-                query = query.Where(i => i.ExpectedArrival <= request.ToDate.Value);
             }
 
             // Apply search filter for GuestName or InvitationNo
@@ -72,22 +51,12 @@ public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, B
                 );
             }
 
-            // Filter by IsRescheduled if specified
-            if (request.IsRescheduled.HasValue)
-            {
-                query = query.Where(i => i.IsRescheduled == request.IsRescheduled.Value);
-            }
-
-            // Note: We use null-conditional operators in the mapping below to handle null Guest navigation properties
-            // This prevents NullReferenceException when accessing Guest properties for orphaned records
-            // Filtering i.Guest != null here could cause SQL translation issues if database schema is not up to date
-
             // Get total count
             var totalCount = await query.CountAsync(cancellationToken);
 
-            // Apply pagination and ordering
+            // Apply pagination and ordering (order by RescheduledAt descending to show most recent first)
             var invitations = await query
-                .OrderByDescending(i => i.CreatedAt)
+                .OrderByDescending(i => i.RescheduledAt ?? i.CreatedAt)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
@@ -132,14 +101,11 @@ public class GetInvitationsQueryHandler : IRequestHandler<GetInvitationsQuery, B
             };
 
             return BaseResponse<PagedResponse<InvitationDto>>.SuccessResponse(response);
-
         }
         catch (Exception ex)
         {
-
-            throw;
+            return BaseResponse<PagedResponse<InvitationDto>>.ErrorResponse($"Error loading rescheduled invitations: {ex.Message}");
         }
     }
 }
-
 

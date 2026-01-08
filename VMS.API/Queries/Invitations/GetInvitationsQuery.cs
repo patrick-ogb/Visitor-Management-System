@@ -11,6 +11,7 @@ public class GetInvitationsQuery : IRequest<BaseResponse<PagedResponse<Invitatio
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public string? SearchTerm { get; set; }
+    public bool? IsRescheduled { get; set; }
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
@@ -36,6 +37,9 @@ public class InvitationDto
     public List<VehicleDto> Vehicles { get; set; } = new();
     public DateTime CreatedAt { get; set; }
     public DateTime? CheckedInAt { get; set; }
+    public bool IsRescheduled { get; set; }
+    public int? RescheduledById { get; set; }
+    public DateTime? RescheduledAt { get; set; }
 }
 
 public class VehicleDto
